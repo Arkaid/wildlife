@@ -1,0 +1,44 @@
+*.apk
+
+# ===============
+# Unity generated
+# ===============
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+
+# =====================================
+# Visual Studio / MonoDevelop generated
+# =====================================
+/*.csproj
+/*.unityproj
+/*.sln
+/*.suo
+/*.user
+/*.userprefs
+/*.pidb
+/*.booproj
+/*.htm
+
+# ============
+# OS generated
+# ============
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
+.vs/
+
+# ======
+# others
+# ======
+#Unity3D Generated File On Crash Reports
+sysinfo.txt
+[Ll]ocalCache/
+Assets/StreamingAssets.meta
+Assets/SteamVR/Scenes/*
