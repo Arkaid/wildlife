@@ -91,6 +91,7 @@ namespace Jintori
         private void OnMaskCleared()
         {
             safePath.RedrawPath(player.x, player.y);
+            UI.instance.percentage = mask.clearedRatio * 100f;
         }
 
         // -----------------------------------------------------------------------------------	

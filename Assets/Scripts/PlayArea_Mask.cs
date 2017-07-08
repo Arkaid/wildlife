@@ -37,10 +37,14 @@ namespace Jintori
             public Texture2D texture { get; private set; }
 
             /// <summary> Number of pixels that have been cleared </summary>
-            int clearedArea;
+            int clearedArea = 0;
 
             /// <summary> Cleared ratio, between 0 and 1 </summary>
-            float clearedRatio { get { return (float)clearedArea / (width * height); } }
+            public float clearedRatio { get { return (float)clearedArea / (width * height); } }
+
+            // --- MonoBehaviour ----------------------------------------------------------------------------
+            // -----------------------------------------------------------------------------------
+
             // --- Methods ----------------------------------------------------------------------------------
             // -----------------------------------------------------------------------------------
             /// <summary>
@@ -86,19 +90,22 @@ namespace Jintori
 
                 // third pass:
                 // find invalid paths and erase them
+                clearedArea = 0;
                 for (int i = 1; i < width - 1; i++)
                 {
                     for (int j = 1; j < height - 1; j++)
                     {
-                        if (this[i, j] != Safe)
-                            continue;
+                        if (this[i, j] == Safe)
+                        {
+                            bool invalid = false;
+                            invalid = invalid || (this[i + 1, j] == Cleared && this[i - 1, j] == Cleared);
+                            invalid = invalid || (this[i, j + 1] == Cleared && this[i, j - 1] == Cleared);
 
-                        bool invalid = false;
-                        invalid = invalid || (this[i + 1, j] == Cleared && this[i - 1, j] == Cleared);
-                        invalid = invalid || (this[i, j + 1] == Cleared && this[i, j - 1] == Cleared);
-
-                        if (invalid)
-                            this[i, j] = Cleared;
+                            if (invalid)
+                                this[i, j] = Cleared;
+                        }
+                        if (this[i, j] == Cleared)
+                            clearedArea++;
                     }
                 }
 
