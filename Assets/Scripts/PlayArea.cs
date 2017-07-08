@@ -48,7 +48,6 @@ namespace Jintori
                 return _player;
             }
         }
-
         Player _player;
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
@@ -84,6 +83,14 @@ namespace Jintori
 
             // create a starting zone
             CreateStartingZone(10, 10, 150, 100);
+
+            print(Screen.width + ", " + Screen.height);
+        }
+        
+        // -----------------------------------------------------------------------------------	
+        void Update()
+        {
+            CenterOnPlayer();
         }
 
         // --- Methods ----------------------------------------------------------------------------------
@@ -153,6 +160,26 @@ namespace Jintori
 
             MeshFilter mf = GetComponent<MeshFilter>();
             mf.mesh = quad;
+        }
+
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Centers the playarea on screen so the player is on the center
+        /// as long as the image fits on the screen without gaps
+        /// </summary>
+        void CenterOnPlayer()
+        {
+            float w2 = 0, h2 = 0;
+            if (Screen.width <= width)
+                w2 = (width - Screen.width) * 0.5f;
+            if (Screen.height <= height)
+                h2 = (height - Screen.height) * 0.5f;
+
+            Vector2 offset = player.transform.position;
+            Vector2 position = (Vector2)transform.position - offset;
+            position.x = Mathf.Clamp(position.x, -w2, w2);
+            position.y = Mathf.Clamp(position.y, -h2, h2);
+            transform.position = position;
         }
     }
 }
