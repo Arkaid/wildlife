@@ -83,8 +83,6 @@ namespace Jintori
 
             // create a starting zone
             CreateStartingZone(10, 10, 150, 100);
-
-            print(Screen.width + ", " + Screen.height);
         }
         
         // -----------------------------------------------------------------------------------	
