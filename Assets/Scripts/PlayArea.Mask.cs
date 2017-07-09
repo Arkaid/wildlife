@@ -88,7 +88,9 @@ namespace Jintori
 
                 // second pass:
                 // fill area from boss into "shadowed"
+                UnityEngine.Profiling.Profiler.BeginSample("Fill");
                 Fill(bossX, bossY, Shadowed);
+                UnityEngine.Profiling.Profiler.EndSample();
 
                 // third pass:
                 // find invalid paths and erase them
@@ -101,9 +103,13 @@ namespace Jintori
 
                         if (data[idx] == Safe)
                         {
+                            // a safe path is invalid if it's
+                            // between two clear pixels
                             bool invalid = false;
-                            invalid = invalid || (this[i + 1, j] == Cleared && this[i - 1, j] == Cleared);
-                            invalid = invalid || (this[i, j + 1] == Cleared && this[i, j - 1] == Cleared);
+                            invalid = invalid || this[i + 1, j] + this[i - 1, j] == Cleared;
+                            invalid = invalid || this[i, j + 1] + this[i, j - 1] == Cleared;
+                            invalid = invalid || this[i + 1, j + 1] + this[i - 1, j - 1] +
+                                                 this[i + 1, j - 1] + this[i - 1, j + 1] == Cleared;
 
                             if (invalid)
                                 data[idx] = Cleared;
@@ -112,7 +118,7 @@ namespace Jintori
                         // only count pixels in the
                         // shadow image that have been cleared
                         if (data[idx] == Cleared)
-                            clearedShadowArea+= shadowImage[idx];
+                            clearedShadowArea += shadowImage[idx];
                     }
                 }
                 clearedShadowArea /= 255;

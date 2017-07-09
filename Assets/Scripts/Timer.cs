@@ -20,18 +20,21 @@ namespace Jintori
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        void Start()
-        {
-            StartTimer(120);
-        }
+
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        public void StartTimer(int totalTime)
+        public void StartTimer()
+        {
+            StartCoroutine(Countdown());
+        }
+
+        // -----------------------------------------------------------------------------------	
+        public void ResetTimer(int totalTime)
         {
             this.totalTime = totalTime;
             remainingTime = totalTime;
             UI.instance.totalTime = totalTime;
-            StartCoroutine(Countdown());
+            UI.instance.time = totalTime;
         }
 
         // -----------------------------------------------------------------------------------	
