@@ -28,10 +28,7 @@ namespace Jintori
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
-        // --- Inspector --------------------------------------------------------------------------------
-        [SerializeField]
-        PathRenderer cutPath = null;
-
+        // --- Inspector --------------------------------------------------------------------------------       
         // --- Properties -------------------------------------------------------------------------------
         /// <summary> Current play area </summary>
         PlayArea playArea
@@ -89,11 +86,11 @@ namespace Jintori
         Point cutPathStart;
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
-        // -----------------------------------------------------------------------------------	
         void Start()
         {
-            cutPath.gameObject.SetActive(false);
+            playArea.cutPath.gameObject.SetActive(false);
         }
+        
         // -----------------------------------------------------------------------------------	
         void Update()
         {
@@ -139,7 +136,7 @@ namespace Jintori
                     int dy = Mathf.RoundToInt(Input.GetAxisRaw("Vertical"));
                     if (playArea.mask[x + dx, y + dy] == PlayArea.Shadowed)
                     {
-                        cutPath.gameObject.SetActive(true);
+                        playArea.cutPath.gameObject.SetActive(true);
                         cutPathStart = new Point(x + dx, y + dy);
                         state = State.Cutting;
 
@@ -160,51 +157,6 @@ namespace Jintori
         }
 
         // --- Methods ----------------------------------------------------------------------------------
-        /*
-        // -----------------------------------------------------------------------------------	
-        /// <summary>
-        /// Bressenham line algorithm
-        /// src: https://stackoverflow.com/questions/11678693/all-cases-covered-bresenhams-line-algorithm
-        /// </summary>
-        IEnumerable<Point> IntermediatePoints(int dx, int dy)
-        {
-            int dx1 = 0, dy1 = 0, dx2 = 0, dy2 = 0;
-            if (dx < 0) dx1 = dx2 = -1; else if (dx > 0) dx1 = dx2 = 1;
-            if (dy < 0) dy1 = -1; else if (dy > 0) dy1 = 1;
-
-            int longest = Mathf.Abs(dx);
-            int shortest = Mathf.Abs(dy);
-            if (shortest > longest)
-            {
-                int tmp = shortest;
-                shortest = longest;
-                longest = tmp;
-                if (dy < 0) dy2 = -1; else if (dy > 0) dy2 = 1;
-                dx2 = 0;
-            }
-
-            int ptx = 0, pty = 0;
-            int num = longest >> 1;
-            for (int i = 0; i <= longest; i++)
-            {
-                num += shortest;
-                if (num >= longest)
-                {
-                    num -= longest;
-                    ptx += dx1;
-                    yield return new Point(ptx, pty);
-                    pty += dy1;
-                }
-                else
-                {
-                    ptx += dx2;
-                    pty += dy2;
-                }
-                yield return new Point(ptx, pty);
-            }
-        }
-        */
-
         // -----------------------------------------------------------------------------------	
         /// <summary> 
         /// Rewinds the last cut moments in history 
@@ -224,7 +176,7 @@ namespace Jintori
             if (rewindHistory.Count == 0)
                 state = State.SafePath;
 
-            cutPath.RedrawPath(cutPathStart.x, cutPathStart.y);
+            playArea.cutPath.RedrawPath(cutPathStart.x, cutPathStart.y);
             playArea.mask.Apply();
         }
 
@@ -307,14 +259,28 @@ namespace Jintori
 
             if (closed)
             {
-                cutPath.gameObject.SetActive(false);
+                playArea.cutPath.gameObject.SetActive(false);
                 rewindHistory.Clear();
                 playArea.mask.Clear(1, 1);
+                playArea.mask.Apply();
+
                 state = State.SafePath;
+                // the path might have dissappeared
+                // this happens when we fill an entire section all the way
+                // up to the border sometimes
+                // if that's the case, move the player back to where it
+                // began cutting
+                if (playArea.mask[x, y] != PlayArea.Safe)
+                {
+                    x = cutPathStart.x;
+                    y = cutPathStart.y;
+                }
+
+                playArea.safePath.RedrawPath(x, y);
             }
 
-            cutPath.RedrawPath(cutPathStart.x, cutPathStart.y);
-            playArea.mask.Apply();
+            else
+                playArea.cutPath.RedrawPath(cutPathStart.x, cutPathStart.y);
         }
 
         // -----------------------------------------------------------------------------------	

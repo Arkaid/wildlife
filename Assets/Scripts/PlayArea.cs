@@ -7,7 +7,6 @@ namespace Jintori
     // --- Class Declaration ------------------------------------------------------------------------
     public partial class PlayArea : MonoBehaviour
     {
-        
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
         public const byte Shadowed = 255;
@@ -27,16 +26,12 @@ namespace Jintori
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
         [SerializeField]
-        PathRenderer safePath = null;
+        PathRenderer _safePath = null;
+        public PathRenderer safePath { get { return _safePath; } }
 
         [SerializeField]
-        PathRenderer cutPath = null;
-
-        [SerializeField]
-        Texture2D DEBUG_baseImage = null;
-
-        [SerializeField]
-        Texture2D DEBUG_shadowImage = null;
+        PathRenderer _cutPath = null;
+        public PathRenderer cutPath { get { return _cutPath; } }
 
         // --- Properties -------------------------------------------------------------------------------
         /// <summary> Mask object with the clear, shadowed areas and paths </summary>
@@ -57,18 +52,16 @@ namespace Jintori
         }
         Player _player;
 
+        /// <summary> Collider around the edges of the play area </summary>
+        EdgeCollider2D edgeCollider;
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
-        // -----------------------------------------------------------------------------------	
-        void Start()
-        {
-            Setup(DEBUG_baseImage, DEBUG_shadowImage);
-        }
-        
         // -----------------------------------------------------------------------------------	
         void Update()
         {
             CenterOnPlayer();
 
+            // cycles the color on the shadow
             float t = Mathf.PingPong(Time.time, CycleTime) / CycleTime;
             material.SetColor("_ShadowColor1", Color.Lerp(CycleColor1, CycleColor2, t));
         }
@@ -82,9 +75,18 @@ namespace Jintori
         /// <param name="shadowImage">Shadow image covering the base image</param>
         public void Setup(Texture2D baseImage, Texture2D shadowImage)
         {
+            // do some basic validity check
+            if (baseImage.width != ImageWidth || baseImage.height != ImageHeight)
+                throw new System.Exception("Invalid Base image size");
+            if (shadowImage.width != ImageWidth || shadowImage.height != ImageHeight)
+                throw new System.Exception("Invalid Shadow image size");
+            if (shadowImage.format != TextureFormat.Alpha8)
+                throw new System.Exception("Shadow image is not of type Alpha8");
+
             // create a new mask
             mask = new Mask(shadowImage);
             mask.maskCleared += OnMaskCleared;
+            mask.Apply();
 
             // material currently assigned
             material = GetComponent<MeshRenderer>().material;
@@ -102,19 +104,11 @@ namespace Jintori
             pos.y = -ImageHeight * 0.5f;
             safePath.transform.localPosition = pos;
             cutPath.transform.localPosition = pos;
-
-            // place the player in its initial position
-            player.x = 10;
-            player.y = 10;
-
-            // create a starting zone
-            CreateStartingZone(10, 10, 150, 100);
         }
 
         // -----------------------------------------------------------------------------------	
         private void OnMaskCleared()
         {
-            safePath.RedrawPath(player.x, player.y);
             UI.instance.percentage = mask.clearedRatio * 100f;
         }
 
@@ -122,7 +116,7 @@ namespace Jintori
         /// <summary>
         /// Creates the starting zone where the player begins
         /// </summary>
-        void CreateStartingZone(int x, int y, int w, int h)
+        public void CreateStartingZone(int x, int y, int w, int h)
         {
             for (int i = x; i < x + w; i++)
             {
@@ -137,6 +131,8 @@ namespace Jintori
             }
             mask.Clear(1, 1);
             mask.Apply();
+
+            safePath.RedrawPath(x, y);
         }
 
         // -----------------------------------------------------------------------------------	
@@ -177,6 +173,16 @@ namespace Jintori
 
             MeshFilter mf = GetComponent<MeshFilter>();
             mf.mesh = quad;
+
+            // add a collider to the quad and a RB to make it a trigger
+            edgeCollider = gameObject.AddComponent<EdgeCollider2D>();
+            edgeCollider.isTrigger = true;
+            edgeCollider.points = new Vector2[] {
+                corners[0], corners[1], corners[2], corners[3], corners[0]
+            };
+
+            Rigidbody2D rb = gameObject.AddComponent<Rigidbody2D>();
+            rb.isKinematic = true;
         }
 
         // -----------------------------------------------------------------------------------	
