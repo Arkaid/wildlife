@@ -15,6 +15,13 @@ namespace Jintori
         public const byte Safe = 128;
         public const byte Cut = 64;
 
+        public const int ImageWidth = 1920;
+        public const int ImageHeight = 1080;
+
+        static readonly Color CycleColor1 = new Color(0.2f, 0.2f, 0.4f, 1);
+        static readonly Color CycleColor2 = new Color(0.4f, 0.4f, 0.7f, 1);
+        const float CycleTime = 3f;
+
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
@@ -25,13 +32,13 @@ namespace Jintori
         [SerializeField]
         PathRenderer cutPath = null;
 
+        [SerializeField]
+        Texture2D DEBUG_baseImage = null;
+
+        [SerializeField]
+        Texture2D DEBUG_shadowImage = null;
+
         // --- Properties -------------------------------------------------------------------------------
-        /// <summary> Width of the play area / image, in pixels </summary>
-        public int width { get; private set; }
-
-        /// <summary> Height of the play area / image, in pixels </summary>
-        public int height { get; private set; }
-
         /// <summary> Mask object with the clear, shadowed areas and paths </summary>
         public Mask mask { get; private set; }
 
@@ -54,16 +61,35 @@ namespace Jintori
         // -----------------------------------------------------------------------------------	
         void Start()
         {
-            // test values
-            width = 845;
-            height = 450;
+            Setup(DEBUG_baseImage, DEBUG_shadowImage);
+        }
+        
+        // -----------------------------------------------------------------------------------	
+        void Update()
+        {
+            CenterOnPlayer();
 
+            float t = Mathf.PingPong(Time.time, CycleTime) / CycleTime;
+            material.SetColor("_ShadowColor1", Color.Lerp(CycleColor1, CycleColor2, t));
+        }
+
+        // --- Methods ----------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Sets up the play area for the next game
+        /// </summary>
+        /// <param name="baseImage">Base image to discover</param>
+        /// <param name="shadowImage">Shadow image covering the base image</param>
+        public void Setup(Texture2D baseImage, Texture2D shadowImage)
+        {
             // create a new mask
-            mask = new Mask(width, height);
+            mask = new Mask(shadowImage);
             mask.maskCleared += OnMaskCleared;
 
             // material currently assigned
             material = GetComponent<MeshRenderer>().material;
+            material.SetTexture("_BaseImage", baseImage);
+            material.SetTexture("_Shadow", shadowImage);
             material.SetTexture("_Mask", mask.texture);
 
             // create a quad big enough to fit the image
@@ -72,8 +98,8 @@ namespace Jintori
             // transform the path's local position
             // to account for quad size
             Vector3 pos = safePath.transform.localPosition;
-            pos.x = -width * 0.5f;
-            pos.y = -height * 0.5f;
+            pos.x = -ImageWidth * 0.5f;
+            pos.y = -ImageHeight * 0.5f;
             safePath.transform.localPosition = pos;
             cutPath.transform.localPosition = pos;
 
@@ -84,14 +110,7 @@ namespace Jintori
             // create a starting zone
             CreateStartingZone(10, 10, 150, 100);
         }
-        
-        // -----------------------------------------------------------------------------------	
-        void Update()
-        {
-            CenterOnPlayer();
-        }
 
-        // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         private void OnMaskCleared()
         {
@@ -126,8 +145,8 @@ namespace Jintori
         /// </summary>
         void CreateQuad()
         {
-            float w = width * 0.5f;
-            float h = height * 0.5f;
+            float w = ImageWidth * 0.5f;
+            float h = ImageHeight * 0.5f;
 
             Vector3[] corners = new Vector3[]
             {
@@ -168,10 +187,10 @@ namespace Jintori
         void CenterOnPlayer()
         {
             float w2 = 0, h2 = 0;
-            if (Screen.width <= width)
-                w2 = (width - Screen.width) * 0.5f;
-            if (Screen.height <= height)
-                h2 = (height - Screen.height) * 0.5f;
+            if (Screen.width <= ImageWidth)
+                w2 = (ImageWidth - Screen.width) * 0.5f;
+            if (Screen.height <= ImageHeight)
+                h2 = (ImageHeight - Screen.height) * 0.5f;
 
             Vector2 offset = player.transform.position;
             Vector2 position = (Vector2)transform.position - offset;

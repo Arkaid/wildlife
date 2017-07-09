@@ -5,6 +5,8 @@
 		_BaseImage ("Base Image", 2D) = "white" {}
 		_Shadow ("Shadow", 2D) = "white" {}
 		_Mask("Shadow Mask", 2D) = "white" {}
+		_ShadowColor1("Shadow Color 1", Color) = (0.3, 0.3, 0.6, 1)
+		_ShadowColor2("Shadow Color 2", Color) = (0.1, 0.1, 0.3, 1)
 	}
 	SubShader
 	{
@@ -41,6 +43,9 @@
 			sampler2D _Mask;
 			float4 _Mask_ST;
 
+			half4 _ShadowColor1;
+			half4 _ShadowColor2;
+
 			v2f vert (appdata v)
 			{
 				v2f o;
@@ -57,6 +62,11 @@
 				fixed4 shadow = tex2D(_Shadow, i.uv);
 				fixed4 mask = tex2D(_Mask, i.uv);
 
+				// change the colors of the shadow image
+				// to simulate color cycling
+				shadow = shadow.a * _ShadowColor1 + (1 - shadow.a) * _ShadowColor2;
+
+				// pass the shadow through a mask and combine with the base image
 				return base * (1 - mask.a) + shadow * mask.a;
 			}
 			ENDCG

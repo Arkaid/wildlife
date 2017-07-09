@@ -53,7 +53,7 @@ namespace Jintori
             {
                 _x = value;
                 Vector3 pos = transform.localPosition;
-                pos.x = _x - playArea.width * 0.5f;
+                pos.x = _x - PlayArea.ImageWidth * 0.5f;
                 transform.localPosition = pos;
             }
         }
@@ -67,7 +67,7 @@ namespace Jintori
             {
                 _y = value;
                 Vector3 pos = transform.localPosition;
-                pos.y = _y - playArea.height * 0.5f;
+                pos.y = _y - PlayArea.ImageHeight * 0.5f;
                 transform.localPosition = pos;
             }
         }
@@ -277,8 +277,8 @@ namespace Jintori
                 left--;
 
                 // out of bounds
-                if (nx + dx >= playArea.width || nx + dx < 0 ||
-                    ny + dy >= playArea.height || ny + dy < 0)
+                if (nx + dx >= PlayArea.ImageWidth || nx + dx < 0 ||
+                    ny + dy >= PlayArea.ImageHeight || ny + dy < 0)
                     continue;
 
                 // look ahead to see if there are any cut paths
@@ -334,13 +334,13 @@ namespace Jintori
             {
                 for (int i = y - 1; i <= y + 1; i++)
                 {
-                    if (i < 0 || i >= playArea.height)
+                    if (i < 0 || i >= PlayArea.ImageHeight)
                         continue;
                     
                     // if the look ahead goes outside the area
                     // you should be able to cut up until the border
                     int sdx = sx + dx;
-                    if (sdx < 0 || sdx >= playArea.width)
+                    if (sdx < 0 || sdx >= PlayArea.ImageWidth)
                         continue;
 
                     if (playArea.mask[sdx, i] == PlayArea.Cut)
@@ -351,12 +351,12 @@ namespace Jintori
             {
                 for (int i = x - 1; i <= x + 1; i++)
                 {
-                    if (i < 0 || i >= playArea.width)
+                    if (i < 0 || i >= PlayArea.ImageWidth)
                         continue;
                     // if the look ahead goes outside the area
                     // you should be able to cut up until the border
                     int sdy = sy + dy;
-                    if (sdy < 0 || sdy >= playArea.height)
+                    if (sdy < 0 || sdy >= PlayArea.ImageHeight)
                         continue;
 
                     if (playArea.mask[i, sdy] == PlayArea.Cut)
@@ -382,7 +382,7 @@ namespace Jintori
             int ny = y;
 
             // +x
-            while (left > 0 && dx > 0 && nx < playArea.width - 1 && 
+            while (left > 0 && dx > 0 && nx < PlayArea.ImageWidth - 1 && 
                 playArea.mask[nx + 1, ny] == PlayArea.Safe)
             {
                 left--;
@@ -398,7 +398,7 @@ namespace Jintori
             }
 
             // +y 
-            while (left > 0 && dy > 0 && ny < playArea.height - 1 &&
+            while (left > 0 && dy > 0 && ny < PlayArea.ImageHeight - 1 &&
                 playArea.mask[nx, ny + 1] == PlayArea.Safe)
             {
                 left--;

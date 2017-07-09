@@ -20,15 +20,9 @@ namespace Jintori
             /// <summary> Shorthand to access mask data </summary>
             public byte this[int x, int y]
             {
-                get { return data[y * width + x]; }
-                set { data[y * width + x] = value; }
+                get { return data[y * ImageWidth + x]; }
+                set { data[y * ImageWidth + x] = value; }
             }
-
-            /// <summary> Mask width </summary>
-            int width;
-
-            /// <summary> Mask height </summary>
-            int height;
 
             /// <summary> Mask data </summary>
             byte[] data;
@@ -36,12 +30,17 @@ namespace Jintori
             /// <summary> Texture </summary>
             public Texture2D texture { get; private set; }
 
+            /// <summary> Number of pixels maked as white (255) in the shadow area </summary>
+            int totalShadowArea = 0;
+
             /// <summary> Number of pixels that have been cleared </summary>
-            int clearedArea = 0;
+            int clearedShadowArea = 0;
 
             /// <summary> Cleared ratio, between 0 and 1 </summary>
-            public float clearedRatio { get { return (float)clearedArea / (width * height); } }
+            public float clearedRatio { get { return (float)clearedShadowArea / totalShadowArea; } }
 
+            /// <summary> Shadow image. Must be grayscale </summary>
+            byte[] shadowImage;
             // --- MonoBehaviour ----------------------------------------------------------------------------
             // -----------------------------------------------------------------------------------
 
@@ -50,15 +49,18 @@ namespace Jintori
             /// <summary>
             /// Constructor
             /// </summary>
-            public Mask(int width, int height)
+            public Mask(Texture2D shadowImage)
             {
-                this.width = width;
-                this.height = height;
-                texture = new Texture2D(width, height, TextureFormat.Alpha8, false);
+                texture = new Texture2D(ImageWidth, ImageHeight, TextureFormat.Alpha8, false);
+                this.shadowImage = shadowImage.GetRawTextureData();
 
-                data = new byte[width * height];
-                for (int i = 0; i < width * height; i++)
+                data = new byte[ImageWidth * ImageHeight];
+                for (int i = 0; i < ImageWidth * ImageHeight; i++)
+                {
                     data[i] = Shadowed;
+                    totalShadowArea += this.shadowImage[i];
+                }
+                totalShadowArea /= 255;
             }
 
             // -----------------------------------------------------------------------------------
@@ -81,7 +83,7 @@ namespace Jintori
 
                 // first pass:
                 // copy old path, leaving everything else cleared
-                for (int i = 0; i < width * height; i++)
+                for (int i = 0; i < ImageWidth * ImageHeight; i++)
                     data[i] = (data[i] == Safe || data[i] == Cut) ? Safe : Cleared;
 
                 // second pass:
@@ -90,41 +92,47 @@ namespace Jintori
 
                 // third pass:
                 // find invalid paths and erase them
-                clearedArea = 0;
-                for (int i = 1; i < width - 1; i++)
+                clearedShadowArea = 0;
+                for (int i = 1; i < ImageWidth - 1; i++)
                 {
-                    for (int j = 1; j < height - 1; j++)
+                    for (int j = 1; j < ImageHeight - 1; j++)
                     {
-                        if (this[i, j] == Safe)
+                        int idx = j * ImageWidth + i;
+
+                        if (data[idx] == Safe)
                         {
                             bool invalid = false;
                             invalid = invalid || (this[i + 1, j] == Cleared && this[i - 1, j] == Cleared);
                             invalid = invalid || (this[i, j + 1] == Cleared && this[i, j - 1] == Cleared);
 
                             if (invalid)
-                                this[i, j] = Cleared;
+                                data[idx] = Cleared;
                         }
-                        if (this[i, j] == Cleared)
-                            clearedArea++;
+
+                        // only count pixels in the
+                        // shadow image that have been cleared
+                        if (data[idx] == Cleared)
+                            clearedShadowArea+= shadowImage[idx];
                     }
                 }
+                clearedShadowArea /= 255;
 
                 // fourth pass:
                 // do the borders. If they're cleared, you
                 // can use them as safe paths
-                for (int i = 0; i < width; i++)
+                for (int i = 0; i < ImageWidth; i++)
                 {
                     if (this[i, 0] == Cleared)
                         this[i, 0] = Safe;
-                    if (this[i, height - 1] == Cleared)
-                        this[i, height - 1] = Safe;
+                    if (this[i, ImageHeight - 1] == Cleared)
+                        this[i, ImageHeight - 1] = Safe;
                 }
-                for (int i = 0; i < height; i++)
+                for (int i = 0; i < ImageHeight; i++)
                 {
                     if (this[0, i] == Cleared)
                         this[0, i] = Safe;
-                    if (this[width-1, i] == Cleared)
-                        this[width-1, i] = Safe;
+                    if (this[ImageWidth - 1, i] == Cleared)
+                        this[ImageWidth - 1, i] = Safe;
                 }
 
                 UnityEngine.Profiling.Profiler.EndSample();
@@ -159,7 +167,7 @@ namespace Jintori
                     xx++;
 
                     // fill until the end of the scanline (or color changes)
-                    while (xx < width && this[xx, y] == refColor)
+                    while (xx < ImageWidth && this[xx, y] == refColor)
                     {
                         this[xx, y] = value;
                         if (y > 0)
@@ -175,7 +183,7 @@ namespace Jintori
                                 pushDw = true; // start checking again
                         }
 
-                        if (y < height - 1)
+                        if (y < ImageHeight - 1)
                         {
                             // can the line above be filled?
                             if (pushUp && this[xx, y + 1] == refColor)
