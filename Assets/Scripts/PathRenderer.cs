@@ -54,9 +54,9 @@ namespace Jintori
             int x = 0;
             int y = 0;
             bool found = false;
-            for (; x < playArea.width && !found; x++)
+            for (; x < PlayArea.ImageWidth && !found; x++)
             {
-                for (; y < playArea.height && !found; y++)
+                for (; y < PlayArea.ImageHeight && !found; y++)
                     found = playArea.mask[x, y] == pathType;
             }
 
@@ -95,7 +95,7 @@ namespace Jintori
             oy = y;
 
             PlayArea.Mask mask = playArea.mask;
-            if (dir != Direction.Lt && x + 1 < playArea.width && mask[x + 1, y] == pathType)
+            if (dir != Direction.Lt && x + 1 < PlayArea.ImageWidth && mask[x + 1, y] == pathType)
             {
                 ox = x + 1;
                 return Direction.Rt;
@@ -105,7 +105,7 @@ namespace Jintori
                 ox = x - 1;
                 return Direction.Lt;
             }
-            if (dir != Direction.Dw && y + 1 < playArea.height && mask[x, y + 1] == pathType)
+            if (dir != Direction.Dw && y + 1 < PlayArea.ImageHeight && mask[x, y + 1] == pathType)
             {
                 oy = y + 1;
                 return Direction.Up;
