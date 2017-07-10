@@ -16,6 +16,9 @@ namespace Jintori
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
+        [SerializeField, Tooltip("Byte value to search in mask for the path (Cut:64, Safe:128)")]
+        byte pathType = 128;
+
         // --- Properties -------------------------------------------------------------------------------
         /// <summary> Current play area </summary>
         PlayArea playArea
@@ -41,10 +44,16 @@ namespace Jintori
         }
         LineRenderer _lineRenderer;
 
+        /// <summary> Edge collider </summary>
+        EdgeCollider2D edgeCollider;
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        [SerializeField, Tooltip("Byte value to search in mask for the path (Cut:64, Safe:128)")]
-        byte pathType = 128;
+        void Awake()
+        {
+            edgeCollider = gameObject.AddComponent<EdgeCollider2D>();
+            edgeCollider.isTrigger = true;
+        }
 
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
@@ -70,6 +79,7 @@ namespace Jintori
             // go around the path, trying to find where it changes direction
             List<Vector3> points = new List<Vector3>();
             points.Add(new Vector2(x, y));
+
             int sx = x; int sy = y;
             Direction dir = GetNextPointDirection(Direction.End, sx, sy, out x, out y);
             while (!(sx == x && sy == y) && dir != Direction.End)
@@ -86,6 +96,12 @@ namespace Jintori
 
             lineRenderer.positionCount = points.Count;
             lineRenderer.SetPositions(points.ToArray());
+
+            System.Converter<Vector3, Vector2> Vec3ToVec2 = (Vector3 v3) => { return v3; };
+            List<Vector2> points2 = points.ConvertAll(Vec3ToVec2);
+            if (lineRenderer.loop)
+                points2.Add(points2[0]);
+            edgeCollider.points = points2.ToArray();
         }
         
         // -----------------------------------------------------------------------------------	

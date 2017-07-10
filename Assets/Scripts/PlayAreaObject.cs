@@ -5,28 +5,57 @@ using UnityEngine;
 namespace Jintori
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    public struct Point
+    public abstract class PlayAreaObject : MonoBehaviour
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
-        public static implicit operator Vector2(Point pt) { return new Vector2(pt.x, pt.y); }
-
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
         // --- Properties -------------------------------------------------------------------------------
-        public int x;
-        public int y;
-        
+        /// <summary> X position, in pixels. Automatically adjusts position in world space </summary>
+        public int x
+        {
+            get { return _x; }
+            set
+            {
+                _x = value;
+                Vector3 pos = transform.localPosition;
+                pos.x = _x - PlayArea.ImageWidth * 0.5f;
+                transform.localPosition = pos;
+            }
+        }
+        int _x;
+
+        /// <summary> Y position, in pixels. Automatically adjusts position in world space </summary>
+        public int y
+        {
+            get { return _y; }
+            set
+            {
+                _y = value;
+                Vector3 pos = transform.localPosition;
+                pos.y = _y - PlayArea.ImageHeight * 0.5f;
+                transform.localPosition = pos;
+            }
+        }
+        int _y;
+
+        /// <summary> Current play area </summary>
+        public PlayArea playArea
+        {
+            get
+            {
+                if (_playArea == null)
+                    _playArea = GetComponentInParent<PlayArea>();
+                return _playArea;
+            }
+        }
+        PlayArea _playArea;
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        public Point(int x = 0, int y = 0)
-        {
-            this.x = x;
-            this.y = y;
-        }
     }
 }

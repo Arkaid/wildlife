@@ -21,6 +21,8 @@ namespace Jintori
         static readonly Color CycleColor2 = new Color(0.4f, 0.4f, 0.7f, 1);
         const float CycleTime = 3f;
 
+        public const int EdgesLayerMask = 1 << 8;
+
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
@@ -55,6 +57,12 @@ namespace Jintori
         /// <summary> Collider around the edges of the play area </summary>
         EdgeCollider2D edgeCollider;
 
+        /// <summary> Current boss. Only becomes valid after setting up the play area </summary>
+        public Enemy boss { get; private set; }
+
+        /// <summary> List of all available bosses </summary>
+        List<Enemy> availableBosses;
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         void Update()
@@ -73,7 +81,8 @@ namespace Jintori
         /// </summary>
         /// <param name="baseImage">Base image to discover</param>
         /// <param name="shadowImage">Shadow image covering the base image</param>
-        public void Setup(Texture2D baseImage, Texture2D shadowImage)
+        /// <param name="bossType">Boss to activate for this playthrough</param>
+        public void Setup(Texture2D baseImage, Texture2D shadowImage, System.Type bossType)
         {
             // do some basic validity check
             if (baseImage.width != ImageWidth || baseImage.height != ImageHeight)
@@ -82,6 +91,19 @@ namespace Jintori
                 throw new System.Exception("Invalid Shadow image size");
             if (shadowImage.format != TextureFormat.Alpha8)
                 throw new System.Exception("Shadow image is not of type Alpha8");
+
+            // Deactivate all enemies
+            Enemy[] enemies = GetComponentsInChildren<Enemy>();
+            availableBosses = new List<Enemy>();
+            foreach (Enemy enemy in enemies)
+            {
+                enemy.gameObject.SetActive(false);
+                if (enemy.isBoss)
+                    availableBosses.Add(enemy);
+            }
+
+            // select boss
+            boss = availableBosses.Find(b => b.GetType() == bossType);
 
             // create a new mask
             mask = new Mask(shadowImage);
@@ -116,8 +138,13 @@ namespace Jintori
         /// <summary>
         /// Creates the starting zone where the player begins
         /// </summary>
-        public void CreateStartingZone(int x, int y, int w, int h)
+        public void CreateStartingZone(IntRect rect)
         {
+            int x = rect.x;
+            int y = rect.y;
+            int w = rect.width;
+            int h = rect.height;
+
             for (int i = x; i < x + w; i++)
             {
                 mask[i, y] = Safe;
@@ -129,7 +156,13 @@ namespace Jintori
                 mask[x, i] = Safe;
                 mask[x + w - 1, i] = Safe;
             }
-            mask.Clear(1, 1);
+
+            // boss cannot be placed until 
+            // the play area has been fully set up
+            // so use this to do the first fill
+            int fillX = rect.x - 1;
+            int fillY = rect.y - 1;
+            mask.Clear(fillX, fillY); 
             mask.Apply();
 
             safePath.RedrawPath(x, y);
@@ -180,9 +213,6 @@ namespace Jintori
             edgeCollider.points = new Vector2[] {
                 corners[0], corners[1], corners[2], corners[3], corners[0]
             };
-
-            Rigidbody2D rb = gameObject.AddComponent<Rigidbody2D>();
-            rb.isKinematic = true;
         }
 
         // -----------------------------------------------------------------------------------	
