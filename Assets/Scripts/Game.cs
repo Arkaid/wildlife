@@ -39,7 +39,9 @@ namespace Jintori
         // -----------------------------------------------------------------------------------	
         void Start()
         {
-            playArea.Setup(DEBUG_baseImage, DEBUG_shadowImage);
+            playArea.Setup(DEBUG_baseImage, DEBUG_shadowImage, typeof(Bouncy));
+            
+            Timer.instance.ResetTimer(120);
             StartCoroutine(SetStartingZone());
         }
 
@@ -47,14 +49,10 @@ namespace Jintori
         // -----------------------------------------------------------------------------------	
         IEnumerator SetStartingZone()
         {
-            // place the player in its initial position
+            // place the player on the center of the screen
             playArea.player.x = PlayArea.ImageWidth / 2;
             playArea.player.y = PlayArea.ImageHeight / 2;
             playArea.player.gameObject.SetActive(false);
-
-            // create a starting zone
-            //playArea.CreateStartingZone(10, 10, 150, 100);
-            Timer.instance.ResetTimer(120);
 
             // Create a square that randomly changes sizes
             const float Area = 100 * 100;
@@ -84,16 +82,28 @@ namespace Jintori
                 yield return new WaitForSeconds(0.05f);
             }
 
+            IntRect rect = new IntRect()
+            {
+                x = playArea.player.x - Mathf.FloorToInt(w),
+                y = playArea.player.y - Mathf.FloorToInt(h),
+                width = Mathf.RoundToInt(w * 2),
+                height = Mathf.RoundToInt(h * 2)
+            };
+
             // re-enable the player and put it in a corner of the square
             playArea.player.gameObject.SetActive(true);
-            int x = playArea.player.x - Mathf.FloorToInt(w);
-            int y = playArea.player.y - Mathf.FloorToInt(h);
-            playArea.player.x = x;
-            playArea.player.y = y;
+            playArea.player.x = rect.x;
+            playArea.player.y = rect.y;
 
             // create the square and destroy the "preview"
-            playArea.CreateStartingZone(x, y, Mathf.RoundToInt(w * 2), Mathf.RoundToInt(h * 2));
+            playArea.CreateStartingZone(rect);
             Destroy(initialSquare);
+
+            // now that the play area has colliders, 
+            // place the boss safely in the shadow
+            playArea.boss.gameObject.SetActive(true);
+            playArea.boss.SetStartPosition(rect);
+            playArea.boss.Run();
 
             // start timer
             Timer.instance.StartTimer();

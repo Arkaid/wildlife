@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Jintori
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    public class Player : MonoBehaviour
+    public class Player : PlayAreaObject
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
@@ -30,46 +30,6 @@ namespace Jintori
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------       
         // --- Properties -------------------------------------------------------------------------------
-        /// <summary> Current play area </summary>
-        PlayArea playArea
-        {
-            get
-            {
-                if (_playArea == null)
-                    _playArea = GetComponentInParent<PlayArea>();
-                return _playArea;
-            }
-        }
-        PlayArea _playArea;
-
-        /// <summary> X position, in pixels. Automatically adjusts position in world space </summary>
-        public int x
-        {
-            get { return _x; }
-            set
-            {
-                _x = value;
-                Vector3 pos = transform.localPosition;
-                pos.x = _x - PlayArea.ImageWidth * 0.5f;
-                transform.localPosition = pos;
-            }
-        }
-        int _x;
-
-        /// <summary> T position, in pixels. Automatically adjusts position in world space </summary>
-        public int y
-        {
-            get { return _y; }
-            set
-            {
-                _y = value;
-                Vector3 pos = transform.localPosition;
-                pos.y = _y - PlayArea.ImageHeight * 0.5f;
-                transform.localPosition = pos;
-            }
-        }
-        int _y;
-
         /// <summary> Player speed </summary>
         int speed = 120;
 
@@ -261,10 +221,11 @@ namespace Jintori
             {
                 playArea.cutPath.gameObject.SetActive(false);
                 rewindHistory.Clear();
-                playArea.mask.Clear(1, 1);
+                playArea.mask.Clear(playArea.boss.x, playArea.boss.y);
                 playArea.mask.Apply();
 
                 state = State.SafePath;
+
                 // the path might have dissappeared
                 // this happens when we fill an entire section all the way
                 // up to the border sometimes
