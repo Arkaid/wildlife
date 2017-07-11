@@ -14,8 +14,8 @@ namespace Jintori
         public const byte Safe = 128;
         public const byte Cut = 64;
 
-        public const int ImageWidth = 1920;
-        public const int ImageHeight = 1080;
+        public const int ImageWidth = 960;
+        public const int ImageHeight = 540;
 
         static readonly Color CycleColor1 = new Color(0.2f, 0.2f, 0.4f, 1);
         static readonly Color CycleColor2 = new Color(0.4f, 0.4f, 0.7f, 1);
@@ -63,7 +63,16 @@ namespace Jintori
         /// <summary> List of all available bosses </summary>
         List<Enemy> availableBosses;
 
+        /// <summary> Zoom used for the pixel perfect adjuster </summary>
+        float cameraZoom;
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------	
+        void Start()
+        {
+            cameraZoom = Camera.main.GetComponent<PixelPerfect>().zoom;
+        }
+
         // -----------------------------------------------------------------------------------	
         void Update()
         {
@@ -222,11 +231,14 @@ namespace Jintori
         /// </summary>
         void CenterOnPlayer()
         {
+            float scr_w = Screen.width / cameraZoom;
+            float scr_h = Screen.height / cameraZoom;
+
             float w2 = 0, h2 = 0;
-            if (Screen.width <= ImageWidth)
-                w2 = (ImageWidth - Screen.width) * 0.5f;
-            if (Screen.height <= ImageHeight)
-                h2 = (ImageHeight - Screen.height) * 0.5f;
+            if (scr_w <= ImageWidth)
+                w2 = (ImageWidth - scr_w) * 0.5f;
+            if (scr_h <= ImageHeight)
+                h2 = (ImageHeight - scr_h) * 0.5f;
 
             Vector2 offset = player.transform.position;
             Vector2 position = (Vector2)transform.position - offset;
