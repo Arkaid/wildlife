@@ -14,6 +14,10 @@ namespace Jintori
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
+        [SerializeField, Tooltip("Must be 1, 2, 4, 8 etc")]
+        int _zoom = 1;
+        public int zoom { get { return _zoom; } }
+
         // --- Properties -------------------------------------------------------------------------------
         int lastWidth = -1;
         int lastHeight = -1;
@@ -24,8 +28,11 @@ namespace Jintori
         {
             if (Screen.width == lastWidth && lastHeight == Screen.height)
                 return;
-            GetComponent<Camera>().orthographicSize = Screen.height * 0.5f;
+            lastWidth = Screen.width;
+            lastHeight = Screen.height;
+            GetComponent<Camera>().orthographicSize = Screen.height * (0.5f / zoom);
         }
+
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
     }
