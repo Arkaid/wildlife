@@ -52,6 +52,7 @@ namespace Jintori
             public Mask(Texture2D shadowImage)
             {
                 texture = new Texture2D(ImageWidth, ImageHeight, TextureFormat.Alpha8, false);
+                texture.filterMode = FilterMode.Point;
                 this.shadowImage = shadowImage.GetRawTextureData();
 
                 data = new byte[ImageWidth * ImageHeight];
