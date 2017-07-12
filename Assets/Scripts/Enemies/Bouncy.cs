@@ -21,26 +21,6 @@ namespace Jintori
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        RaycastHit2D[] hits = new RaycastHit2D[8];
-        /*void OnTriggerEnter2D(Collider2D other)
-        {
-            if (!other.CompareTag("Safe") && !other.CompareTag("Play Area"))
-                return;
-
-            float radius = collider.bounds.extents.magnitude * 1.1f;
-            int nHits = Physics2D.CircleCastNonAlloc(transform.position, radius, velocity, hits, radius);
-            Vector2 normal = Vector3.zero;
-            for (int i = 0; i < nHits; i++)
-            {
-                if (hits[i].collider != collider)
-                    normal += hits[i].normal;
-            }
-            normal = Quaternion.Euler(0, 0, Random.Range(-5, 5f)) * normal.normalized;
-            velocity = Vector2.Reflect(velocity, normal);
-        }
-        */
-        // -----------------------------------------------------------------------------------	
-
 
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
@@ -50,33 +30,60 @@ namespace Jintori
         }
 
         // -----------------------------------------------------------------------------------	
+        RaycastHit2D[] hits = new RaycastHit2D[1];
         protected override void UpdatePosition()
         {
-            // first, check if we're going to bounce
-            float dt = Time.deltaTime;
-            float radius = collider.bounds.extents.magnitude;
-            Vector2 from = (Vector2)transform.position + velocity.normalized * radius;
-            float distance = speed * dt;
+            // number of interpolation steps for the movement
+            const int Steps = 10;
 
-            // cast forward, see if hits any edges
-            int nHits = Physics2D.CircleCastNonAlloc(from, radius, velocity, hits, distance, PlayArea.EdgesLayerMask);
-            
-            // if it does, calculate the dt needed to reach the edge without 
-            // going past it
-            if (nHits > 0)
-                dt = hits[0].distance / speed;
+            // delta time, delta x and y
+            float dt = Time.deltaTime / Steps;
+            float dx = velocity.x * dt;
+            float dy = velocity.y * dt;
 
-            // update position
-            x += Mathf.RoundToInt(velocity.x * dt);
-            y += Mathf.RoundToInt(velocity.y * dt);
-
-            // bounce velocity (with a little random deviation)
-            if (nHits > 0)
+            // starting x and y, pre-edge contact x and y
+            int sx = x; int sy = y;
+            int px, py;
+            for (int i = 0; i < Steps; i++)
             {
-                Vector2 normal = hits[0].normal;
-                normal = Quaternion.Euler(0, 0, Random.Range(-10, 10)) * normal;
-                velocity = Vector2.Reflect(velocity, normal);
+                // update position
+                px = x;
+                py = y;
+                x = Mathf.RoundToInt(sx + dx * i);
+                y = Mathf.RoundToInt(sy + dy * i);
+
+                // tell the physics engine to update colliders (thanks Unity 2017.1!)
+                Physics2D.Simulate(dt);
+
+                // did it get in contact with the edges?
+                if (collider.IsTouchingLayers(PlayArea.EdgesLayerMask))
+                {
+                    // go back to a non-collision position
+                    x = px;
+                    y = py;
+                    
+                    // increasingly make circles until a hit point is found
+                    int radius = 0;
+                    while (Physics2D.CircleCastNonAlloc(
+                        transform.position, radius,
+                        velocity, hits, 1,
+                        PlayArea.EdgesLayerMask) == 0)
+                        radius++;
+
+                    // reflect velocity with a bit of noise
+                    Vector2 normal = hits[0].normal;
+                    normal = Quaternion.Euler(0, 0, Random.Range(-10, 10)) * normal;
+                    velocity = Vector2.Reflect(velocity, normal);
+
+                    // set new start point and do the rest of the steps
+                    sx = x;
+                    sy = y;
+                    dx = velocity.x * dt;
+                    dy = velocity.y * dt;
+                }
             }
+
+
         }
     }
 }
