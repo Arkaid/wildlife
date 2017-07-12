@@ -219,6 +219,7 @@ namespace Jintori
             // add a collider to the quad and a RB to make it a trigger
             edgeCollider = gameObject.AddComponent<EdgeCollider2D>();
             edgeCollider.isTrigger = true;
+            edgeCollider.edgeRadius = 1;
             edgeCollider.points = new Vector2[] {
                 corners[0], corners[1], corners[2], corners[3], corners[0]
             };
