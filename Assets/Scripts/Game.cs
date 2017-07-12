@@ -56,7 +56,7 @@ namespace Jintori
 
             // Create a square that randomly changes sizes
             const float Area = 100 * 100;
-            const int MaxWidth = 300;
+            const int MaxWidth = 270;
             const int MinWidth = 20;
             initialSquare.mesh.triangles = new int[]
             {
