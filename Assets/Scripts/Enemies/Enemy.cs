@@ -88,21 +88,6 @@ namespace Jintori
         }
 
         // -----------------------------------------------------------------------------------	
-        Collider2D[] overlaps = new Collider2D[8];
-        // -----------------------------------------------------------------------------------	
-        /// <summary>
-        /// Returns true if it overlaps the safe path or the edges of the play area
-        /// </summary>
-        /// <param name="position">Position to test for, world coordinates</param>
-        protected bool OverlapsEdges(Vector2 position)
-        {
-            // too many overlaps
-            Bounds bounds = collider.bounds;
-            int hits = Physics2D.OverlapCircleNonAlloc(position, bounds.extents.magnitude, overlaps, PlayArea.EdgesLayerMask);
-            return hits > 0;
-        }
-
-        // -----------------------------------------------------------------------------------	
         /// <summary>
         /// Sets the position of the boss at the start of the game
         /// </summary>
@@ -126,15 +111,13 @@ namespace Jintori
                 if (playerInitalSquare.Contains(test))
                     continue;
 
-                if (OverlapsEdges(test))
-                    continue;
-
-                // it's overlapping, but not with itself
-                if (overlaps.Length == 1 && overlaps[0] != collider)
-                    continue;
-
                 x = (int)test.x;
                 y = (int)test.y;
+
+                Physics2D.Simulate(0.05f);
+                if (collider.IsTouchingLayers(PlayArea.EdgesLayerMask))
+                    continue;
+
                 break;
             }
         }

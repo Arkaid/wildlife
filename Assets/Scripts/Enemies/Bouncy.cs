@@ -26,15 +26,32 @@ namespace Jintori
         // -----------------------------------------------------------------------------------	
         private void OnMaskCleared()
         {
-            if (playArea.mask.clearedRatio >= 0.5f && transform.localScale == Vector3.one)
-                transform.localScale = Vector3.one * 0.5f;
+            const float MinSize = 0.4f;
+            const float MaxSize = 1.0f;
+            const float MinRatio = 0.25f; // start getting small here
+            const float MaxRatio = 0.75f; // stop getting small here
+
+            float t = Mathf.Clamp(playArea.mask.clearedRatio, MinRatio, MaxRatio);
+            t = (t - MinRatio) / (MaxRatio - MinRatio);
+            float size = Mathf.Lerp(MaxSize, MinSize, t);
+            transform.localScale = Vector3.one * size;
         }
 
         // -----------------------------------------------------------------------------------	
         protected override void Setup()
         {
             playArea.mask.maskCleared += OnMaskCleared;
-            velocity = Random.insideUnitCircle.normalized * speed;
+
+            // start with a 45 degree angle, no matter what
+            int dir = Random.Range(0, 3);
+            switch(dir)
+            {
+                case 0: velocity = new Vector2( 1,  1); break;
+                case 1: velocity = new Vector2( 1, -1); break;
+                case 2: velocity = new Vector2(-1, -1); break;
+                case 3: velocity = new Vector2(-1,  1); break;
+            }
+            velocity = velocity.normalized * speed;
         }
 
         // -----------------------------------------------------------------------------------	
@@ -80,7 +97,7 @@ namespace Jintori
 
                     // reflect velocity with a bit of noise
                     Vector2 normal = hits[0].normal;
-                    normal = Quaternion.Euler(0, 0, Random.Range(-10, 10)) * normal;
+                    normal = Quaternion.Euler(0, 0, Random.Range(-2, 2) * 5) * normal;
                     velocity = Vector2.Reflect(velocity, normal);
 
                     // set new start point and do the rest of the steps
