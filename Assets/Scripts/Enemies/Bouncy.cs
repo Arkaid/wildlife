@@ -24,8 +24,16 @@ namespace Jintori
 
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
+        private void OnMaskCleared()
+        {
+            if (playArea.mask.clearedRatio >= 0.5f && transform.localScale == Vector3.one)
+                transform.localScale = Vector3.one * 0.5f;
+        }
+
+        // -----------------------------------------------------------------------------------	
         protected override void Setup()
         {
+            playArea.mask.maskCleared += OnMaskCleared;
             velocity = Random.insideUnitCircle.normalized * speed;
         }
 
