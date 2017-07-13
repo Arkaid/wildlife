@@ -52,7 +52,7 @@ namespace Jintori
         void Awake()
         {
             edgeCollider = gameObject.AddComponent<EdgeCollider2D>();
-            edgeCollider.isTrigger = true;
+            edgeCollider.edgeRadius = 1;
         }
 
         // --- Methods ----------------------------------------------------------------------------------

@@ -133,7 +133,7 @@ namespace Jintori
                 x = (int)test.x;
                 y = (int)test.y;
 
-                Physics2D.Simulate(0.05f);
+                Physics2D.Simulate(0.005f);
                 if (collider.IsTouchingLayers(PlayArea.EdgesLayerMask))
                     continue;
 
