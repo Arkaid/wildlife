@@ -36,7 +36,7 @@ namespace Jintori
         }
 
         // -----------------------------------------------------------------------------------	
-        RaycastHit2D[] hits = new RaycastHit2D[2];
+        ContactPoint2D[] contacts = new ContactPoint2D[8];
         // -----------------------------------------------------------------------------------	
         /// <summary>
         /// Moves the object and bounces it at exactly so it comes out at a 45
@@ -64,27 +64,23 @@ namespace Jintori
                 y = Mathf.RoundToInt(sy + dy * i);
 
                 // tell the physics engine to update colliders (thanks Unity 2017.1!)
-                Physics2D.Simulate(0.0001f);
+                Physics2D.Simulate(0.005f);
 
                 // did it get in contact with the edges?
-                if (collider.IsTouchingLayers(PlayArea.EdgesLayerMask))
+                int nHits = collider.GetContacts(PlayArea.EdgeContactFilter, contacts);
+                if (nHits > 0)
                 {
                      // go back to a non-collision position
                     x = px;
                     y = py;
 
-                    // Find the normal 
-                    int radius = 0;
-                    int nHits = 0;
-                    while (nHits == 0)
-                    {
-                        radius++;
-                        nHits = Physics2D.CircleCastNonAlloc(transform.position, 
-                            radius, velocity, hits, 1, PlayArea.EdgesLayerMask);
-                    }
+                    // obtain normal from contact points
+                    Vector2 normal = Vector3.zero;
+                    for (int j = 0; j < nHits; j++)
+                        normal += contacts[j].normal;
+                    normal.Normalize();
 
                     // reflect velocity 
-                    Vector2 normal = hits[0].normal;
                     //normal = Quaternion.Euler(0, 0, Random.Range(-2, 2) * 5) * normal;
                     velocity = Vector2.Reflect(velocity, normal);
 
