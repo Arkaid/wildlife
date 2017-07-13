@@ -39,7 +39,7 @@ namespace Jintori
         // -----------------------------------------------------------------------------------	
         void Start()
         {
-            playArea.Setup(DEBUG_baseImage, DEBUG_shadowImage, typeof(Bouncy));
+            playArea.Setup(DEBUG_baseImage, DEBUG_shadowImage, typeof(Slimy));
             
             Timer.instance.ResetTimer(120);
             StartCoroutine(SetStartingZone());
@@ -55,8 +55,8 @@ namespace Jintori
             playArea.player.gameObject.SetActive(false);
 
             // Create a square that randomly changes sizes
-            const float Area = 100 * 100;
-            const int MaxWidth = 270;
+            const float Area = 50 * 50;
+            const int MaxWidth = 100;
             const int MinWidth = 20;
             initialSquare.mesh.triangles = new int[]
             {
@@ -103,7 +103,7 @@ namespace Jintori
             // place the boss safely in the shadow
             playArea.boss.gameObject.SetActive(true);
             playArea.boss.SetStartPosition(rect);
-            playArea.boss.Run();
+            playArea.boss.Run(Enemy.Difficulty.Easy_1);
 
             // start timer
             Timer.instance.StartTimer();

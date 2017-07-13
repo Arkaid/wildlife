@@ -101,7 +101,9 @@ namespace Jintori
             List<Vector2> points2 = points.ConvertAll(Vec3ToVec2);
             if (lineRenderer.loop)
                 points2.Add(points2[0]);
-            edgeCollider.points = points2.ToArray();
+
+            if (points.Count > 1)
+                edgeCollider.points = points2.ToArray();
         }
         
         // -----------------------------------------------------------------------------------	

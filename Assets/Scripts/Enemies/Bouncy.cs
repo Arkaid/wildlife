@@ -5,58 +5,44 @@ using UnityEngine;
 namespace Jintori
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    public class Bouncy : Enemy
+    public abstract class Bouncy : Enemy
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
+        static readonly Vector2[] Directions = new Vector2[]
+        {
+            (new Vector2(-1, -1)).normalized,
+            (new Vector2( 1, -1)).normalized,
+            (new Vector2( 1,  1)).normalized,
+            (new Vector2(-1,  1)).normalized,
+        };
+
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
-        [SerializeField]
-        float speed;
-
         // --- Properties -------------------------------------------------------------------------------
-        Vector2 velocity;
+        /// <summary> Velocity vector </summary>
+        protected Vector2 velocity { get; private set; }
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        private void OnMaskCleared()
+        protected void InitialVelocity(float speed)
         {
-            const float MinSize = 0.4f;
-            const float MaxSize = 1.0f;
-            const float MinRatio = 0.25f; // start getting small here
-            const float MaxRatio = 0.75f; // stop getting small here
-
-            float t = Mathf.Clamp(playArea.mask.clearedRatio, MinRatio, MaxRatio);
-            t = (t - MinRatio) / (MaxRatio - MinRatio);
-            float size = Mathf.Lerp(MaxSize, MinSize, t);
-            transform.localScale = Vector3.one * size;
-        }
-
-        // -----------------------------------------------------------------------------------	
-        protected override void Setup()
-        {
-            playArea.mask.maskCleared += OnMaskCleared;
-
             // start with a 45 degree angle, no matter what
-            int dir = Random.Range(0, 3);
-            switch(dir)
-            {
-                case 0: velocity = new Vector2( 1,  1); break;
-                case 1: velocity = new Vector2( 1, -1); break;
-                case 2: velocity = new Vector2(-1, -1); break;
-                case 3: velocity = new Vector2(-1,  1); break;
-            }
-            velocity = velocity.normalized * speed;
+            velocity = Directions[Random.Range(0, 4)] * speed;
         }
 
         // -----------------------------------------------------------------------------------	
-        RaycastHit2D[] hits = new RaycastHit2D[1];
-        protected override void UpdatePosition()
+        RaycastHit2D[] hits = new RaycastHit2D[2];
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Moves the object and bounces it at exactly so it comes out at a 45
+        /// degree angle. Optionally, may add a little noise to the bounce
+        /// </summary>
+        protected void MoveAndBounce()
         {
             // number of interpolation steps for the movement
             const int Steps = 10;
@@ -78,27 +64,44 @@ namespace Jintori
                 y = Mathf.RoundToInt(sy + dy * i);
 
                 // tell the physics engine to update colliders (thanks Unity 2017.1!)
-                Physics2D.Simulate(dt);
+                Physics2D.Simulate(0.0001f);
 
                 // did it get in contact with the edges?
                 if (collider.IsTouchingLayers(PlayArea.EdgesLayerMask))
                 {
-                    // go back to a non-collision position
+                     // go back to a non-collision position
                     x = px;
                     y = py;
-                    
-                    // increasingly make circles until a hit point is found
-                    int radius = 0;
-                    while (Physics2D.CircleCastNonAlloc(
-                        transform.position, radius,
-                        velocity, hits, 1,
-                        PlayArea.EdgesLayerMask) == 0)
-                        radius++;
 
-                    // reflect velocity with a bit of noise
+                    // Find the normal 
+                    int radius = 0;
+                    int nHits = 0;
+                    while (nHits == 0)
+                    {
+                        radius++;
+                        nHits = Physics2D.CircleCastNonAlloc(transform.position, 
+                            radius, velocity, hits, 1, PlayArea.EdgesLayerMask);
+                    }
+
+                    // reflect velocity 
                     Vector2 normal = hits[0].normal;
-                    normal = Quaternion.Euler(0, 0, Random.Range(-2, 2) * 5) * normal;
+                    //normal = Quaternion.Euler(0, 0, Random.Range(-2, 2) * 5) * normal;
                     velocity = Vector2.Reflect(velocity, normal);
+
+                    // make sure it's always at a 45 degree angle
+                    float smallest = Vector2.Angle(velocity, Directions[0]);
+                    int idx = 0;
+                    for (int dir = 1; dir < 4; dir++)
+                    {
+                        float angle = Vector2.Angle(velocity, Directions[dir]);
+                        if (smallest > angle)
+                        {
+                            idx = dir;
+                            smallest = angle;
+                        }
+                    }
+                    velocity = Directions[idx] * velocity.magnitude;
+
 
                     // set new start point and do the rest of the steps
                     sx = x;
@@ -107,8 +110,6 @@ namespace Jintori
                     dy = velocity.y * dt;
                 }
             }
-
-
         }
     }
 }
