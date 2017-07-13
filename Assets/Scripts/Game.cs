@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Jintori
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    public class Game : MonoBehaviour
+    public class Game : IllogicGate.SingletonBehaviour<Game>
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
@@ -33,15 +33,20 @@ namespace Jintori
         Texture2D DEBUG_shadowImage = null;
 
         // --- Properties -------------------------------------------------------------------------------
+        /// <summary> Current state of the game </summary>
         State state;
+
+        /// <summary> Current round (1, 2 or 3) </summary>
+        public int round { get; private set; }
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         void Start()
         {
             playArea.Setup(DEBUG_baseImage, DEBUG_shadowImage, typeof(Slimy));
-            
-            Timer.instance.ResetTimer(120);
+
+            round = 1;
+            Timer.instance.ResetTimer(Config.instance.roundTime);
             StartCoroutine(SetStartingZone());
         }
 
@@ -103,7 +108,7 @@ namespace Jintori
             // place the boss safely in the shadow
             playArea.boss.gameObject.SetActive(true);
             playArea.boss.SetStartPosition(rect);
-            playArea.boss.Run(Enemy.Difficulty.Easy_1);
+            playArea.boss.Run();
 
             // start timer
             Timer.instance.StartTimer();

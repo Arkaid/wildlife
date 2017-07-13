@@ -10,20 +10,6 @@ namespace Jintori
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
-        public enum Difficulty
-        {
-            Easy_1,
-            Easy_2,
-            Easy_3,
-            Medium_1,
-            Medium_2,
-            Medium_3,
-            Hard_1,
-            Hard_2,
-            Hard_3,
-        }
-        
-
 
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
@@ -48,9 +34,6 @@ namespace Jintori
             }
         }
         private Collider2D _collider;
-
-        /// <summary> Difficulty set upon starting the level </summary>
-        public Difficulty difficulty { get; private set; }
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
@@ -78,9 +61,8 @@ namespace Jintori
         /// <summary>
         /// Runs the enemy
         /// </summary>
-        public void Run(Difficulty difficulty)
+        public void Run()
         {
-            this.difficulty = difficulty;
             StartCoroutine(RunCoroutine());
         }
 

@@ -5,53 +5,42 @@ using UnityEngine;
 namespace Jintori
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    /// <summary>
-    /// Slimy boss's blobby
-    /// </summary>
-    public class Blobby : Bouncy
+    public class Config : IllogicGate.Singleton<Config>
     {
-        [System.Serializable]
-        struct Settings
-        {
-            public Config.Difficulty difficulty;
-            [Range(1,3)]
-            public int round;
-            public float speed;
-            public int maxBounces;
-        }
-
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
+        public enum Difficulty
+        {
+            Easy,
+            Medium,
+            Hard,
+        }
+
+        public static readonly int[] RoundTime = new int[]
+        {
+            300, 
+            180, 
+            120,
+        };
+
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
-        [SerializeField]
-        Settings [] settings;
-
         // --- Properties -------------------------------------------------------------------------------
-        /// <summary> Settings for the current difficulty </summary>
-        Settings currentSettings;
+        /// <summary> Game difficulty </summary>
+        public Difficulty difficulty { get; private set; }
+
+        /// <summary> Time for one round, adjusted for difficulty </summary>
+        public int roundTime { get { return RoundTime[(int)difficulty]; } }
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        protected override void Setup()
+        protected override void OnInstanceCreated()
         {
-            currentSettings = System.Array.Find(
-                settings,
-                s => s.difficulty == Config.instance.difficulty &&
-                s.round == Game.instance.round);
-
-            InitialVelocity(currentSettings.speed);
-        }
-
-        // -----------------------------------------------------------------------------------	
-        protected override void UpdatePosition()
-        {
-            MoveAndBounce();
+            difficulty = Difficulty.Easy;
         }
     }
 }

@@ -10,10 +10,12 @@ namespace Jintori
         [System.Serializable]
         struct Settings
         {
-            public Difficulty difficulty;
+            public Config.Difficulty difficulty;
+            [Range(1, 3)]
+            public int round;
             public float speed;
             public int blobCount;
-            public float blobsPerSecond;
+            public float timeBetweenBlobs;
         }
 
         // --- Events -----------------------------------------------------------------------------------
@@ -36,6 +38,8 @@ namespace Jintori
         // -----------------------------------------------------------------------------------	
         private void OnMaskCleared()
         {
+            // resizes the boss to a smaller 
+            // size as you take away parts of the shadow
             const float MinSize = 0.4f;
             const float MaxSize = 1.0f;
             const float MinRatio = 0.25f; // start getting small here
@@ -50,7 +54,11 @@ namespace Jintori
         // -----------------------------------------------------------------------------------	
         protected override void Setup()
         {
-            currentSettings = System.Array.Find(settings, s => s.difficulty == difficulty);
+            currentSettings = System.Array.Find(
+                settings, 
+                s => s.difficulty == Config.instance.difficulty && 
+                s.round == Game.instance.round);
+
             playArea.mask.maskCleared += OnMaskCleared;
             InitialVelocity(currentSettings.speed);
         }
