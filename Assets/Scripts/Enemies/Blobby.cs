@@ -33,18 +33,6 @@ namespace Jintori
         /// <summary> Settings for the current difficulty </summary>
         Settings currentSettings;
 
-        /// <summary> Animator to get/set states </summary>
-        Animator animator
-        {
-            get
-            {
-                if (_animator == null)
-                    _animator = GetComponent<Animator>();
-                return _animator;
-            }
-        }
-        Animator _animator;
-
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
 

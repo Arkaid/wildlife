@@ -16,6 +16,7 @@ namespace Jintori
             StartCut,
             Cutting,
             Rewinding,
+            Dying,
         }
 
         /// <summary> Current direction of travel </summary>
@@ -45,22 +46,21 @@ namespace Jintori
         /// <summary> First point in the cut path (used for the renderer) </summary>
         Point cutPathStart;
 
-        /// <summary> Animator to get/set states </summary>
-        Animator animator
+
+
+        /// <summary> Lives left </summary>
+        public int lives
         {
-            get
-            {
-                if (_animator == null)
-                    _animator = GetComponent<Animator>();
-                return _animator;
-            }
+            get { return _lives; }
+            set { SetLives(value); }
         }
-        Animator _animator;
+        int _lives;
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------	
         void Start()
         {
-            playArea.cutPath.gameObject.SetActive(false);
+            playArea.cutPath.Clear();
         }
         
         // -----------------------------------------------------------------------------------	
@@ -108,7 +108,6 @@ namespace Jintori
                     int dy = Mathf.RoundToInt(Input.GetAxisRaw("Vertical"));
                     if (playArea.mask[x + dx, y + dy] == PlayArea.Shadowed)
                     {
-                        playArea.cutPath.gameObject.SetActive(true);
                         cutPathStart = new Point(x + dx, y + dy);
                         state = State.Cutting;
 
@@ -130,9 +129,18 @@ namespace Jintori
 
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        /// <summary> Hides and disables the player </summary>
-        public void Hide()
+        void SetLives(int value)
         {
+            _lives = value;
+            UI.instance.lives = value;
+        }
+
+        // -----------------------------------------------------------------------------------	
+        /// <summary> Hides and disables the player </summary>
+        public void Hide(int x = PlayArea.ImageWidth / 2, int y = PlayArea.ImageHeight / 2)
+        {
+            this.x = x;
+            this.y = y;
             gameObject.SetActive(false);
         }
         
@@ -142,12 +150,37 @@ namespace Jintori
         /// </summary>
         public void Spawn(int x, int y)
         {
-            Debug.Assert(playArea.mask[x, y] == PlayArea.Safe);
+            lives--;
 
             this.x = x;
             this.y = y;
             gameObject.SetActive(true);
             state = State.SafePath;
+        }
+
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Call to hit the player
+        /// </summary>
+        public void Hit()
+        {
+            state = State.Dying;
+            playArea.cutPath.Clear();
+            animator.SetTrigger("Die");
+        }
+
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Called after the "Die" animation
+        /// </summary>
+        void AnimationEvent_Respawn()
+        {
+            Rewind(rewindHistory.Count + 1);
+            if (lives > 0)
+            {
+                gameObject.SetActive(false);
+                Spawn(x, y);
+            }
         }
 
         // -----------------------------------------------------------------------------------	
@@ -252,12 +285,16 @@ namespace Jintori
 
             if (closed)
             {
-                playArea.cutPath.gameObject.SetActive(false);
                 rewindHistory.Clear();
+                playArea.cutPath.Clear();
                 playArea.mask.Clear(playArea.boss.x, playArea.boss.y);
                 playArea.mask.Apply();
 
                 state = State.SafePath;
+
+                // if we already won, there's nothing else to do
+                if (playArea.mask.clearedRatio >= Config.instance.clearRatio)
+                    return;
 
                 // the path might have dissappeared
                 // this happens when we fill an entire section all the way

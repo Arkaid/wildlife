@@ -27,22 +27,9 @@ namespace Jintori
         [SerializeField]
         Settings [] settings;
 
-
         // --- Properties -------------------------------------------------------------------------------
         /// <summary> Settings for the current difficulty level and round </summary>
         Settings currentSettings;
-
-        /// <summary> Animator to get/set states </summary>
-        Animator animator
-        {
-            get
-            {
-                if (_animator == null)
-                    _animator = GetComponent<Animator>();
-                return _animator;
-            }
-        }
-        Animator _animator;
 
         /// <summary> Blobby object we use to copy and spawn new instances </summary>
         Blobby sourceBlobby;

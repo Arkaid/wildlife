@@ -29,46 +29,26 @@ namespace Jintori
         [SerializeField]
         Image timeBarRight = null;
 
+        [SerializeField]
+        RectTransform lifeRoot = null;
+
         // --- Properties -------------------------------------------------------------------------------
         /// <summary> Percentage to display (0 ~ 100) </summary>
-        public float percentage
-        {
-            set
-            {
-                float clamped = Mathf.Clamp(value, 0, 100);
-                int i = Mathf.FloorToInt(clamped);
-                int j = Mathf.FloorToInt((clamped - i) * 100);
-                percentageText.text = string.Format("{0:00}<size=12>.{1:00}</size>%", i, j);
-            }
-        }
+        public float percentage { set { SetPercentage(value); } }
 
         /// <summary> Total time, in seconds (0~999)  </summary>
-        public float totalTime
-        {
-            set { _totalTime = Mathf.Clamp(value, 0, 999); }
-        }
+        public float totalTime { set { _totalTime = Mathf.Clamp(value, 0, 999); } }
         float _totalTime = 999;
 
-
         /// <summary> Current time, in seconds (0~999)  </summary>
-        public float time
-        {
-            set
-            {
-                _time = Mathf.Clamp(value, 0, 999);
-
-                int i = Mathf.FloorToInt(_time);
-                int j = Mathf.FloorToInt((_time - i) * 100);
-                timeText.text = string.Format("{0:000}<size=12>.{1:00}</size>", i, j);
-
-                UpdateBarWidth();
-            }
-        }
+        public float time { set { SetTime(value); } }
         private float _time = 999;
 
         /// <summary> Used to keep track of when the width changed to update bar size </summary>
         private int lastWidth = -1;
 
+        /// <summary> Total lives to show </summary>
+        public int lives { set { SetLives(value); } }
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
@@ -80,10 +60,67 @@ namespace Jintori
                 UpdateBarWidth();
             }
             UpdateControlAlpha();
-
         }
+
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
+        public void Show()
+        {
+            gameObject.SetActive(true);
+        }
+        // -----------------------------------------------------------------------------------	
+        public void Hide()
+        {
+            gameObject.SetActive(false);
+        }
+        
+        // -----------------------------------------------------------------------------------	
+        void SetPercentage(float value)
+        {
+            float clamped = Mathf.Clamp(value, 0, 100);
+            int i = Mathf.FloorToInt(clamped);
+            int j = Mathf.FloorToInt((clamped - i) * 100);
+            percentageText.text = string.Format("{0:00}<size=12>.{1:00}</size>%", i, j);
+        }
+
+        // -----------------------------------------------------------------------------------	
+        void SetTime(float value)
+        {
+            _time = Mathf.Clamp(value, 0, 999);
+
+            int i = Mathf.FloorToInt(_time);
+            int j = Mathf.FloorToInt((_time - i) * 100);
+            timeText.text = string.Format("{0:000}<size=12>.{1:00}</size>", i, j);
+
+            UpdateBarWidth();
+        }
+        
+        // -----------------------------------------------------------------------------------	
+        void SetLives(int value)
+        {
+            Transform lifeImage = lifeRoot.GetChild(0);
+            lifeImage.gameObject.SetActive(false);
+            
+            while(lifeRoot.childCount > 1)
+            {
+                Transform child = lifeRoot.GetChild(1);
+                DestroyObject(child.gameObject);
+                child.SetParent(null);
+            }
+
+            for (int i = 0; i < value; i++)
+            {
+                Transform copy = Instantiate(lifeImage);
+                copy.gameObject.SetActive(true);
+                copy.SetParent(lifeRoot);
+                copy.localScale = Vector3.one;
+            }
+        }
+
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Controls the fading of the top and bottom UI elements when the player gets close to them
+        /// </summary>
         void UpdateControlAlpha()
         {
             const float BottomFadeStart = 0.15f;

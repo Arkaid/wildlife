@@ -33,6 +33,13 @@ namespace Jintori
             0.95f
         };
 
+        /// <summary> Starting amount of lives for each difficulty </summary>
+        public static readonly int[] Lives = new int[]
+        {
+            4,
+            3,
+            3
+        };
 
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
@@ -47,6 +54,9 @@ namespace Jintori
 
         /// <summary> Needed clear ratio to win, adjusted for difficulty </summary>
         public float clearRatio { get { return ClearRatio[(int)difficulty]; } }
+
+        /// <summary> Starting amount of lives, adjusted for difficulty </summary>
+        public int lives { get { return Lives[(int)difficulty]; } }
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
