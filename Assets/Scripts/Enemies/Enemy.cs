@@ -9,6 +9,9 @@ namespace Jintori
     public abstract class Enemy : PlayAreaObject
     {
         // --- Events -----------------------------------------------------------------------------------
+        /// <summary> Raised when the blobby dies </summary>
+        public event System.Action<Enemy> killed = null;
+
         // --- Constants --------------------------------------------------------------------------------
 
         // --- Static Properties ------------------------------------------------------------------------
@@ -34,6 +37,8 @@ namespace Jintori
             }
         }
         private Collider2D _collider;
+
+        protected List<Enemy> subEnemies { get; private set; }
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
@@ -63,6 +68,7 @@ namespace Jintori
         /// </summary>
         public void Run()
         {
+            subEnemies = new List<Enemy>();
             StartCoroutine(RunCoroutine());
         }
 
@@ -72,7 +78,15 @@ namespace Jintori
         /// </summary>
         public void Kill()
         {
+            if (killed != null)
+                killed(this);
+
             isAlive = false;
+
+            // kill all sub enemies
+            // (use a copy, since kill tends to remove enemies from the sublist)
+            foreach (Enemy enemy in subEnemies.ToArray())
+                enemy.Kill();
         }
 
         // -----------------------------------------------------------------------------------	
@@ -90,13 +104,28 @@ namespace Jintori
 
         // -----------------------------------------------------------------------------------	
         /// <summary>
+        /// Checks if the enemy fell outside the shadow. This doesn't happen for
+        /// bosses, but it does happen for non-boss enemies that get cut out.
+        /// It "kills" the enemy, if that is the case
+        /// </summary>
+        protected void KillIfOutsideShadow()
+        {
+            if (playArea.mask[x, y] != PlayArea.Shadowed)
+                Kill();
+        }
+
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
         /// Sets the position of the boss at the start of the game
         /// </summary>
         /// <param name="playerInitalSquare">Needed to know where NOT to start</param>
-        public void SetStartPosition(IntRect playerInitalSquare)
+        public void SetBossStartPosition(IntRect playerInitalSquare)
         {
             // object must be active for this to work...
             Debug.Assert(gameObject.activeInHierarchy);
+
+            // object must be a boss
+            Debug.Assert(isBoss);
 
             // create a random position within the play
             // area that 

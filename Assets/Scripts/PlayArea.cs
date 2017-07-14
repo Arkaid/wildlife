@@ -22,7 +22,11 @@ namespace Jintori
         const float CycleTime = 3f;
 
         public const int EdgesLayerMask = 1 << 8;
-        public static readonly ContactFilter2D EdgeContactFilter = new ContactFilter2D() { layerMask = EdgesLayerMask };
+        public static readonly ContactFilter2D EdgeContactFilter = new ContactFilter2D()
+        {
+            useLayerMask = true,
+            layerMask = EdgesLayerMask
+        };
 
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------

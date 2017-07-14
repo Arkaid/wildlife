@@ -45,6 +45,18 @@ namespace Jintori
         /// <summary> First point in the cut path (used for the renderer) </summary>
         Point cutPathStart;
 
+        /// <summary> Animator to get/set states </summary>
+        Animator animator
+        {
+            get
+            {
+                if (_animator == null)
+                    _animator = GetComponent<Animator>();
+                return _animator;
+            }
+        }
+        Animator _animator;
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
         void Start()
         {
@@ -117,6 +129,27 @@ namespace Jintori
         }
 
         // --- Methods ----------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------	
+        /// <summary> Hides and disables the player </summary>
+        public void Hide()
+        {
+            gameObject.SetActive(false);
+        }
+        
+        // -----------------------------------------------------------------------------------	
+        /// <summary> 
+        /// Spawns the player at the given position 
+        /// </summary>
+        public void Spawn(int x, int y)
+        {
+            Debug.Assert(playArea.mask[x, y] == PlayArea.Safe);
+
+            this.x = x;
+            this.y = y;
+            gameObject.SetActive(true);
+            state = State.SafePath;
+        }
+
         // -----------------------------------------------------------------------------------	
         /// <summary> 
         /// Rewinds the last cut moments in history 

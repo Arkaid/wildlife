@@ -70,7 +70,7 @@ namespace Jintori
                 int nHits = collider.GetContacts(PlayArea.EdgeContactFilter, contacts);
                 if (nHits > 0)
                 {
-                     // go back to a non-collision position
+                    // go back to a non-collision position
                     x = px;
                     y = py;
 
@@ -79,6 +79,9 @@ namespace Jintori
                     for (int j = 0; j < nHits; j++)
                         normal += contacts[j].normal;
                     normal.Normalize();
+
+                    // use the first normal
+                    //Vector2 normal = contacts[0].normal;
 
                     // reflect velocity 
                     //normal = Quaternion.Euler(0, 0, Random.Range(-2, 2) * 5) * normal;

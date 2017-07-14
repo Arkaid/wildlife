@@ -33,6 +33,18 @@ namespace Jintori
         /// <summary> Settings for the current difficulty </summary>
         Settings currentSettings;
 
+        /// <summary> Animator to get/set states </summary>
+        Animator animator
+        {
+            get
+            {
+                if (_animator == null)
+                    _animator = GetComponent<Animator>();
+                return _animator;
+            }
+        }
+        Animator _animator;
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
 
@@ -45,7 +57,21 @@ namespace Jintori
                 s => s.difficulty == Config.instance.difficulty &&
                 s.round == Game.instance.round);
 
+            playArea.mask.maskCleared += KillIfOutsideShadow;
+            killed += OnKilled;
+
             InitialVelocity(currentSettings.speed);
+        }
+
+        // -----------------------------------------------------------------------------------	
+        private void OnKilled(Enemy sender)
+        {
+            playArea.mask.maskCleared -= KillIfOutsideShadow;
+            animator.SetTrigger("Die");
+
+            // wait a few seconds to destroy the object
+            // to give the animation time to finish
+            DestroyObject(gameObject, 5); 
         }
 
         // -----------------------------------------------------------------------------------	
