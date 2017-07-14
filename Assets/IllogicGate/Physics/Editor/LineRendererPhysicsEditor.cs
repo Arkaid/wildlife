@@ -156,7 +156,7 @@ namespace IllogicGate
             }
 
             // update line renderer
-            line.SetVertexCount(segments + 1);
+            line.positionCount = segments + 1;
             line.SetPositions(points);
         }
         

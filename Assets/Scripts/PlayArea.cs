@@ -75,7 +75,7 @@ namespace Jintori
         // -----------------------------------------------------------------------------------	
         void Start()
         {
-            cameraZoom = Camera.main.GetComponent<PixelPerfect>().zoom;
+            cameraZoom = Camera.main.GetComponent<CameraAdjuster>().zoom;
         }
 
         // -----------------------------------------------------------------------------------	
@@ -140,6 +140,21 @@ namespace Jintori
             pos.y = -ImageHeight * 0.5f;
             safePath.transform.localPosition = pos;
             cutPath.transform.localPosition = pos;
+        }
+
+        // -----------------------------------------------------------------------------------	
+        public IEnumerator DiscoverShadow()
+        {
+            safePath.Clear();
+            cutPath.Clear();
+
+            for (int y = ImageHeight - 1; y >= 0; y--)
+            {
+                for (int x = 0; x < ImageWidth; x++)
+                    mask[x, y] = Cleared;
+                mask.Apply();
+                yield return null;
+            }
         }
 
         // -----------------------------------------------------------------------------------	

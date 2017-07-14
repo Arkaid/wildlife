@@ -54,6 +54,18 @@ namespace Jintori
         }
         PlayArea _playArea;
 
+        /// <summary> Animator, if available. </summary>
+        public Animator animator
+        {
+            get
+            {
+                if (_animator == null)
+                    _animator = GetComponent<Animator>();
+                return _animator;
+            }
+        }
+        Animator _animator;
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         // --- Methods ----------------------------------------------------------------------------------

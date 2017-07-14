@@ -45,17 +45,25 @@ namespace Jintori
         LineRenderer _lineRenderer;
 
         /// <summary> Edge collider </summary>
-        EdgeCollider2D edgeCollider;
+        public new EdgeCollider2D collider { get; private set; }
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         void Awake()
         {
-            edgeCollider = gameObject.AddComponent<EdgeCollider2D>();
-            edgeCollider.edgeRadius = 1;
+            collider = gameObject.AddComponent<EdgeCollider2D>();
+            collider.edgeRadius = 1;
         }
 
         // --- Methods ----------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------	
+        public void Clear()
+        {
+            lineRenderer.positionCount = 0;
+            lineRenderer.SetPositions(new Vector3[]{});
+            collider.points = new Vector2[] { Vector2.zero, Vector2.zero };
+        }
+
         // -----------------------------------------------------------------------------------	
         public void RedrawPath()
         {
@@ -103,7 +111,7 @@ namespace Jintori
                 points2.Add(points2[0]);
 
             if (points.Count > 1)
-                edgeCollider.points = points2.ToArray();
+                collider.points = points2.ToArray();
         }
         
         // -----------------------------------------------------------------------------------	

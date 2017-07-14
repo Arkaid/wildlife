@@ -48,10 +48,9 @@ namespace Jintori
         // -----------------------------------------------------------------------------------	
         IEnumerator Initialize()
         {
-            // place the player on the center of the screen
-            playArea.player.x = PlayArea.ImageWidth / 2;
-            playArea.player.y = PlayArea.ImageHeight / 2;
+            // Hide the player
             playArea.player.Hide();
+            playArea.player.lives = Config.instance.lives;
 
             // Create a square that randomly changes sizes
             // until the fire button gets pressed
@@ -115,8 +114,21 @@ namespace Jintori
         // -----------------------------------------------------------------------------------	
         IEnumerator WinRound()
         {
-            // kill boss
+            // kill boss and hide player
             playArea.boss.Kill();
+            playArea.player.Hide();
+
+            // hide UI elements
+            UI.instance.Hide();
+
+            // Fit the camera to see all the image
+            // (player must be on the center of the play area)
+            CameraAdjuster camAdjuster = Camera.main.GetComponent<CameraAdjuster>();
+            camAdjuster.ZoomToImage();
+
+            // unhide all the shadow
+            yield return StartCoroutine(playArea.DiscoverShadow());
+
 
             yield break;
         }

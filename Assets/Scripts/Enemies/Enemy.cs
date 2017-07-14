@@ -97,9 +97,18 @@ namespace Jintori
             while (isAlive)
             {
                 UpdatePosition();
+                CheckPlayerHit();
                 yield return null;
             }
             Finish();
+        }
+        
+        // -----------------------------------------------------------------------------------	
+        void CheckPlayerHit()
+        {
+            Physics2D.Simulate(0.005f);
+            if (collider.IsTouching(playArea.cutPath.collider))
+                playArea.player.Hit();
         }
 
         // -----------------------------------------------------------------------------------	
