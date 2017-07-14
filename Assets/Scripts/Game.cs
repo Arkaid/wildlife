@@ -5,16 +5,13 @@ using UnityEngine;
 namespace Jintori
 {
     // --- Class Declaration ------------------------------------------------------------------------
+    /// <summary>
+    /// Controls three rounds of a game.
+    /// </summary>
     public class Game : IllogicGate.SingletonBehaviour<Game>
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
-        enum State
-        {
-            Setup,
-            SelectStartQuad,
-            Playing,
-        }
 
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
@@ -33,9 +30,6 @@ namespace Jintori
         Texture2D DEBUG_shadowImage = null;
 
         // --- Properties -------------------------------------------------------------------------------
-        /// <summary> Current state of the game </summary>
-        State state;
-
         /// <summary> Current round (1, 2 or 3) </summary>
         public int round { get; private set; }
 
@@ -47,19 +41,20 @@ namespace Jintori
 
             round = 1;
             Timer.instance.ResetTimer(Config.instance.roundTime);
-            StartCoroutine(SetStartingZone());
+            StartCoroutine(Initialize());
         }
-
+        
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        IEnumerator SetStartingZone()
+        IEnumerator Initialize()
         {
             // place the player on the center of the screen
             playArea.player.x = PlayArea.ImageWidth / 2;
             playArea.player.y = PlayArea.ImageHeight / 2;
-            playArea.player.gameObject.SetActive(false);
+            playArea.player.Hide();
 
             // Create a square that randomly changes sizes
+            // until the fire button gets pressed
             const float Area = 50 * 50;
             const int MaxWidth = 100;
             const int MinWidth = 20;
@@ -96,9 +91,7 @@ namespace Jintori
             };
 
             // re-enable the player and put it in a corner of the square
-            playArea.player.gameObject.SetActive(true);
-            playArea.player.x = rect.x;
-            playArea.player.y = rect.y;
+            playArea.player.Spawn(rect.x, rect.y);
 
             // create the square and destroy the "preview"
             playArea.CreateStartingZone(rect);
@@ -107,13 +100,36 @@ namespace Jintori
             // now that the play area has colliders, 
             // place the boss safely in the shadow
             playArea.boss.gameObject.SetActive(true);
-            playArea.boss.SetStartPosition(rect);
+            playArea.boss.SetBossStartPosition(rect);
             playArea.boss.Run();
 
             // start timer
             Timer.instance.StartTimer();
 
+            // set callbacks to check game progress
+            playArea.mask.maskCleared += OnMaskCleared;
+
             yield break;
+        }
+        
+        // -----------------------------------------------------------------------------------	
+        IEnumerator WinRound()
+        {
+            // kill boss
+            playArea.boss.Kill();
+
+            yield break;
+        }
+
+        // -----------------------------------------------------------------------------------	
+        private void OnMaskCleared()
+        {
+            // Did we win?
+            if (playArea.mask.clearedRatio >= Config.instance.clearRatio)
+            {
+                playArea.mask.maskCleared -= OnMaskCleared;
+                StartCoroutine(WinRound());
+            }
         }
     }
 }

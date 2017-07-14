@@ -53,9 +53,25 @@ namespace Jintori
             }
         }
         PlayArea _playArea;
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Updates the values of x and y from the local position
+        /// You should call this if you move the object by its transform
+        /// and not by the x and y properties
+        /// </summary>
+        public void SetXYFromLocalPosition()
+        {
+            Vector2 pos = transform.localPosition;
+
+            _x = Mathf.RoundToInt(pos.x + PlayArea.ImageWidth * 0.5f);
+            _x = Mathf.Clamp(_x, 0, PlayArea.ImageWidth - 1);
+
+            _y = Mathf.RoundToInt(pos.y + PlayArea.ImageHeight * 0.5f);
+            _y = Mathf.Clamp(_y, 0, PlayArea.ImageHeight - 1);
+        }
     }
 }

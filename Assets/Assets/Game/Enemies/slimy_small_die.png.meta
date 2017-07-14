@@ -1,9 +1,15 @@
 fileFormatVersion: 2
 guid: 0d6d0982241acb44187c1df12f8080d3
-timeCreated: 1499922546
+timeCreated: 1499992484
 licenseType: Free
 TextureImporter:
-  fileIDToRecycleName: {}
+  fileIDToRecycleName:
+    21300000: slimy_small_die_0
+    21300002: slimy_small_die_1
+    21300004: slimy_small_die_2
+    21300006: slimy_small_die_3
+    21300008: slimy_small_die_4
+    21300010: slimy_small_die_5
   serializedVersion: 4
   mipmaps:
     mipMapMode: 0
@@ -73,7 +79,91 @@ TextureImporter:
     overridden: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: slimy_small_die_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 90
+        width: 45
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: slimy_small_die_1
+      rect:
+        serializedVersion: 2
+        x: 45
+        y: 90
+        width: 45
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: slimy_small_die_2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 45
+        width: 45
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: slimy_small_die_3
+      rect:
+        serializedVersion: 2
+        x: 45
+        y: 45
+        width: 45
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: slimy_small_die_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 45
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: slimy_small_die_5
+      rect:
+        serializedVersion: 2
+        x: 45
+        y: 0
+        width: 45
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
     outline: []
     physicsShape: []
   spritePackingTag: 
