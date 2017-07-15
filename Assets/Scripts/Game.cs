@@ -52,6 +52,9 @@ namespace Jintori
             playArea.player.Hide();
             playArea.player.lives = Config.instance.lives;
 
+            // play the intro animation for the round
+            yield return StartCoroutine(UI.instance.roundStart.Show(2));
+
             // Create a square that randomly changes sizes
             // until the fire button gets pressed
             const float Area = 50 * 50;
