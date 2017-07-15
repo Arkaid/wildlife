@@ -36,6 +36,9 @@ namespace Jintori
         RoundStart _roundStart = null;
         public RoundStart roundStart { get { return _roundStart; } }
 
+        [SerializeField]
+        GameResult gameResult = null;
+
         // --- Properties -------------------------------------------------------------------------------
         /// <summary> Percentage to display (0 ~ 100) </summary>
         public float percentage { set { SetPercentage(value); } }
@@ -68,16 +71,50 @@ namespace Jintori
 
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        public void Show()
+        /// <summary>
+        /// Resets the UI to the beginning of the round
+        /// </summary>
+        public void Reset(int livesLeft)
         {
             gameObject.SetActive(true);
+
+            lives = livesLeft;
+
+            roundStart.Reset();
+            gameResult.Reset();
         }
+
         // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Hides the UI completely
+        /// </summary>
         public void Hide()
         {
             gameObject.SetActive(false);
         }
+
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Play the game result
+        /// </summary>
+        public void PlayResult(bool cleared)
+        {
+            StartCoroutine(PlayResultCoroutine(cleared));
+        }
         
+        // -----------------------------------------------------------------------------------	
+        IEnumerator PlayResultCoroutine(bool cleared)
+        {
+            // hide the top / down UI parts
+
+            if (cleared)
+                yield return StartCoroutine(gameResult.PlayCleared());
+            else
+                yield return StartCoroutine(gameResult.PlayGameOver());
+
+            UI.instance.Hide();
+        }
+
         // -----------------------------------------------------------------------------------	
         void SetPercentage(float value)
         {

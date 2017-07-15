@@ -148,13 +148,26 @@ namespace Jintori
             safePath.Clear();
             cutPath.Clear();
 
+            bool cancelWait = false;
             for (int y = ImageHeight - 1; y >= 0; y--)
             {
                 for (int x = 0; x < ImageWidth; x++)
                     mask[x, y] = Cleared;
-                mask.Apply();
-                yield return null;
+
+                // cancel the slow "discover" and just clear the whole image
+                // if the player hits the fire button
+                if (Input.GetButtonDown("Fire1"))
+                    cancelWait = true;
+
+                if (!cancelWait)
+                {
+                    yield return null;
+                    mask.Apply();
+                }
             }
+
+            if (cancelWait)
+                mask.Apply();
         }
 
         // -----------------------------------------------------------------------------------	

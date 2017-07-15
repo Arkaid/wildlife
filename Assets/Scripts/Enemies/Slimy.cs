@@ -122,7 +122,7 @@ namespace Jintori
 
             // wait a few seconds to destroy the object
             // to give the animation time to finish
-            DestroyObject(gameObject, 5);
+            DestroyObject(gameObject, 10);
         }
         
     }
