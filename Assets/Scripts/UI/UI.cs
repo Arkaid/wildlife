@@ -32,6 +32,10 @@ namespace Jintori
         [SerializeField]
         RectTransform lifeRoot = null;
 
+        [SerializeField]
+        RoundStart _roundStart = null;
+        public RoundStart roundStart { get { return _roundStart; } }
+
         // --- Properties -------------------------------------------------------------------------------
         /// <summary> Percentage to display (0 ~ 100) </summary>
         public float percentage { set { SetPercentage(value); } }
