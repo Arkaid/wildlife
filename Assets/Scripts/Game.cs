@@ -33,33 +33,60 @@ namespace Jintori
         /// <summary> Current round (1, 2 or 3) </summary>
         public int round { get; private set; }
 
+        /// <summary> Play area currently active </summary>
+        PlayArea currentPlay;
+
+        /// <summary> lives left </summary>
+        public int livesLeft { get; private set; }
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         void Start()
         {
-            playArea.Setup(DEBUG_baseImage, DEBUG_shadowImage, typeof(Slimy));
-
             round = 1;
-            Timer.instance.ResetTimer(Config.instance.roundTime);
-            StartCoroutine(Initialize());
+            livesLeft = Config.instance.lives;
+            playArea.gameObject.SetActive(false);
+            StartCoroutine(InitializeRound());
         }
         
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        IEnumerator Initialize()
+        IEnumerator InitializeRound()
         {
+            // destroy previous area
+            if (currentPlay != null)
+                Destroy(currentPlay.gameObject);
+
+            // create a fresh play area
+            currentPlay = Instantiate(playArea, playArea.transform.parent, true);
+            currentPlay.gameObject.SetActive(true);
+            currentPlay.Setup(DEBUG_baseImage, DEBUG_shadowImage, typeof(Slimy));
+
+            // check when the player spawns to count lives
+            currentPlay.player.spawned += OnPlayerSpawned;
+
+            // set the camera to auto adjust
+            CameraAdjuster camAdjuster = Camera.main.GetComponent<CameraAdjuster>();
+            camAdjuster.autoAdjust = true;
+
+            // reset the UI
+            UI.instance.Reset(livesLeft);
+
+            // reset the timer
+            Timer.instance.ResetTimer(Config.instance.roundTime);
+
             // Hide the player
-            playArea.player.Hide();
-            playArea.player.lives = Config.instance.lives;
+            currentPlay.player.Hide();
 
             // play the intro animation for the round
-            yield return StartCoroutine(UI.instance.roundStart.Show(2));
+            yield return StartCoroutine(UI.instance.roundStart.Show(round));
 
             // Create a square that randomly changes sizes
             // until the fire button gets pressed
             const float Area = 50 * 50;
             const int MaxWidth = 100;
             const int MinWidth = 20;
+            initialSquare.gameObject.SetActive(true);
             initialSquare.mesh.triangles = new int[]
             {
                 0, 1, 2,
@@ -86,43 +113,50 @@ namespace Jintori
 
             IntRect rect = new IntRect()
             {
-                x = playArea.player.x - Mathf.FloorToInt(w),
-                y = playArea.player.y - Mathf.FloorToInt(h),
+                x = currentPlay.player.x - Mathf.FloorToInt(w),
+                y = currentPlay.player.y - Mathf.FloorToInt(h),
                 width = Mathf.RoundToInt(w * 2),
                 height = Mathf.RoundToInt(h * 2)
             };
 
             // re-enable the player and put it in a corner of the square
-            playArea.player.Spawn(rect.x, rect.y);
+            currentPlay.player.Spawn(rect.x, rect.y);
 
             // create the square and destroy the "preview"
-            playArea.CreateStartingZone(rect);
-            Destroy(initialSquare);
+            currentPlay.CreateStartingZone(rect);
+            initialSquare.gameObject.SetActive(false);
 
             // now that the play area has colliders, 
             // place the boss safely in the shadow
-            playArea.boss.gameObject.SetActive(true);
-            playArea.boss.SetBossStartPosition(rect);
-            playArea.boss.Run();
+            currentPlay.boss.gameObject.SetActive(true);
+            currentPlay.boss.SetBossStartPosition(rect);
+            currentPlay.boss.Run();
 
             // start timer
             Timer.instance.StartTimer();
 
             // set callbacks to check game progress
-            playArea.mask.maskCleared += OnMaskCleared;
+            currentPlay.mask.maskCleared += OnMaskCleared;
 
             yield break;
         }
-        
+
+        // -----------------------------------------------------------------------------------	
+        private void OnPlayerSpawned()
+        {
+            livesLeft--;
+            UI.instance.lives = livesLeft;
+        }
+
         // -----------------------------------------------------------------------------------	
         IEnumerator WinRound()
         {
             // kill boss and hide player
-            playArea.boss.Kill();
-            playArea.player.Hide();
+            currentPlay.boss.Kill();
+            currentPlay.player.Hide();
 
-            // hide UI elements
-            UI.instance.Hide();
+            // played the final result before hiding the UI
+            UI.instance.PlayResult(true);
 
             // Fit the camera to see all the image
             // (player must be on the center of the play area)
@@ -130,8 +164,27 @@ namespace Jintori
             camAdjuster.ZoomToImage();
 
             // unhide all the shadow
-            yield return StartCoroutine(playArea.DiscoverShadow());
+            yield return StartCoroutine(currentPlay.DiscoverShadow());
 
+            // wait until the player hits fire again
+            yield return null;
+            while (!Input.GetButtonDown("Fire1"))
+                yield return null;
+
+            // play next round or go back to top menu?
+            if (round < 3)
+            {
+                // add a life since you respawn on the next round
+                livesLeft++;
+
+                // start next round
+                round++;
+                StartCoroutine(InitializeRound());
+            }
+            else
+            {
+                print("Go back to top");
+            }
 
             yield break;
         }
@@ -140,9 +193,9 @@ namespace Jintori
         private void OnMaskCleared()
         {
             // Did we win?
-            if (playArea.mask.clearedRatio >= Config.instance.clearRatio)
+            if (currentPlay.mask.clearedRatio >= Config.instance.clearRatio)
             {
-                playArea.mask.maskCleared -= OnMaskCleared;
+                currentPlay.mask.maskCleared -= OnMaskCleared;
                 StartCoroutine(WinRound());
             }
         }

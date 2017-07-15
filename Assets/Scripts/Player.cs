@@ -8,6 +8,8 @@ namespace Jintori
     public class Player : PlayAreaObject
     {
         // --- Events -----------------------------------------------------------------------------------
+        public event System.Action spawned = null;
+
         // --- Constants --------------------------------------------------------------------------------
         /// <summary> Possible states for the player </summary>
         enum State
@@ -46,15 +48,6 @@ namespace Jintori
         /// <summary> First point in the cut path (used for the renderer) </summary>
         Point cutPathStart;
 
-
-
-        /// <summary> Lives left </summary>
-        public int lives
-        {
-            get { return _lives; }
-            set { SetLives(value); }
-        }
-        int _lives;
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
@@ -129,13 +122,6 @@ namespace Jintori
 
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        void SetLives(int value)
-        {
-            _lives = value;
-            UI.instance.lives = value;
-        }
-
-        // -----------------------------------------------------------------------------------	
         /// <summary> Hides and disables the player </summary>
         public void Hide(int x = PlayArea.ImageWidth / 2, int y = PlayArea.ImageHeight / 2)
         {
@@ -150,7 +136,8 @@ namespace Jintori
         /// </summary>
         public void Spawn(int x, int y)
         {
-            lives--;
+            if (spawned != null)
+                spawned();
 
             this.x = x;
             this.y = y;
@@ -176,7 +163,7 @@ namespace Jintori
         void AnimationEvent_Respawn()
         {
             Rewind(rewindHistory.Count + 1);
-            if (lives > 0)
+            if (Game.instance.livesLeft > 0)
             {
                 gameObject.SetActive(false);
                 Spawn(x, y);

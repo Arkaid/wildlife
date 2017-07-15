@@ -1,12 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Jintori
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    public class RoundStart : MonoBehaviour
+    public class GameResult : MonoBehaviour
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
@@ -15,16 +14,14 @@ namespace Jintori
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
         [SerializeField]
-        RectTransform [] rounds = null;
+        Animation gameOver;
 
         [SerializeField]
-        new Animation animation = null;
+        Animation cleared;
 
         // --- Properties -------------------------------------------------------------------------------
-
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         /// <summary>
@@ -32,23 +29,29 @@ namespace Jintori
         /// </summary>
         public void Reset()
         {
-            gameObject.SetActive(false);
+            gameOver.gameObject.SetActive(false);
+            cleared.gameObject.SetActive(false);
         }
 
         // -----------------------------------------------------------------------------------	
-        public IEnumerator Show(int round)
+        public IEnumerator PlayGameOver()
         {
-            Debug.Assert(round >= 1 && round <= 3);
-            round--;
-            gameObject.SetActive(true);
-            for (int i = 0; i < rounds.Length; i++)
-                rounds[i].gameObject.SetActive(i == round);
+            gameOver.gameObject.SetActive(true);
+            gameOver.Play();
 
-            animation.Play();
-            while (animation.isPlaying)
+            while (gameOver.isPlaying)
                 yield return null;
-
-            gameObject.SetActive(false);
         }
+
+        // -----------------------------------------------------------------------------------	
+        public IEnumerator PlayCleared()
+        {
+            cleared.gameObject.SetActive(true);
+            cleared.Play();
+
+            while (cleared.isPlaying)
+                yield return null;
+        }
+
     }
 }
