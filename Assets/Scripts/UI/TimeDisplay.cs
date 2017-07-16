@@ -49,7 +49,7 @@ namespace Jintori
             int j = Mathf.FloorToInt((value - i) * 100);
             valueText.text = string.Format("{0:000}<size=10>.{1:00}</size>", i, j);
 
-            float idx = (1f - (value / totalTime)) * 8;
+            float idx = (1f - (value / totalTime)) * (sprites.Length - 1);
             clockImage.sprite = sprites[Mathf.RoundToInt(idx)];
         }
 

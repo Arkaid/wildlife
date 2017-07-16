@@ -15,12 +15,6 @@ namespace Jintori
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
         [SerializeField]
-        Player player = null;
-
-        [SerializeField]
-        Text percentageText = null;
-
-        [SerializeField]
         Text livesText = null;
 
         [SerializeField]
@@ -44,10 +38,6 @@ namespace Jintori
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        void Update()
-        {
-            UpdateControlAlpha();
-        }
 
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
@@ -98,56 +88,6 @@ namespace Jintori
             }
             else
                 yield return StartCoroutine(gameResult.PlayGameOver());
-        }
-
-        // -----------------------------------------------------------------------------------	
-        /// <summary>
-        /// Controls the fading of the top and bottom UI elements when the player gets close to them
-        /// </summary>
-        void UpdateControlAlpha()
-        {
-            const float BottomFadeStart = 0.15f;
-            const float BottomFadeEnd = 0.025f;
-            const float TopFadeStart = 0.90f;
-            const float TopFadeEnd = 0.95f;
-            const float MinAlpha = 0.2f;
-
-            Camera cam = Camera.main;
-            Vector2 playerVP = cam.WorldToViewportPoint(player.transform.position);
-
-            // fade in/out the bottom UI
-            if (playerVP.y < BottomFadeStart)
-            {
-                // make sure t doesn't overshoot
-                float t = Mathf.Max(playerVP.y, BottomFadeEnd);
-
-                // set it between 0 and 1
-                t = (t - BottomFadeEnd) / (BottomFadeStart - BottomFadeEnd);
-                /*
-                // blend the text
-                Color col = timeText.color;
-                col.a = Mathf.Lerp(MinAlpha, 1, t);
-                timeText.color = col;
-
-                // and the time bars
-                col = timeBarLeft.color;
-                col.a = Mathf.Lerp(MinAlpha, 1, t);
-                timeBarLeft.color = col;
-                timeBarRight.color = col;
-                */
-            }
-
-            // fade in/out the top UI
-            else if (playerVP.y > TopFadeStart)
-            {
-                float t = Mathf.Min(playerVP.y, TopFadeEnd);
-                t = (TopFadeEnd - t) / (TopFadeEnd - TopFadeStart);
-
-                Color col = percentageText.color;
-                col.a = Mathf.Lerp(MinAlpha, 1, t);
-                percentageText.color = col;
-            }
-
         }
     }
 }
