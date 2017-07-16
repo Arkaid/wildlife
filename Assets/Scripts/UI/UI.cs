@@ -21,16 +21,11 @@ namespace Jintori
         Text percentageText = null;
 
         [SerializeField]
-        Text timeText = null;
-
-        [SerializeField]
-        Image timeBarLeft = null;
-
-        [SerializeField]
-        Image timeBarRight = null;
-
-        [SerializeField]
         Text livesText = null;
+
+        [SerializeField]
+        TimeDisplay _timeDisplay = null;
+        public TimeDisplay timeDisplay { get { return _timeDisplay; } }
 
         [SerializeField]
         PercentageBar _percentageBar = null;
@@ -44,17 +39,6 @@ namespace Jintori
         GameResult gameResult = null;
 
         // --- Properties -------------------------------------------------------------------------------
-        /// <summary> Total time, in seconds (0~999)  </summary>
-        public float totalTime { set { _totalTime = Mathf.Clamp(value, 0, 999); } }
-        float _totalTime = 999;
-
-        /// <summary> Current time, in seconds (0~999)  </summary>
-        public float time { set { SetTime(value); } }
-        private float _time = 999;
-
-        /// <summary> Used to keep track of when the width changed to update bar size </summary>
-        private int lastWidth = -1;
-
         /// <summary> Total lives to show </summary>
         public int lives { set { livesText.text = string.Format("x{0:00}", value); } }
 
@@ -62,11 +46,6 @@ namespace Jintori
         // -----------------------------------------------------------------------------------	
         void Update()
         {
-            if (Screen.width != lastWidth)
-            {
-                lastWidth = Screen.width;
-                UpdateBarWidth();
-            }
             UpdateControlAlpha();
         }
 
@@ -77,12 +56,13 @@ namespace Jintori
         /// </summary>
         /// <param name="clearPercentage"> percentage needed to clear the round </param>
         /// <param name="livesLeft"> lives left in the round </param>
-        public void Reset(int livesLeft, int clearPercentage)
+        public void Reset(int livesLeft, int clearPercentage, int roundTime)
         {
             gameObject.SetActive(true);
 
             lives = livesLeft;
 
+            timeDisplay.Reset(roundTime);
             percentageBar.Reset(clearPercentage);
             roundStart.Reset();
             gameResult.Reset();
@@ -121,18 +101,6 @@ namespace Jintori
         }
 
         // -----------------------------------------------------------------------------------	
-        void SetTime(float value)
-        {
-            _time = Mathf.Clamp(value, 0, 999);
-
-            int i = Mathf.FloorToInt(_time);
-            int j = Mathf.FloorToInt((_time - i) * 100);
-            timeText.text = string.Format("{0:000}<size=12>.{1:00}</size>", i, j);
-
-            UpdateBarWidth();
-        }
-
-        // -----------------------------------------------------------------------------------	
         /// <summary>
         /// Controls the fading of the top and bottom UI elements when the player gets close to them
         /// </summary>
@@ -155,7 +123,7 @@ namespace Jintori
 
                 // set it between 0 and 1
                 t = (t - BottomFadeEnd) / (BottomFadeStart - BottomFadeEnd);
-
+                /*
                 // blend the text
                 Color col = timeText.color;
                 col.a = Mathf.Lerp(MinAlpha, 1, t);
@@ -166,6 +134,7 @@ namespace Jintori
                 col.a = Mathf.Lerp(MinAlpha, 1, t);
                 timeBarLeft.color = col;
                 timeBarRight.color = col;
+                */
             }
 
             // fade in/out the top UI
@@ -179,22 +148,6 @@ namespace Jintori
                 percentageText.color = col;
             }
 
-        }
-
-        // -----------------------------------------------------------------------------------	
-        /// <summary>
-        /// Updates the width of the time bar when and if the screen is resized. 
-        /// Also when time changes
-        /// </summary>
-        void UpdateBarWidth()
-        {
-            float t = _time / _totalTime;
-
-            float x = timeBarRight.rectTransform.anchoredPosition.x;
-            Vector2 size = timeBarRight.rectTransform.sizeDelta;
-            size.x = (Screen.width * 0.5f - x - 10) * t;
-            timeBarRight.rectTransform.sizeDelta = size;
-            timeBarLeft.rectTransform.sizeDelta = size;
         }
     }
 }

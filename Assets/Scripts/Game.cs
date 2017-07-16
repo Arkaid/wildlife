@@ -44,11 +44,12 @@ namespace Jintori
         void Start()
         {
             round = 1;
+            Timer.instance.timedOut += OnTimerTimedOut;
             livesLeft = Config.instance.lives;
             playArea.gameObject.SetActive(false);
             StartCoroutine(InitializeRound());
         }
-        
+
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         IEnumerator InitializeRound()
@@ -71,7 +72,7 @@ namespace Jintori
             camAdjuster.autoAdjust = true;
 
             // reset the UI
-            UI.instance.Reset(livesLeft, Config.instance.clearPercentage);
+            UI.instance.Reset(livesLeft, Config.instance.clearPercentage, Config.instance.roundTime);
 
             // reset the timer
             Timer.instance.ResetTimer(Config.instance.roundTime);
@@ -164,6 +165,13 @@ namespace Jintori
         private void OnPlayerDied()
         {
             StartCoroutine(GameOver());
+        }
+
+        // -----------------------------------------------------------------------------------	
+        private void OnTimerTimedOut()
+        {
+            livesLeft = 0;
+            currentPlay.player.Hit();
         }
 
         // -----------------------------------------------------------------------------------	

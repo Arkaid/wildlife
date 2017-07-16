@@ -1,62 +1,57 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Jintori
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    public class Timer : IllogicGate.SingletonBehaviour<Timer>
+    public class TimeDisplay : MonoBehaviour
     {
         // --- Events -----------------------------------------------------------------------------------
-        public event System.Action timedOut;
-
         // --- Constants --------------------------------------------------------------------------------
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
-        // --- Properties -------------------------------------------------------------------------------
-        public float totalTime { get; private set; }
+        [SerializeField]
+        Text valueText;
 
-        public float remainingTime { get; private set; }
+        [SerializeField]
+        Image clockImage;
+
+        [SerializeField]
+        Sprite[] sprites;
+
+        // --- Properties -------------------------------------------------------------------------------
+        /// <summary> Total time, in seconds (0~999)  </summary>
+        float totalTime = 999f;
+
+        /// <summary> Current time, in seconds (0~999)  </summary>
+        public float time { set { SetTime(value); } }
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        public void StartTimer()
-        {
-            StartCoroutine(Countdown());
-        }
-
-        // -----------------------------------------------------------------------------------	
-        public void ResetTimer(int totalTime)
+        public void Reset(float totalTime)
         {
             this.totalTime = totalTime;
-            remainingTime = totalTime;
+            time = totalTime;
         }
 
         // -----------------------------------------------------------------------------------	
-        public void StopTimer()
+        void SetTime(float value)
         {
-            StopAllCoroutines();
+            value = Mathf.Clamp(value, 0, 999);
+
+            int i = Mathf.FloorToInt(value);
+            int j = Mathf.FloorToInt((value - i) * 100);
+            valueText.text = string.Format("{0:000}<size=10>.{1:00}</size>", i, j);
+
+            float idx = (1f - (value / totalTime)) * 8;
+            clockImage.sprite = sprites[Mathf.RoundToInt(idx)];
         }
 
-        // -----------------------------------------------------------------------------------	
-        IEnumerator Countdown()
-        {
-            while(remainingTime > 0)
-            {
-                remainingTime -= Time.deltaTime;
-                UI.instance.timeDisplay.time = remainingTime;
-                yield return null;
-            }
-            remainingTime = 0;
-            UI.instance.timeDisplay.time = 0;
-
-            if (timedOut != null)
-                timedOut();
-        }
     }
 }
