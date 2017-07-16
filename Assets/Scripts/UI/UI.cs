@@ -78,6 +78,8 @@ namespace Jintori
         {
             gameObject.SetActive(true);
 
+            percentage = 0;
+
             lives = livesLeft;
 
             roundStart.Reset();
@@ -108,11 +110,12 @@ namespace Jintori
             // hide the top / down UI parts
 
             if (cleared)
+            {
                 yield return StartCoroutine(gameResult.PlayCleared());
+                Hide();
+            }
             else
                 yield return StartCoroutine(gameResult.PlayGameOver());
-
-            UI.instance.Hide();
         }
 
         // -----------------------------------------------------------------------------------	

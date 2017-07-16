@@ -8,7 +8,11 @@ namespace Jintori
     public class Player : PlayAreaObject
     {
         // --- Events -----------------------------------------------------------------------------------
+        /// <summary> Called when the player spawns into the play area </summary>
         public event System.Action spawned = null;
+
+        /// <summary> Called when the player tried to spawn but there were no more lives left </summary>
+        public event System.Action died = null;
 
         // --- Constants --------------------------------------------------------------------------------
         /// <summary> Possible states for the player </summary>
@@ -162,11 +166,25 @@ namespace Jintori
         /// </summary>
         void AnimationEvent_Respawn()
         {
+            // store these in case it was the last life
+            int nx = x; int ny = y;
+
+            // clear up the cut path
             Rewind(rewindHistory.Count + 1);
+
+            // can we respawn?
             if (Game.instance.livesLeft > 0)
             {
                 gameObject.SetActive(false);
                 Spawn(x, y);
+            }
+
+            // nope, we ded
+            else
+            {
+                x = nx; y = ny;
+                if (died != null)
+                    died();
             }
         }
 

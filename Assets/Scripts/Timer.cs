@@ -38,6 +38,12 @@ namespace Jintori
         }
 
         // -----------------------------------------------------------------------------------	
+        public void StopTimer()
+        {
+            StopAllCoroutines();
+        }
+
+        // -----------------------------------------------------------------------------------	
         IEnumerator Countdown()
         {
             while(remainingTime > 0)
