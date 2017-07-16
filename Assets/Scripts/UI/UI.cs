@@ -30,7 +30,7 @@ namespace Jintori
         Image timeBarRight = null;
 
         [SerializeField]
-        RectTransform lifeRoot = null;
+        Text livesText = null;
 
         [SerializeField]
         PercentageBar _percentageBar = null;
@@ -56,7 +56,7 @@ namespace Jintori
         private int lastWidth = -1;
 
         /// <summary> Total lives to show </summary>
-        public int lives { set { SetLives(value); } }
+        public int lives { set { livesText.text = string.Format("x{0:00}", value); } }
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
@@ -130,28 +130,6 @@ namespace Jintori
             timeText.text = string.Format("{0:000}<size=12>.{1:00}</size>", i, j);
 
             UpdateBarWidth();
-        }
-        
-        // -----------------------------------------------------------------------------------	
-        void SetLives(int value)
-        {
-            Transform lifeImage = lifeRoot.GetChild(0);
-            lifeImage.gameObject.SetActive(false);
-            
-            while(lifeRoot.childCount > 1)
-            {
-                Transform child = lifeRoot.GetChild(1);
-                DestroyObject(child.gameObject);
-                child.SetParent(null);
-            }
-
-            for (int i = 0; i < value; i++)
-            {
-                Transform copy = Instantiate(lifeImage);
-                copy.gameObject.SetActive(true);
-                copy.SetParent(lifeRoot);
-                copy.localScale = Vector3.one;
-            }
         }
 
         // -----------------------------------------------------------------------------------	
