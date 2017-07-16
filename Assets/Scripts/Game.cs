@@ -71,7 +71,7 @@ namespace Jintori
             camAdjuster.autoAdjust = true;
 
             // reset the UI
-            UI.instance.Reset(livesLeft);
+            UI.instance.Reset(livesLeft, Config.instance.clearPercentage);
 
             // reset the timer
             Timer.instance.ResetTimer(Config.instance.roundTime);
