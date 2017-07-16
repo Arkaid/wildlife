@@ -20,7 +20,7 @@ namespace Jintori
         /// <summary> Time needed to clear rounds in each difficulty </summary>
         public static readonly int[] RoundTime = new int[]
         {
-            300, 
+            5, 
             180, 
             120,
         };
