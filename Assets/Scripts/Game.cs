@@ -178,8 +178,8 @@ namespace Jintori
             // played the final result before hiding the UI
             UI.instance.PlayResult(false);
 
-            // hide the player
-            playArea.player.Hide();
+            // hide the player at its current position
+            currentPlay.player.Hide(currentPlay.player.x, currentPlay.player.y);
 
             // wait until the player hits fire again
             yield return null;
