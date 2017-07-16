@@ -62,8 +62,9 @@ namespace Jintori
             currentPlay.gameObject.SetActive(true);
             currentPlay.Setup(DEBUG_baseImage, DEBUG_shadowImage, typeof(Slimy));
 
-            // check when the player spawns to count lives
+            // check when the player spawns to count lives / game overs
             currentPlay.player.spawned += OnPlayerSpawned;
+            currentPlay.player.died += OnPlayerDied;
 
             // set the camera to auto adjust
             CameraAdjuster camAdjuster = Camera.main.GetComponent<CameraAdjuster>();
@@ -86,6 +87,7 @@ namespace Jintori
             const float Area = 50 * 50;
             const int MaxWidth = 100;
             const int MinWidth = 20;
+            const float FlickDelay = 0.075f;
             initialSquare.gameObject.SetActive(true);
             initialSquare.mesh.triangles = new int[]
             {
@@ -93,7 +95,7 @@ namespace Jintori
                 3, 0, 2
             };
             float w = 0, h = 0;
-            while (!Input.GetButton("Fire1"))
+            while (true)
             {
                 w = Random.Range(MinWidth, MaxWidth);
                 h = Area / w;
@@ -108,7 +110,17 @@ namespace Jintori
                 };
 
                 initialSquare.mesh.vertices = corners;
-                yield return new WaitForSeconds(0.05f);
+
+                // wait until the next random square
+                // or cancel wait if user presses button
+                float wait = FlickDelay;
+                while (wait >= 0 && !Input.GetButtonDown("Fire1"))
+                {
+                    wait -= Time.deltaTime;
+                    yield return null;
+                }
+                if (wait > 0)
+                    break;
             }
 
             IntRect rect = new IntRect()
@@ -149,8 +161,44 @@ namespace Jintori
         }
 
         // -----------------------------------------------------------------------------------	
+        private void OnPlayerDied()
+        {
+            StartCoroutine(GameOver());
+        }
+
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Runs when the player loses his last life
+        /// </summary>
+        IEnumerator GameOver()
+        {
+            // stop timer
+            Timer.instance.StopTimer();
+
+            // played the final result before hiding the UI
+            UI.instance.PlayResult(false);
+
+            // hide the player
+            playArea.player.Hide();
+
+            // wait until the player hits fire again
+            yield return null;
+            while (!Input.GetButtonDown("Fire1"))
+                yield return null;
+
+            print("Go back to top");
+        }
+
+
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Process when the player clears the minimum needed percentage
+        /// </summary>
         IEnumerator WinRound()
         {
+            // stop timer
+            Timer.instance.StopTimer();
+
             // kill boss and hide player
             currentPlay.boss.Kill();
             currentPlay.player.Hide();
