@@ -33,6 +33,10 @@ namespace Jintori
         RectTransform lifeRoot = null;
 
         [SerializeField]
+        PercentageBar _percentageBar = null;
+        public PercentageBar percentageBar { get { return _percentageBar; } }
+
+        [SerializeField]
         RoundStart _roundStart = null;
         public RoundStart roundStart { get { return _roundStart; } }
 
@@ -40,9 +44,6 @@ namespace Jintori
         GameResult gameResult = null;
 
         // --- Properties -------------------------------------------------------------------------------
-        /// <summary> Percentage to display (0 ~ 100) </summary>
-        public float percentage { set { SetPercentage(value); } }
-
         /// <summary> Total time, in seconds (0~999)  </summary>
         public float totalTime { set { _totalTime = Mathf.Clamp(value, 0, 999); } }
         float _totalTime = 999;
@@ -74,14 +75,15 @@ namespace Jintori
         /// <summary>
         /// Resets the UI to the beginning of the round
         /// </summary>
-        public void Reset(int livesLeft)
+        /// <param name="clearPercentage"> percentage needed to clear the round </param>
+        /// <param name="livesLeft"> lives left in the round </param>
+        public void Reset(int livesLeft, int clearPercentage)
         {
             gameObject.SetActive(true);
 
-            percentage = 0;
-
             lives = livesLeft;
 
+            percentageBar.Reset(clearPercentage);
             roundStart.Reset();
             gameResult.Reset();
         }
@@ -116,15 +118,6 @@ namespace Jintori
             }
             else
                 yield return StartCoroutine(gameResult.PlayGameOver());
-        }
-
-        // -----------------------------------------------------------------------------------	
-        void SetPercentage(float value)
-        {
-            float clamped = Mathf.Clamp(value, 0, 100);
-            int i = Mathf.FloorToInt(clamped);
-            int j = Mathf.FloorToInt((clamped - i) * 100);
-            percentageText.text = string.Format("{0:00}<size=12>.{1:00}</size>%", i, j);
         }
 
         // -----------------------------------------------------------------------------------	

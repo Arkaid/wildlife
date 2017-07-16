@@ -55,6 +55,9 @@ namespace Jintori
         /// <summary> Needed clear ratio to win, adjusted for difficulty </summary>
         public float clearRatio { get { return ClearRatio[(int)difficulty]; } }
 
+        /// <summary> Needed clear percentage to win, adjusted for difficulty </summary>
+        public int clearPercentage { get { return Mathf.FloorToInt(clearRatio * 100); } }
+
         /// <summary> Starting amount of lives, adjusted for difficulty </summary>
         public int lives { get { return Lives[(int)difficulty]; } }
 

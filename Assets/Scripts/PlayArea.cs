@@ -173,7 +173,7 @@ namespace Jintori
         // -----------------------------------------------------------------------------------	
         private void OnMaskCleared()
         {
-            UI.instance.percentage = mask.clearedRatio * 100f;
+            UI.instance.percentageBar.percentage = mask.clearedRatio * 100f;
         }
 
         // -----------------------------------------------------------------------------------	
