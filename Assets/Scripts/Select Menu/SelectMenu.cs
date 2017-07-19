@@ -21,10 +21,6 @@ namespace Jintori
         CharacterAvatar characterAvatar = null;
 
         // --- Properties -------------------------------------------------------------------------------
-        string[] characterFiles;
-
-        Dictionary<string, CharacterSheet> characterSheets;
-
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         // --- Methods ----------------------------------------------------------------------------------
@@ -40,37 +36,35 @@ namespace Jintori
         }
 
         // -----------------------------------------------------------------------------------	
-        private void OnCharacterSelected(string file)
+        private void OnCharacterSelected(CharacterDataFile file)
         {
             characterAvatar.SetSelected();
             StartCoroutine(LoadGame(file));
         }
 
         // -----------------------------------------------------------------------------------	
-        private void OnCharacterSwitched(string file)
+        private void OnCharacterSwitched(CharacterDataFile file)
         {
-            characterAvatar.SetCharacter(characterSheets[file]);
+            characterAvatar.SetCharacter(file);
         }
 
         // -----------------------------------------------------------------------------------	
         IEnumerator LoadCharacterSheets()
         {
-            characterFiles = System.IO.Directory.GetFiles(CharacterDataFile.dataPath, "*.chr");
-            characterSheets = new Dictionary<string, CharacterSheet>();
+            string [] files = System.IO.Directory.GetFiles(CharacterDataFile.dataPath, "*.chr");
 
-            foreach (string file in characterFiles)
+            foreach (string file in files)
             {
-                CharacterSheet sheet = CharacterDataFile.LoadCharacterSheet(file);
-                characterIconGrid.Add(sheet.icon, file);
-                characterSheets.Add(file, sheet);
+                CharacterDataFile charFile = new CharacterDataFile(file);
+                characterIconGrid.Add(charFile);
                 yield return null;
             }
         }
 
         // -----------------------------------------------------------------------------------	
-        IEnumerator LoadGame(string file)
+        IEnumerator LoadGame(CharacterDataFile file)
         {
-            Game.characterFile = file;
+            Game.source = file;
             yield return new WaitForSeconds(1);
             yield return StartCoroutine(Transition.instance.Show());
             SceneManager.LoadScene("Game");

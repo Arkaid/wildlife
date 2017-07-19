@@ -22,11 +22,15 @@ namespace Jintori
             // Get existing open window or if none, make a new one:
             CharacterDataEditor window = GetWindow<CharacterDataEditor>();
             window.Show();
+            window.Clear();
         }
 
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
         // --- Properties -------------------------------------------------------------------------------
+        /// <summary> Unique id to identify the character file. Used for saving / loading progress </summary>
+        string guid;
+            
         /// <summary> Character sheet used for previewing puroses </summary>
         CharacterSheet characterSheet;
 
@@ -64,7 +68,12 @@ namespace Jintori
                 Save();
             if (GUILayout.Button("Test"))
                 Test();
+            GUILayout.EndHorizontal();
 
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("New ID", GUILayout.Width(200)))
+                guid = System.Guid.NewGuid().ToString().ToUpper();
+            EditorGUILayout.SelectableLabel(guid);
             GUILayout.EndHorizontal();
 
             scroll = GUILayout.BeginScrollView(scroll);
@@ -130,6 +139,7 @@ namespace Jintori
         /// </summary>
         void Clear()
         {
+            guid = System.Guid.NewGuid().ToString().ToUpper();
             characterSheet = null;
             rounds = new RoundData[3];
             characterSheetFile = null;
@@ -148,7 +158,7 @@ namespace Jintori
             if (string.IsNullOrEmpty(target))
                 return;
 
-            CharacterDataFile.CreateFile(target, characterSheetFile, roundFiles);
+            CharacterDataFile.CreateFile(target, guid, characterSheetFile, roundFiles);
         }
         
         // -----------------------------------------------------------------------------------	
@@ -163,14 +173,17 @@ namespace Jintori
             if (string.IsNullOrEmpty(target))
                 return;
 
+            CharacterDataFile charFile = new CharacterDataFile(target);
             characterSheetFile = "_TEST_";
-            characterSheet = CharacterDataFile.LoadCharacterSheet(target);
+            characterSheet = charFile.characterSheet;
+
+            guid = charFile.guid;
 
             for (int i = 0; i < 3; i++)
             {
                 roundFiles[i, 0] = "_TEST_";
                 roundFiles[i, 1] = "_TEST_";
-                rounds[i] = CharacterDataFile.LoadRound(target, i);
+                rounds[i] = charFile.LoadRound(i);
             }
         }
 

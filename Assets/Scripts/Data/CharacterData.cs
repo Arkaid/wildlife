@@ -157,13 +157,15 @@ namespace Jintori
         struct Header
         {
             public byte version;
+            public string guid;
             public Entry characterSheet;
             public Entry[] roundBase;
             public Entry[] roundShadow;
 
-            public Header(byte version)
+            public Header(byte version, string guid)
             {
                 this.version = version;
+                this.guid = guid;
                 characterSheet = new Entry();
                 roundBase = new Entry[3];
                 roundShadow = new Entry[3];
@@ -172,6 +174,7 @@ namespace Jintori
             public Header(BinaryReader br)
             {
                 version = br.ReadByte();
+                guid = br.ReadString();
                 characterSheet = new Entry(br);
                 roundBase = new Entry[3];
                 roundShadow = new Entry[3];
@@ -186,6 +189,7 @@ namespace Jintori
             public void Save(BinaryWriter bw)
             {
                 bw.Write(version);
+                bw.Write(guid);
                 characterSheet.Save(bw);
                 for (int i = 0; i < roundBase.Length; i++)
                 {
@@ -209,13 +213,13 @@ namespace Jintori
         /// <param name="filename">File to save to</param>
         /// <param name="charSheetFile"> PNG file with the character sheet </param>
         /// <param name="roundFiles"> PNG files for each round (base, shadow) </param>
-        public static void CreateFile(string filename, string charSheetFile, string [,] roundFiles)
+        public static void CreateFile(string filename, string guid, string charSheetFile, string [,] roundFiles)
         {
             BinaryWriter bw = new BinaryWriter(File.Open(filename, FileMode.Create));
             BlowFishCS.BlowFish blowfish = new BlowFishCS.BlowFish(IllogicGate.Data.EncryptedFile.RestoreKey(ShuffledKey));
             
             // save an empty header to make space for it
-            Header header = new Header(Version1);
+            Header header = new Header(Version1, guid);
             header.Save(bw);
 
             byte[] data;
@@ -252,6 +256,12 @@ namespace Jintori
         }
 
         // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Hack to turn a PNG file into raw data we can actually use and save
+        /// </summary>
+        /// <param name="pngFile"></param>
+        /// <param name="isShadow"></param>
+        /// <returns></returns>
         static public byte[] GetRawTextureData(string pngFile, bool isShadow = false)
         {
             const string TempFile = "Assets/_temp_.png";
@@ -269,8 +279,6 @@ namespace Jintori
             importer.mipmapEnabled = false;
             importer.isReadable = true;
             importer.textureCompression = TextureImporterCompression.Uncompressed;
-            //importer.textureCompression = TextureImporterCompression.CompressedHQ;
-            //importer.crunchedCompression = true;
             importer.textureType = isShadow ?
                 TextureImporterType.SingleChannel : 
                 TextureImporterType.Default;
@@ -283,15 +291,45 @@ namespace Jintori
             return rawData;
         }
 #endif
+        // --- Properties -------------------------------------------------------------------------------
+        /// <summary> File header </summary>
+        Header header;
+
+        /// <summary> Unique identifier </summary>
+        public string guid { get { return header.guid; } }
+        
+        /// <summary> original file with character data </summary>
+        public string source { get; private set; }
+
+        /// <summary> Character sheet. Call LoadCharacterSheet </summary>
+        public CharacterSheet characterSheet
+        {
+            get
+            {
+                if (_characterSheet == null)
+                    LoadCharacterSheet();
+                return _characterSheet;
+            }
+        }
+        CharacterSheet _characterSheet;
+
+        // --- Methods ----------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------	
+        public CharacterDataFile(string filename)
+        {
+            BinaryReader br = new BinaryReader(File.Open(filename, FileMode.Open));
+            header = new Header(br);
+            source = filename;
+            br.Close();
+        }
 
         // -----------------------------------------------------------------------------------	
         /// <summary>
         /// Loads and decrypts a character sheet from file
         /// </summary>
-        /// <param name="filename">File to load it from</param>
-        public static CharacterSheet LoadCharacterSheet(string filename)
+        public void LoadCharacterSheet()
         {
-            BinaryReader br = new BinaryReader(File.Open(filename, FileMode.Open));
+            BinaryReader br = new BinaryReader(File.Open(source, FileMode.Open));
             BlowFishCS.BlowFish blowfish = new BlowFishCS.BlowFish(IllogicGate.Data.EncryptedFile.RestoreKey(ShuffledKey));
 
             Header header = new Header(br);
@@ -303,18 +341,17 @@ namespace Jintori
             rawData = LZMAtools.DecompressLZMAByteArrayToByteArray(rawData);
             br.Close();
 
-            return new CharacterSheet(rawData);
+            _characterSheet = new CharacterSheet(rawData);
         }
 
         // -----------------------------------------------------------------------------------	
         /// <summary>
         /// Loads the images for a given round
         /// </summary>
-        /// <param name="filename">File name to load the rounds from</param>
         /// <param name="round">round to load (0 to 2)</param>
-        public static RoundData LoadRound(string filename, int round)
+        public RoundData LoadRound(int round)
         {
-            BinaryReader br = new BinaryReader(File.Open(filename, FileMode.Open));
+            BinaryReader br = new BinaryReader(File.Open(source, FileMode.Open));
             BlowFishCS.BlowFish blowfish = new BlowFishCS.BlowFish(IllogicGate.Data.EncryptedFile.RestoreKey(ShuffledKey));
 
             Header header = new Header(br);
@@ -334,9 +371,5 @@ namespace Jintori
 
             return new RoundData(rawBase, rawShadow);
         }
-
-
-        // --- Properties -------------------------------------------------------------------------------
-        // --- Methods ----------------------------------------------------------------------------------
     }
 }

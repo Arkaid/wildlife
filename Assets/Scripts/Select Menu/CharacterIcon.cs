@@ -11,10 +11,10 @@ namespace Jintori
     {
         // --- Events -----------------------------------------------------------------------------------
         /// <summary> Raised when the icon is switched </summary>
-        public event System.Action<string> switched;
+        public event System.Action<CharacterDataFile> switched;
 
         /// <summary> Raised when the icon is selected </summary>
-        public event System.Action<string> selected;
+        public event System.Action<CharacterDataFile> selected;
 
         // --- Constants --------------------------------------------------------------------------------
         /// <summary> Cycle time for the colors </summary>
@@ -49,7 +49,7 @@ namespace Jintori
         Toggle _toggle = null;
 
         /// <summary> Source file associated to this icon </summary>
-        string characterFile;
+        CharacterDataFile characterFile;
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
@@ -78,9 +78,9 @@ namespace Jintori
 
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        public void Setup(Sprite sprite, string characterFile)
+        public void Setup(CharacterDataFile characterFile)
         {
-            iconImage.sprite = sprite;
+            iconImage.sprite = characterFile.characterSheet.icon;
             this.characterFile = characterFile;
         }
 

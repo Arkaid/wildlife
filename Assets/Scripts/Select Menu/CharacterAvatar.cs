@@ -43,7 +43,7 @@ namespace Jintori
         RectTransform _rectTransform;
 
         /// <summary> Character we're currently showing </summary>
-        CharacterSheet character;
+        CharacterDataFile characterFile;
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
@@ -65,17 +65,17 @@ namespace Jintori
 
         // --- Methods ----------------------------------------------------------------------------------
         // ----------------------------------------------------------------------------------	
-        public void SetCharacter(CharacterSheet character)
+        public void SetCharacter(CharacterDataFile characterFile)
         {
-            this.character = character;
-            characterImage.sprite = character.avatarA;
-            nameImage.sprite = character.name;
+            this.characterFile = characterFile;
+            characterImage.sprite = characterFile.characterSheet.avatarA;
+            nameImage.sprite = characterFile.characterSheet.name;
         }
         
         // -----------------------------------------------------------------------------------	
         public void SetSelected()
         {
-            characterImage.sprite = character.avatarB;
+            characterImage.sprite = characterFile.characterSheet.avatarB;
         }
 
         // -----------------------------------------------------------------------------------	
