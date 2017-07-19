@@ -28,7 +28,7 @@ namespace Jintori
         /// <summary> Amount of percentage (ratio) needed to clear in order to finish the round, per difficulty </summary>
         public static readonly float[] ClearRatio = new float[]
         {
-            0.80f,
+            0.10f,
             0.90f,
             0.95f
         };
