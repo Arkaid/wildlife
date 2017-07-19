@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Jintori
 {
@@ -201,7 +202,7 @@ namespace Jintori
             while (!Input.GetButtonDown("Fire1"))
                 yield return null;
 
-            print("Go back to top");
+            SceneManager.LoadScene("Select Menu");
         }
 
 
@@ -246,7 +247,7 @@ namespace Jintori
             }
             else
             {
-                print("Go back to top");
+                SceneManager.LoadScene("Select Menu");
             }
 
             yield break;
