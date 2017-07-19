@@ -20,7 +20,7 @@ namespace Jintori
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
         /// <summary> Character file containing the images we want to play </summary>
-        public static string characterFile;
+        public static CharacterDataFile source;
 
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
@@ -29,6 +29,7 @@ namespace Jintori
 
         [SerializeField]
         MeshFilter initialSquare = null;
+
         // --- Properties -------------------------------------------------------------------------------
         /// <summary> Current round (1, 2 or 3) </summary>
         public int round { get; private set; }
@@ -44,8 +45,8 @@ namespace Jintori
         void Start()
         {
 #if UNITY_EDITOR
-            if (string.IsNullOrEmpty(characterFile))
-                characterFile = DEBUG_file;
+            if (source == null)
+                source = new CharacterDataFile(DEBUG_file);
 #endif
             round = 1;
             Timer.instance.timedOut += OnTimerTimedOut;
@@ -63,7 +64,7 @@ namespace Jintori
                 Destroy(currentPlay.gameObject);
 
             // Load the images
-            RoundData roundData = CharacterDataFile.LoadRound(characterFile, round - 1);
+            RoundData roundData = source.LoadRound(round - 1);
 
             // create a fresh play area
             currentPlay = Instantiate(playArea, playArea.transform.parent, true);

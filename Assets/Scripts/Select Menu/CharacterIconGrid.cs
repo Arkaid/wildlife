@@ -9,10 +9,10 @@ namespace Jintori
     {
         // --- Events -----------------------------------------------------------------------------------
         /// <summary> Raised when the icon is switched </summary>
-        public event System.Action<string> switched;
+        public event System.Action<CharacterDataFile> switched;
 
         /// <summary> Raised when the icon is selected </summary>
-        public event System.Action<string> selected;
+        public event System.Action<CharacterDataFile> selected;
 
         // --- Constants --------------------------------------------------------------------------------
         // --- Static Properties ------------------------------------------------------------------------
@@ -53,13 +53,11 @@ namespace Jintori
         /// <summary>
         /// Adds an icon to the grid
         /// </summary>
-        /// <param name="sprite">Sprite to use</param>
-        /// <param name="characterFile">Character file the sprite belongs to</param>
-        public void Add(Sprite sprite, string characterFile)
+        public void Add(CharacterDataFile characterFile)
         {
             CharacterIcon newIcon = Instantiate(sampleIcon);
             newIcon.gameObject.SetActive(true);
-            newIcon.Setup(sprite, characterFile);
+            newIcon.Setup(characterFile);
 
             newIcon.selected += selected;
             newIcon.switched += switched;

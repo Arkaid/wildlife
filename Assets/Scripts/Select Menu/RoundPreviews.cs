@@ -1,35 +1,30 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Jintori
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    public class DataManager : IllogicGate.Singleton<DataManager>
+    public class RoundPreviews : MonoBehaviour
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
-        // --- Properties -------------------------------------------------------------------------------
-        /// <summary> Progress file. Edit with care! </summary>
-        public JSONObject progress = new JSONObject();
+        // --- Inspector --------------------------------------------------------------------------------
+        [SerializeField]
+        Image [] rounds;
 
-        /// <summary> Location of the progress file </summary>
-        string progressFilePath { get { return Application.persistentDataPath + "/progress.sav"; } }
-        
+        // --- Properties -------------------------------------------------------------------------------
+        // --- MonoBehaviour ----------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------	
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        public void SaveProgress()
+        public void SetCharacter(CharacterSheet characterSheet, string file)
         {
-            IllogicGate.Data.EncryptedFile.WriteJSONObject(progressFilePath, progress);
-        }
-        
-        // -----------------------------------------------------------------------------------	
-        public void LoadProgress()
-        {
-            progress = IllogicGate.Data.EncryptedFile.ReadJSONObject(progressFilePath);
+
         }
     }
 }
