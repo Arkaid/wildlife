@@ -12,6 +12,9 @@ namespace Jintori
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
+#if UNITY_EDITOR
+        const string DEBUG_file = "Assets/Characters/arkaid01.chr";
+#endif
 
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
@@ -25,15 +28,6 @@ namespace Jintori
 
         [SerializeField]
         MeshFilter initialSquare = null;
-
-        /*
-        [SerializeField]
-        Texture2D DEBUG_baseImage = null;
-
-        [SerializeField]
-        Texture2D DEBUG_shadowImage = null;
-        */
-
         // --- Properties -------------------------------------------------------------------------------
         /// <summary> Current round (1, 2 or 3) </summary>
         public int round { get; private set; }
@@ -48,6 +42,11 @@ namespace Jintori
         // -----------------------------------------------------------------------------------	
         void Start()
         {
+#if UNITY_EDITOR
+            if (string.IsNullOrEmpty(characterFile))
+                characterFile = DEBUG_file;
+#endif
+
             round = 1;
             Timer.instance.timedOut += OnTimerTimedOut;
             livesLeft = Config.instance.lives;
