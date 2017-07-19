@@ -15,6 +15,9 @@ namespace Jintori
 
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
+        /// <summary> Character file containing the images we want to play </summary>
+        public static string characterFile;
+
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
         [SerializeField]
@@ -23,11 +26,13 @@ namespace Jintori
         [SerializeField]
         MeshFilter initialSquare = null;
 
+        /*
         [SerializeField]
         Texture2D DEBUG_baseImage = null;
 
         [SerializeField]
         Texture2D DEBUG_shadowImage = null;
+        */
 
         // --- Properties -------------------------------------------------------------------------------
         /// <summary> Current round (1, 2 or 3) </summary>
@@ -58,10 +63,13 @@ namespace Jintori
             if (currentPlay != null)
                 Destroy(currentPlay.gameObject);
 
+            // Load the images
+            RoundData roundData = CharacterDataFile.LoadRound(characterFile, round - 1);
+
             // create a fresh play area
             currentPlay = Instantiate(playArea, playArea.transform.parent, true);
             currentPlay.gameObject.SetActive(true);
-            currentPlay.Setup(DEBUG_baseImage, DEBUG_shadowImage, typeof(Slimy));
+            currentPlay.Setup(roundData.baseImage, roundData.shadowImage, typeof(Slimy));
 
             // check when the player spawns to count lives / game overs
             currentPlay.player.spawned += OnPlayerSpawned;

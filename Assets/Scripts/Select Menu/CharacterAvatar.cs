@@ -1,12 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Jintori
 {
     // --- Class Declaration ------------------------------------------------------------------------
     [ExecuteInEditMode]
-    public class CharacterPreview : MonoBehaviour
+    public class CharacterAvatar : MonoBehaviour
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
@@ -17,8 +18,17 @@ namespace Jintori
         [SerializeField, Tooltip("Minimum amount of space to leave at the top of the preview")]
         float minimumTopSpace = 20;
 
+        [SerializeField]
+        Image characterImage = null;
+
+        [SerializeField]
+        Image nameImage= null;
+
         // --- Properties -------------------------------------------------------------------------------
+        /// <summary> Used to auto adjust the position on screen </summary>
         int lastWidth = -1;
+
+        /// <summary> Used to auto adjust the position on screen </summary>
         int lastHeight = -1;
 
         RectTransform rectTransform
@@ -32,12 +42,16 @@ namespace Jintori
         }
         RectTransform _rectTransform;
 
+        /// <summary> Character we're currently showing </summary>
+        CharacterSheet character;
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         void Start()
         {
             rectTransform.anchoredPosition = Vector2.zero;
         }
+
         // -----------------------------------------------------------------------------------	
         void Update()
         {
@@ -50,6 +64,20 @@ namespace Jintori
         }
 
         // --- Methods ----------------------------------------------------------------------------------
+        // ----------------------------------------------------------------------------------	
+        public void SetCharacter(CharacterSheet character)
+        {
+            this.character = character;
+            characterImage.sprite = character.avatarA;
+            nameImage.sprite = character.name;
+        }
+        
+        // -----------------------------------------------------------------------------------	
+        public void SetSelected()
+        {
+            characterImage.sprite = character.avatarB;
+        }
+
         // -----------------------------------------------------------------------------------	
         void AdjustPosition()
         {
