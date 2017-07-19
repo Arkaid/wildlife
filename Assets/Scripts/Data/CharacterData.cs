@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 namespace Jintori
 {
     // --- Class Declaration ------------------------------------------------------------------------
@@ -44,12 +48,14 @@ namespace Jintori
 
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        public CharacterSheet(byte[] pngData)
+        public CharacterSheet(byte[] rawData)
         {
-            source = new Texture2D(ImageWidth, ImageHeight, TextureFormat.ARGB32, false);
-            source.LoadImage(pngData);
+            source = new Texture2D(ImageWidth, ImageHeight, TextureFormat.RGBA32, false);
             source.filterMode = FilterMode.Point;
             source.alphaIsTransparency = true;
+            source.wrapMode = TextureWrapMode.Clamp;
+            source.LoadRawTextureData(rawData);
+            source.Apply();
 
             // these values are taken directly from the sprite
             // sheet. If the sprite sheet layout changes, fix
@@ -89,18 +95,21 @@ namespace Jintori
         /// <summary>
         /// Creates the textures needed for the round
         /// </summary>
-        /// <param name="pngBase">PNG data for the base image</param>
-        /// <param name="pngShadow">PNG data for the shadow </param>
-        public RoundData(byte[] pngBase, byte[] pngShadow)
+        public RoundData(byte[] rawBase, byte[] rawShadow)
         {
-            baseImage = new Texture2D(PlayArea.ImageWidth, PlayArea.ImageHeight, TextureFormat.ARGB32, false);
-            baseImage.LoadImage(pngBase);
+            baseImage = new Texture2D(PlayArea.ImageWidth, PlayArea.ImageHeight, TextureFormat.RGB24, false);
             baseImage.filterMode = FilterMode.Point;
+            baseImage.alphaIsTransparency = true;
+            baseImage.wrapMode = TextureWrapMode.Clamp;
+            baseImage.LoadRawTextureData(rawBase);
+            baseImage.Apply();
 
             shadowImage = new Texture2D(PlayArea.ImageWidth, PlayArea.ImageHeight, TextureFormat.Alpha8, false);
-            shadowImage.LoadImage(pngShadow);
-            shadowImage.filterMode = FilterMode.Point;
-            shadowImage.alphaIsTransparency = true;
+            baseImage.filterMode = FilterMode.Point;
+            baseImage.alphaIsTransparency = true;
+            baseImage.wrapMode = TextureWrapMode.Clamp;
+            shadowImage.LoadRawTextureData(rawShadow);
+            shadowImage.Apply();
         }
     }
 
@@ -186,6 +195,9 @@ namespace Jintori
             }
         }
 
+        // --- Static Properties ------------------------------------------------------------------------
+        public static string dataPath { get { return Application.dataPath + "/Characters"; } }
+
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
 #if UNITY_EDITOR
@@ -209,7 +221,9 @@ namespace Jintori
             byte[] data;
 
             // encrypt and save the character sheet file
-            data = File.ReadAllBytes(charSheetFile);
+            //data = File.ReadAllBytes(charSheetFile);
+            data = GetRawTextureData(charSheetFile);
+            data = LZMAtools.CompressByteArrayToLZMAByteArray(data);
             data = blowfish.Encrypt_ECB(data);
             header.characterSheet = new Entry((int)bw.BaseStream.Position, data.Length);
             bw.Write(data);
@@ -217,12 +231,14 @@ namespace Jintori
             // encrypt and save round images
             for (int i = 0; i < 3; i++)
             {
-                data = File.ReadAllBytes(roundFiles[i, 0]);
+                data = GetRawTextureData(roundFiles[i, 0]);
+                data = LZMAtools.CompressByteArrayToLZMAByteArray(data);
                 data = blowfish.Encrypt_ECB(data);
                 header.roundBase[i] = new Entry((int)bw.BaseStream.Position, data.Length);
                 bw.Write(data);
 
-                data = File.ReadAllBytes(roundFiles[i, 1]);
+                data = GetRawTextureData(roundFiles[i, 1], true);
+                data = LZMAtools.CompressByteArrayToLZMAByteArray(data);
                 data = blowfish.Encrypt_ECB(data);
                 header.roundShadow[i] = new Entry((int)bw.BaseStream.Position, data.Length);
                 bw.Write(data);
@@ -235,7 +251,39 @@ namespace Jintori
             bw.Close();
         }
 
+        // -----------------------------------------------------------------------------------	
+        static public byte[] GetRawTextureData(string pngFile, bool isShadow = false)
+        {
+            const string TempFile = "Assets/_temp_.png";
+            File.Copy(pngFile, Application.dataPath + "/_temp_.png", true);
+
+            AssetDatabase.ImportAsset(TempFile);
+
+            TextureImporter importer = (TextureImporter)AssetImporter.GetAtPath(TempFile);
+            importer.alphaIsTransparency = true;
+            importer.alphaSource = isShadow ? 
+                TextureImporterAlphaSource.FromGrayScale : 
+                TextureImporterAlphaSource.FromInput;
+            importer.anisoLevel = 0;
+            importer.filterMode = FilterMode.Point;
+            importer.mipmapEnabled = false;
+            importer.isReadable = true;
+            importer.textureCompression = TextureImporterCompression.Uncompressed;
+            //importer.textureCompression = TextureImporterCompression.CompressedHQ;
+            //importer.crunchedCompression = true;
+            importer.textureType = isShadow ?
+                TextureImporterType.SingleChannel : 
+                TextureImporterType.Default;
+            importer.SaveAndReimport();
+
+            Texture2D test = AssetDatabase.LoadAssetAtPath<Texture2D>(TempFile);
+            byte [] rawData = test.GetRawTextureData();
+            AssetDatabase.DeleteAsset(TempFile);
+
+            return rawData;
+        }
 #endif
+
         // -----------------------------------------------------------------------------------	
         /// <summary>
         /// Loads and decrypts a character sheet from file
@@ -250,11 +298,12 @@ namespace Jintori
 
             // read and decrypt the character sheet
             br.BaseStream.Seek(header.characterSheet.offset, SeekOrigin.Begin);
-            byte[] pngData = br.ReadBytes(header.characterSheet.length);
-            pngData = blowfish.Decrypt_ECB(pngData);
+            byte[] rawData = br.ReadBytes(header.characterSheet.length);
+            rawData = blowfish.Decrypt_ECB(rawData);
+            rawData = LZMAtools.DecompressLZMAByteArrayToByteArray(rawData);
             br.Close();
 
-            return new CharacterSheet(pngData);
+            return new CharacterSheet(rawData);
         }
 
         // -----------------------------------------------------------------------------------	
@@ -272,16 +321,18 @@ namespace Jintori
 
             // read and decrypt the round image and shadow
             br.BaseStream.Seek(header.roundBase[round].offset, SeekOrigin.Begin);
-            byte[] pngBase = br.ReadBytes(header.roundBase[round].length);
-            pngBase = blowfish.Decrypt_ECB(pngBase);
+            byte[] rawBase = br.ReadBytes(header.roundBase[round].length);
+            rawBase = blowfish.Decrypt_ECB(rawBase);
+            rawBase = LZMAtools.DecompressLZMAByteArrayToByteArray(rawBase);
 
             br.BaseStream.Seek(header.roundShadow[round].offset, SeekOrigin.Begin);
-            byte[] pngShadow = br.ReadBytes(header.roundShadow[round].length);
-            pngShadow = blowfish.Decrypt_ECB(pngShadow);
+            byte[] rawShadow = br.ReadBytes(header.roundShadow[round].length);
+            rawShadow = blowfish.Decrypt_ECB(rawShadow);
+            rawShadow = LZMAtools.DecompressLZMAByteArrayToByteArray(rawShadow);
 
             br.Close();
 
-            return new RoundData(pngBase, pngShadow);
+            return new RoundData(rawBase, rawShadow);
         }
 
 

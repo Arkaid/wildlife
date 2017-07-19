@@ -7,9 +7,15 @@ using UnityEngine.EventSystems;
 namespace Jintori
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    public class CharacterIcon : MonoBehaviour, ISelectHandler
+    public class CharacterIcon : MonoBehaviour, IPointerEnterHandler, ISelectHandler
     {
         // --- Events -----------------------------------------------------------------------------------
+        /// <summary> Raised when the icon is switched </summary>
+        public event System.Action<string> switched;
+
+        /// <summary> Raised when the icon is selected </summary>
+        public event System.Action<string> selected;
+
         // --- Constants --------------------------------------------------------------------------------
         /// <summary> Cycle time for the colors </summary>
         const float CycleTime = 1.5f;
@@ -42,23 +48,44 @@ namespace Jintori
         }
         Toggle _toggle = null;
 
+        /// <summary> Source file associated to this icon </summary>
+        string characterFile;
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         void Start()
         {
-            toggle.onValueChanged.AddListener(SetSelected);
+            toggle.onValueChanged.AddListener(OnToggleValueChanged);
+        }
+
+        // -----------------------------------------------------------------------------------	
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            if (!toggle.isOn)
+            {
+                toggle.isOn = true;
+                if (switched != null)
+                    switched(characterFile);
+            }
         }
 
         // -----------------------------------------------------------------------------------	
         public void OnSelect(BaseEventData eventData)
         {
-            if (!toggle.isOn)
-                toggle.isOn = true;
+            if (selected != null)
+                selected(characterFile);
         }
 
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        void SetSelected(bool value)
+        public void Setup(Sprite sprite, string characterFile)
+        {
+            iconImage.sprite = sprite;
+            this.characterFile = characterFile;
+        }
+
+        // -----------------------------------------------------------------------------------	
+        void OnToggleValueChanged(bool value)
         {
             selectedFrame.gameObject.SetActive(value);
             normalFrame.gameObject.SetActive(!value);
@@ -70,7 +97,7 @@ namespace Jintori
         // -----------------------------------------------------------------------------------	
         IEnumerator CycleColors()
         {
-            while(toggle.isOn)
+            while (toggle.isOn)
             {
                 float t = Mathf.PingPong(Time.time, CycleTime) / CycleTime;
                 selectedFrame.color = Color.Lerp(ColorA, ColorB, t);

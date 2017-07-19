@@ -218,7 +218,7 @@ namespace Jintori
             characterSheetFile = EditorUtility.OpenFilePanel("Load Character Sheet", "", "png");
             if (string.IsNullOrEmpty(characterSheetFile))
                 return;
-            characterSheet = new CharacterSheet(File.ReadAllBytes(characterSheetFile));
+            characterSheet = new CharacterSheet(CharacterDataFile.GetRawTextureData(characterSheetFile));
             foldout[0] = true;
         }
 
@@ -236,8 +236,8 @@ namespace Jintori
             if (string.IsNullOrEmpty(roundFiles[round, 1]))
                 return;
 
-            byte[] pngBase = System.IO.File.ReadAllBytes(roundFiles[round, 0]);
-            byte [] pngShadow = System.IO.File.ReadAllBytes(roundFiles[round, 1]);
+            byte[] pngBase = CharacterDataFile.GetRawTextureData(roundFiles[round, 0]);
+            byte [] pngShadow = CharacterDataFile.GetRawTextureData(roundFiles[round, 1], true);
             rounds[round] = new RoundData(pngBase, pngShadow);
             foldout[round + 1] = true;
         }
