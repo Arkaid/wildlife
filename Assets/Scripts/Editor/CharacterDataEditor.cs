@@ -2,10 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using System.IO;
 
 namespace Jintori
 {
     // --- Class Declaration ------------------------------------------------------------------------
+    /// <summary>
+    /// Helps create and test character data files
+    /// </summary>
     public class CharacterDataEditor : EditorWindow
     {
         // --- Events -----------------------------------------------------------------------------------
@@ -23,14 +27,22 @@ namespace Jintori
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
         // --- Properties -------------------------------------------------------------------------------
-        CharacterData.CharacterSheet characterSheet;
+        /// <summary> Character sheet used for previewing puroses </summary>
+        CharacterSheet characterSheet;
+
+        /// <summary> source PNG file for the character sheet </summary>
         string characterSheetFile;
 
-        string[,] roundFiles = new string[3, 2];
-        CharacterData.RoundData[] rounds = new CharacterData.RoundData[3];
+        /// <summary> Round data for previewing purposes </summary>
+        RoundData[] rounds = new RoundData[3];
 
+        /// <summary> source PNG files for for each round (base, shadow) </summary>
+        string[,] roundFiles = new string[3, 2];
+
+        /// <summary> For scrolling </summary>
         Vector2 scroll;
 
+        /// <summary> For each fold out </summary>
         bool[] foldout = new bool[4];
 
         // --- EditorWindow -----------------------------------------------------------------------------
@@ -50,13 +62,15 @@ namespace Jintori
                 LoadRoundSet(2);
             if (GUILayout.Button("Save"))
                 Save();
+            if (GUILayout.Button("Test"))
+                Test();
 
             GUILayout.EndHorizontal();
 
             scroll = GUILayout.BeginScrollView(scroll);
 
             foldout[0] = EditorGUILayout.Foldout(foldout[0], "Character Sheet");
-            if (foldout[0] && !string.IsNullOrEmpty(characterSheetFile))
+            if (foldout[0] && characterSheet != null)
             {
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("Name", GUILayout.Width(75));
@@ -111,16 +125,53 @@ namespace Jintori
 
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Clears the previews
+        /// </summary>
         void Clear()
         {
+            characterSheet = null;
+            rounds = new RoundData[3];
             characterSheetFile = null;
             roundFiles = new string[3, 2];
         }
+
         // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Saves and encrypts the charcter file to disk
+        /// </summary>
         void Save()
         {
-            string target = EditorUtility.OpenFilePanel("Save", "", "chr");
+            string target = Path.GetFileNameWithoutExtension(characterSheetFile) + ".chr";
+            target = EditorUtility.SaveFilePanel("Save", "", target, "chr");
 
+            if (string.IsNullOrEmpty(target))
+                return;
+
+            CharacterDataFile.CreateFile(target, characterSheetFile, roundFiles);
+        }
+        
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Loads a created character file to test if it was saved correctly
+        /// </summary>
+        void Test()
+        {
+            Clear();
+
+            string target = EditorUtility.OpenFilePanel("Select file", "", "chr");
+            if (string.IsNullOrEmpty(target))
+                return;
+
+            characterSheetFile = "_TEST_";
+            characterSheet = CharacterDataFile.LoadCharacterSheet(target);
+
+            for (int i = 0; i < 3; i++)
+            {
+                roundFiles[i, 0] = "_TEST_";
+                roundFiles[i, 1] = "_TEST_";
+                rounds[i] = CharacterDataFile.LoadRound(target, i);
+            }
         }
 
         // -----------------------------------------------------------------------------------	
@@ -159,29 +210,35 @@ namespace Jintori
         }
 
         // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Load a PNG into preview and save the file name
+        /// </summary>
         void LoadCharacterSheet()
         {
             characterSheetFile = EditorUtility.OpenFilePanel("Load Character Sheet", "", "png");
             if (string.IsNullOrEmpty(characterSheetFile))
                 return;
-            characterSheet = new CharacterData.CharacterSheet(System.IO.File.ReadAllBytes(characterSheetFile));
+            characterSheet = new CharacterSheet(File.ReadAllBytes(characterSheetFile));
             foldout[0] = true;
         }
 
         // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Load a PNG into preview and save the file name
+        /// </summary>
         void LoadRoundSet(int round)
         {
-            roundFiles[round, 0] = EditorUtility.OpenFilePanel("Load Round 1 Image", "", "png");
+            roundFiles[round, 0] = EditorUtility.OpenFilePanel("Load Base Image", "", "png");
             if (string.IsNullOrEmpty(roundFiles[round, 0]))
                 return;
 
-            roundFiles[round, 1] = EditorUtility.OpenFilePanel("Load Round 1 Shadow", "", "png");
+            roundFiles[round, 1] = EditorUtility.OpenFilePanel("Load Shadow Image", "", "png");
             if (string.IsNullOrEmpty(roundFiles[round, 1]))
                 return;
 
             byte[] pngBase = System.IO.File.ReadAllBytes(roundFiles[round, 0]);
             byte [] pngShadow = System.IO.File.ReadAllBytes(roundFiles[round, 1]);
-            rounds[round] = new CharacterData.RoundData(pngBase, pngShadow);
+            rounds[round] = new RoundData(pngBase, pngShadow);
             foldout[round + 1] = true;
         }
     }
