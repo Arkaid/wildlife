@@ -15,10 +15,10 @@ namespace Jintori
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
         [SerializeField]
-        CharacterIconGrid characterIconGrid;
+        CharacterIconGrid characterIconGrid = null;
 
         [SerializeField]
-        CharacterAvatar characterAvatar;
+        CharacterAvatar characterAvatar = null;
 
         // --- Properties -------------------------------------------------------------------------------
         string[] characterFiles;
@@ -31,9 +31,12 @@ namespace Jintori
         // -----------------------------------------------------------------------------------	
         IEnumerator Start()
         {
+            Transition.instance.maskValue = 1;
+
             characterIconGrid.switched += OnCharacterSwitched;
             characterIconGrid.selected += OnCharacterSelected;
             yield return StartCoroutine(LoadCharacterSheets());
+            yield return StartCoroutine(Transition.instance.Hide());
         }
 
         // -----------------------------------------------------------------------------------	
@@ -67,8 +70,9 @@ namespace Jintori
         // -----------------------------------------------------------------------------------	
         IEnumerator LoadGame(string file)
         {
-            yield return new WaitForSeconds(2);
             Game.characterFile = file;
+            yield return new WaitForSeconds(1);
+            yield return StartCoroutine(Transition.instance.Show());
             SceneManager.LoadScene("Game");
         }
     }

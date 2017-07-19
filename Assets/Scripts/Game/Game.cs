@@ -47,7 +47,6 @@ namespace Jintori
             if (string.IsNullOrEmpty(characterFile))
                 characterFile = DEBUG_file;
 #endif
-
             round = 1;
             Timer.instance.timedOut += OnTimerTimedOut;
             livesLeft = Config.instance.lives;
@@ -87,6 +86,9 @@ namespace Jintori
 
             // Hide the player
             currentPlay.player.Hide();
+
+            // Hide the transition
+            yield return StartCoroutine(Transition.instance.Hide());
 
             // play the intro animation for the round
             yield return StartCoroutine(UI.instance.roundStart.Show(round));
@@ -202,6 +204,9 @@ namespace Jintori
             while (!Input.GetButtonDown("Fire1"))
                 yield return null;
 
+            // transition out
+            yield return StartCoroutine(Transition.instance.Show());
+
             SceneManager.LoadScene("Select Menu");
         }
 
@@ -234,6 +239,9 @@ namespace Jintori
             yield return null;
             while (!Input.GetButtonDown("Fire1"))
                 yield return null;
+
+            // transition out
+            yield return StartCoroutine(Transition.instance.Show());
 
             // play next round or go back to top menu?
             if (round < 3)
