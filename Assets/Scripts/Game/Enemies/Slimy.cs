@@ -11,7 +11,7 @@ namespace Jintori
         struct Settings
         {
             public Config.Difficulty difficulty;
-            [Range(1, 3)]
+            [Range(0, 2)]
             public int round;
             public float speed;
             public int blobCount;
