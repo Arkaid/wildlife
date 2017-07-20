@@ -38,10 +38,10 @@ namespace Jintori
         string characterSheetFile;
 
         /// <summary> Round data for previewing purposes </summary>
-        RoundData[] rounds = new RoundData[3];
+        RoundData[] rounds = new RoundData[Config.Rounds];
 
         /// <summary> source PNG files for for each round (base, shadow) </summary>
-        string[,] roundFiles = new string[3, 2];
+        string[,] roundFiles = new string[Config.Rounds, 2];
 
         /// <summary> For scrolling </summary>
         Vector2 scroll;
@@ -117,7 +117,7 @@ namespace Jintori
                 GUILayout.EndHorizontal();
             }
 
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < Config.Rounds; i++)
             {
                 foldout[i + 1] = EditorGUILayout.Foldout(foldout[i + 1], string.Format("Round {0}", i + 1));
                 if (foldout[i + 1] && !string.IsNullOrEmpty(roundFiles[i, 0]) && !string.IsNullOrEmpty(roundFiles[0, 1]))
@@ -141,9 +141,9 @@ namespace Jintori
         {
             guid = System.Guid.NewGuid().ToString().ToUpper();
             characterSheet = null;
-            rounds = new RoundData[3];
+            rounds = new RoundData[Config.Rounds];
             characterSheetFile = null;
-            roundFiles = new string[3, 2];
+            roundFiles = new string[Config.Rounds, 2];
         }
 
         // -----------------------------------------------------------------------------------	
@@ -179,7 +179,7 @@ namespace Jintori
 
             guid = charFile.guid;
 
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < Config.Rounds; i++)
             {
                 roundFiles[i, 0] = "_TEST_";
                 roundFiles[i, 1] = "_TEST_";

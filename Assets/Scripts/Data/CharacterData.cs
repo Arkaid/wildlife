@@ -65,7 +65,7 @@ namespace Jintori
             avatarB = Sprite.Create(source, new Rect(600, 150, 600, 800), new Vector2(300, 400), 100);
             icon = Sprite.Create(source, new Rect(0, 0, 150, 150), new Vector2(75, 75), 100);
 
-            roundIcons = new Sprite[3];
+            roundIcons = new Sprite[Config.Rounds];
             roundIcons[0] = Sprite.Create(source, new Rect(150, 20, 130, 130), new Vector2(65, 65), 100);
             roundIcons[1] = Sprite.Create(source, new Rect(280, 20, 130, 130), new Vector2(65, 65), 100);
             roundIcons[2] = Sprite.Create(source, new Rect(410, 20, 130, 130), new Vector2(65, 65), 100);
@@ -167,8 +167,8 @@ namespace Jintori
                 this.version = version;
                 this.guid = guid;
                 characterSheet = new Entry();
-                roundBase = new Entry[3];
-                roundShadow = new Entry[3];
+                roundBase = new Entry[Config.Rounds];
+                roundShadow = new Entry[Config.Rounds];
             }
 
             public Header(BinaryReader br)
@@ -176,8 +176,8 @@ namespace Jintori
                 version = br.ReadByte();
                 guid = br.ReadString();
                 characterSheet = new Entry(br);
-                roundBase = new Entry[3];
-                roundShadow = new Entry[3];
+                roundBase = new Entry[Config.Rounds];
+                roundShadow = new Entry[Config.Rounds];
 
                 for (int i = 0; i < roundBase.Length; i++)
                 {
@@ -233,7 +233,7 @@ namespace Jintori
             bw.Write(data);
 
             // encrypt and save round images
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < Config.Rounds; i++)
             {
                 data = GetRawTextureData(roundFiles[i, 0]);
                 data = LZMAtools.CompressByteArrayToLZMAByteArray(data);

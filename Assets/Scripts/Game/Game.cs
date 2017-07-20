@@ -245,7 +245,7 @@ namespace Jintori
             yield return StartCoroutine(Transition.instance.Show());
 
             // play next round or go back to top menu?
-            if (round < 3)
+            if (round < Config.Rounds)
             {
                 // add a life since you respawn on the next round
                 livesLeft++;

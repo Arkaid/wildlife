@@ -22,11 +22,11 @@ public class Test : MonoBehaviour
     void Start()
     {
         Jintori.Data.SaveFile.instance.Load();
-        Jintori.Data.CharacterStats data = Jintori.Data.SaveFile.instance.GetCharacterStats("testy");
+        Jintori.Data.CharacterStats data = Jintori.Data.SaveFile.instance.GetCharacterStats("DB4477E3-96F4-43AC-BB66-B7BC59EA80C2");
 
         
-        print(data.rounds[0].records[Config.Difficulty.Easy].highScore);
-        data.rounds[0].records[Config.Difficulty.Easy].highScore = 100;
+        print(data.rounds[0].cleared);
+        data.rounds[0].cleared = true;
 
         Jintori.Data.SaveFile.instance.Save();
     }
