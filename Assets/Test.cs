@@ -12,24 +12,22 @@ public class Test : MonoBehaviour
     // --- Static Methods ---------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------
     // --- Inspector --------------------------------------------------------------------------------
-    [SerializeField]
-    Rigidbody2D[] testObjects;
-
-    [SerializeField]
-    Transform explosionSource;
 
     // --- Properties -------------------------------------------------------------------------------
     // --- MonoBehaviour ----------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------	
-    void OnCollisionEnter2D(Collision2D col)
-    {
-        print("Hello");
-    }
 
 	// --- Methods ----------------------------------------------------------------------------------
 	// -----------------------------------------------------------------------------------	
     void Start()
     {
+        Jintori.Data.SaveFile.instance.Load();
+        Jintori.Data.CharacterStats data = Jintori.Data.SaveFile.instance.GetCharacterStats("testy");
 
+        
+        print(data.rounds[0].records[Config.Difficulty.Easy].highScore);
+        data.rounds[0].records[Config.Difficulty.Easy].highScore = 100;
+
+        Jintori.Data.SaveFile.instance.Save();
     }
 }
