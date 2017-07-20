@@ -9,6 +9,8 @@ namespace Jintori
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
+        public const int Rounds = 3;
+
         /// <summary> Levels of overall game difficulty </summary>
         public enum Difficulty
         {

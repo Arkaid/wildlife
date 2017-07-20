@@ -47,7 +47,7 @@ namespace Jintori.Data
     public class RoundData
     {
         /// <summary> True if this round has been cleared in any difficulty </summary>
-        public bool cleared { get; private set; }
+        public bool cleared;
 
         /// <summary> Record socres for each difficulty </summary>
         public Dictionary<Config.Difficulty, Records> records { get; private set; }
@@ -156,6 +156,12 @@ namespace Jintori.Data
         Dictionary<string, CharacterStats> characterDataByGUID = new Dictionary<string, CharacterStats>();
 
         // --- Methods ----------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------	
+        protected override void OnInstanceCreated()
+        {
+            Load();
+        }
+
         // -----------------------------------------------------------------------------------	
         /// <summary>
         /// Retreives stats for a character by guid. 

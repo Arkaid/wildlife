@@ -20,6 +20,9 @@ namespace Jintori
         [SerializeField]
         CharacterAvatar characterAvatar = null;
 
+        [SerializeField]
+        RoundPreviews roundPreviews = null;
+
         // --- Properties -------------------------------------------------------------------------------
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
@@ -46,6 +49,7 @@ namespace Jintori
         private void OnCharacterSwitched(CharacterDataFile file)
         {
             characterAvatar.SetCharacter(file);
+            roundPreviews.SetCharacter(file);
         }
 
         // -----------------------------------------------------------------------------------	
