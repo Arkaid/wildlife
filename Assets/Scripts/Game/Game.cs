@@ -48,7 +48,7 @@ namespace Jintori
             if (source == null)
                 source = new CharacterDataFile(DEBUG_file);
 #endif
-            round = 1;
+            round = 0;
             Timer.instance.timedOut += OnTimerTimedOut;
             livesLeft = Config.instance.lives;
             playArea.gameObject.SetActive(false);
@@ -64,7 +64,7 @@ namespace Jintori
                 Destroy(currentPlay.gameObject);
 
             // Load the images
-            RoundData roundData = source.LoadRound(round - 1);
+            RoundData roundData = source.LoadRound(round);
 
             // create a fresh play area
             currentPlay = Instantiate(playArea, playArea.transform.parent, true);
@@ -225,6 +225,9 @@ namespace Jintori
             currentPlay.boss.Kill();
             currentPlay.player.Hide();
 
+            // save results
+            SaveResults();
+
             // played the final result before hiding the UI
             UI.instance.PlayResult(true);
 
@@ -245,13 +248,13 @@ namespace Jintori
             yield return StartCoroutine(Transition.instance.Show());
 
             // play next round or go back to top menu?
+            round++;
             if (round < Config.Rounds)
             {
                 // add a life since you respawn on the next round
                 livesLeft++;
 
                 // start next round
-                round++;
                 StartCoroutine(InitializeRound());
             }
             else
@@ -260,6 +263,24 @@ namespace Jintori
             }
 
             yield break;
+        }
+
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Saves game results into the save file
+        /// </summary>
+        private void SaveResults()
+        {
+            Data.CharacterStats stats = Data.SaveFile.instance.GetCharacterStats(source.guid);
+            Data.RoundData roundData = stats.rounds[round];
+            Data.Records records = roundData.records[Config.instance.difficulty];
+            roundData.cleared = true;
+
+            float elapsed = Timer.instance.totalTime - Timer.instance.remainingTime;
+            if (elapsed < records.bestTime)
+                records.bestTime = elapsed;
+
+            Data.SaveFile.instance.Save();
         }
 
         // -----------------------------------------------------------------------------------	
