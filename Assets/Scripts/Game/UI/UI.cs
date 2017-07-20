@@ -32,6 +32,10 @@ namespace Jintori
         [SerializeField]
         GameResult gameResult = null;
 
+        [SerializeField]
+        ScoreDisplay _scoreDisplay = null;
+        public ScoreDisplay scoreDisplay {  get { return _scoreDisplay; } }
+
         // --- Properties -------------------------------------------------------------------------------
         /// <summary> Total lives to show </summary>
         public int lives { set { livesText.text = string.Format("x{0:00}", value); } }
@@ -56,6 +60,7 @@ namespace Jintori
             percentageBar.Reset(clearPercentage);
             roundStart.Reset();
             gameResult.Reset();
+            scoreDisplay.Reset();
         }
 
         // -----------------------------------------------------------------------------------	
