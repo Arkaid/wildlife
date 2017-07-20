@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Jintori
+namespace Jintori.Game
 {
     // --- Class Declaration ------------------------------------------------------------------------
     public class Slimy : Bouncy
@@ -60,7 +60,7 @@ namespace Jintori
             currentSettings = System.Array.Find(
                 settings, 
                 s => s.difficulty == Config.instance.difficulty && 
-                s.round == Game.instance.round);
+                s.round == Controller.instance.round);
 
             sourceBlobby = GetComponentInChildren<Blobby>(true);
 

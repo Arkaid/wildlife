@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Jintori
+namespace Jintori.SelectScreen
 {
     // --- Class Declaration ------------------------------------------------------------------------
     [ExecuteInEditMode]
-    public class CharacterAvatar : MonoBehaviour
+    public class Avatar : MonoBehaviour
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
@@ -43,7 +43,7 @@ namespace Jintori
         RectTransform _rectTransform;
 
         /// <summary> Character we're currently showing </summary>
-        CharacterDataFile characterFile;
+        CharacterFile.File characterFile;
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
@@ -65,17 +65,17 @@ namespace Jintori
 
         // --- Methods ----------------------------------------------------------------------------------
         // ----------------------------------------------------------------------------------	
-        public void SetCharacter(CharacterDataFile characterFile)
+        public void SetCharacter(CharacterFile.File file)
         {
-            this.characterFile = characterFile;
-            characterImage.sprite = characterFile.characterSheet.avatarA;
-            nameImage.sprite = characterFile.characterSheet.name;
+            characterFile = file;
+            characterImage.sprite = file.baseSheet.avatarA;
+            nameImage.sprite = file.baseSheet.name;
         }
         
         // -----------------------------------------------------------------------------------	
         public void SetSelected()
         {
-            characterImage.sprite = characterFile.characterSheet.avatarB;
+            characterImage.sprite = characterFile.baseSheet.avatarB;
         }
 
         // -----------------------------------------------------------------------------------	

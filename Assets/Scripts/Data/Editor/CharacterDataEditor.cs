@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using System.IO;
 
-namespace Jintori
+namespace Jintori.CharacterFile
 {
     // --- Class Declaration ------------------------------------------------------------------------
     /// <summary>
@@ -30,15 +30,15 @@ namespace Jintori
         // --- Properties -------------------------------------------------------------------------------
         /// <summary> Unique id to identify the character file. Used for saving / loading progress </summary>
         string guid;
-            
+
         /// <summary> Character sheet used for previewing puroses </summary>
-        CharacterSheet characterSheet;
+        BaseSheet baseSheet;
 
         /// <summary> source PNG file for the character sheet </summary>
         string characterSheetFile;
 
         /// <summary> Round data for previewing purposes </summary>
-        RoundData[] rounds = new RoundData[Config.Rounds];
+        RoundImages[] rounds = new RoundImages[Config.Rounds];
 
         /// <summary> source PNG files for for each round (base, shadow) </summary>
         string[,] roundFiles = new string[Config.Rounds, 2];
@@ -79,41 +79,41 @@ namespace Jintori
             scroll = GUILayout.BeginScrollView(scroll);
 
             foldout[0] = EditorGUILayout.Foldout(foldout[0], "Character Sheet");
-            if (foldout[0] && characterSheet != null)
+            if (foldout[0] && baseSheet != null)
             {
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("Name", GUILayout.Width(75));
-                DrawSprite(characterSheet.name);
+                DrawSprite(baseSheet.name);
                 GUILayout.EndHorizontal();
 
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("Icon", GUILayout.Width(75));
-                DrawSprite(characterSheet.icon);
+                DrawSprite(baseSheet.icon);
                 GUILayout.EndHorizontal();
 
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("Avatar A", GUILayout.Width(75));
-                DrawSprite(characterSheet.avatarA);
+                DrawSprite(baseSheet.avatarA);
                 GUILayout.EndHorizontal();
 
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("Avatar B", GUILayout.Width(75));
-                DrawSprite(characterSheet.avatarB);
+                DrawSprite(baseSheet.avatarB);
                 GUILayout.EndHorizontal();
 
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("Round 1 Icon", GUILayout.Width(75));
-                DrawSprite(characterSheet.roundIcons[0]);
+                DrawSprite(baseSheet.roundIcons[0]);
                 GUILayout.EndHorizontal();
 
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("Round 2 Icon", GUILayout.Width(75));
-                DrawSprite(characterSheet.roundIcons[1]);
+                DrawSprite(baseSheet.roundIcons[1]);
                 GUILayout.EndHorizontal();
 
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("Round 3 Icon", GUILayout.Width(75));
-                DrawSprite(characterSheet.roundIcons[2]);
+                DrawSprite(baseSheet.roundIcons[2]);
                 GUILayout.EndHorizontal();
             }
 
@@ -140,8 +140,8 @@ namespace Jintori
         void Clear()
         {
             guid = System.Guid.NewGuid().ToString().ToUpper();
-            characterSheet = null;
-            rounds = new RoundData[Config.Rounds];
+            baseSheet = null;
+            rounds = new RoundImages[Config.Rounds];
             characterSheetFile = null;
             roundFiles = new string[Config.Rounds, 2];
         }
@@ -158,7 +158,7 @@ namespace Jintori
             if (string.IsNullOrEmpty(target))
                 return;
 
-            CharacterDataFile.CreateFile(target, guid, characterSheetFile, roundFiles);
+            File.CreateFile(target, guid, characterSheetFile, roundFiles);
         }
         
         // -----------------------------------------------------------------------------------	
@@ -173,9 +173,9 @@ namespace Jintori
             if (string.IsNullOrEmpty(target))
                 return;
 
-            CharacterDataFile charFile = new CharacterDataFile(target);
+            File charFile = new File(target);
             characterSheetFile = "_TEST_";
-            characterSheet = charFile.characterSheet;
+            baseSheet = charFile.baseSheet;
 
             guid = charFile.guid;
 
@@ -231,7 +231,7 @@ namespace Jintori
             characterSheetFile = EditorUtility.OpenFilePanel("Load Character Sheet", "", "png");
             if (string.IsNullOrEmpty(characterSheetFile))
                 return;
-            characterSheet = new CharacterSheet(CharacterDataFile.GetRawTextureData(characterSheetFile));
+            baseSheet = new BaseSheet(File.GetRawTextureData(characterSheetFile));
             foldout[0] = true;
         }
 
@@ -249,9 +249,9 @@ namespace Jintori
             if (string.IsNullOrEmpty(roundFiles[round, 1]))
                 return;
 
-            byte[] pngBase = CharacterDataFile.GetRawTextureData(roundFiles[round, 0]);
-            byte [] pngShadow = CharacterDataFile.GetRawTextureData(roundFiles[round, 1], true);
-            rounds[round] = new RoundData(pngBase, pngShadow);
+            byte[] pngBase = File.GetRawTextureData(roundFiles[round, 0]);
+            byte [] pngShadow = File.GetRawTextureData(roundFiles[round, 1], true);
+            rounds[round] = new RoundImages(pngBase, pngShadow);
             foldout[round + 1] = true;
         }
     }

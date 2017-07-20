@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Jintori
+namespace Jintori.Game
 {
     // --- Class Declaration ------------------------------------------------------------------------
     public abstract class PlayAreaObject : MonoBehaviour
@@ -22,7 +22,7 @@ namespace Jintori
             {
                 _x = value;
                 Vector3 pos = transform.localPosition;
-                pos.x = _x - PlayArea.ImageWidth * 0.5f;
+                pos.x = _x - Config.ImageWidth * 0.5f;
                 transform.localPosition = pos;
             }
         }
@@ -36,7 +36,7 @@ namespace Jintori
             {
                 _y = value;
                 Vector3 pos = transform.localPosition;
-                pos.y = _y - PlayArea.ImageHeight * 0.5f;
+                pos.y = _y - Config.ImageHeight * 0.5f;
                 transform.localPosition = pos;
             }
         }
@@ -79,11 +79,11 @@ namespace Jintori
         {
             Vector2 pos = transform.localPosition;
 
-            _x = Mathf.RoundToInt(pos.x + PlayArea.ImageWidth * 0.5f);
-            _x = Mathf.Clamp(_x, 0, PlayArea.ImageWidth - 1);
+            _x = Mathf.RoundToInt(pos.x + Config.ImageWidth * 0.5f);
+            _x = Mathf.Clamp(_x, 0, Config.ImageWidth - 1);
 
-            _y = Mathf.RoundToInt(pos.y + PlayArea.ImageHeight * 0.5f);
-            _y = Mathf.Clamp(_y, 0, PlayArea.ImageHeight - 1);
+            _y = Mathf.RoundToInt(pos.y + Config.ImageHeight * 0.5f);
+            _y = Mathf.Clamp(_y, 0, Config.ImageHeight - 1);
         }
     }
 }

@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Jintori
+namespace Jintori.Game
 {
     // --- Class Declaration ------------------------------------------------------------------------
     /// <summary>
     /// Controls three rounds of a game.
     /// </summary>
-    public class Game : IllogicGate.SingletonBehaviour<Game>
+    public class Controller : IllogicGate.SingletonBehaviour<Controller>
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
@@ -20,7 +20,7 @@ namespace Jintori
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
         /// <summary> Character file containing the images we want to play </summary>
-        public static CharacterDataFile source;
+        public static CharacterFile.File sourceFile;
 
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
@@ -51,8 +51,8 @@ namespace Jintori
         void Start()
         {
 #if UNITY_EDITOR
-            if (source == null)
-                source = new CharacterDataFile(DEBUG_file);
+            if (sourceFile == null)
+                sourceFile = new CharacterFile.File(DEBUG_file);
 #endif
             round = 0;
             Timer.instance.timedOut += OnTimerTimedOut;
@@ -70,7 +70,7 @@ namespace Jintori
                 Destroy(currentPlay.gameObject);
 
             // Load the images
-            RoundData roundData = source.LoadRound(round);
+            CharacterFile.RoundImages roundData = sourceFile.LoadRound(round);
 
             // create a fresh play area
             currentPlay = Instantiate(playArea, playArea.transform.parent, true);
@@ -283,7 +283,7 @@ namespace Jintori
         /// </summary>
         private void SaveResults()
         {
-            Data.CharacterStats stats = Data.SaveFile.instance.GetCharacterStats(source.guid);
+            Data.CharacterStats stats = Data.SaveFile.instance.GetCharacterStats(sourceFile.guid);
             Data.RoundData roundData = stats.rounds[round];
             Data.Records records = roundData.records[Config.instance.difficulty];
             roundData.cleared = true;

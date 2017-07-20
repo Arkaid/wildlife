@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Jintori
+namespace Jintori.SelectScreen
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    public class SelectMenu : MonoBehaviour
+    /// <summary>
+    /// Controls the select screen
+    /// </summary>
+    public class Controller : MonoBehaviour
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
@@ -15,13 +18,13 @@ namespace Jintori
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
         [SerializeField]
-        CharacterIconGrid characterIconGrid = null;
+        IconGrid characterIconGrid = null;
 
         [SerializeField]
-        CharacterAvatar characterAvatar = null;
+        Avatar characterAvatar = null;
 
         [SerializeField]
-        RoundPreviews roundPreviews = null;
+        Rounds roundPreviews = null;
 
         // --- Properties -------------------------------------------------------------------------------
         // --- MonoBehaviour ----------------------------------------------------------------------------
@@ -42,14 +45,14 @@ namespace Jintori
         }
 
         // -----------------------------------------------------------------------------------	
-        private void OnCharacterSelected(CharacterDataFile file)
+        private void OnCharacterSelected(CharacterFile.File file)
         {
             characterAvatar.SetSelected();
             StartCoroutine(LoadGame(file));
         }
 
         // -----------------------------------------------------------------------------------	
-        private void OnCharacterSwitched(CharacterDataFile file)
+        private void OnCharacterSwitched(CharacterFile.File file)
         {
             characterAvatar.SetCharacter(file);
             roundPreviews.SetCharacter(file);
@@ -58,11 +61,11 @@ namespace Jintori
         // -----------------------------------------------------------------------------------	
         IEnumerator LoadCharacterSheets()
         {
-            string [] files = System.IO.Directory.GetFiles(CharacterDataFile.dataPath, "*.chr");
+            string [] files = System.IO.Directory.GetFiles(CharacterFile.File.dataPath, "*.chr");
 
             foreach (string file in files)
             {
-                CharacterDataFile charFile = new CharacterDataFile(file);
+                CharacterFile.File charFile = new CharacterFile.File(file);
                 characterIconGrid.Add(charFile);
                 yield return null;
             }
@@ -71,9 +74,9 @@ namespace Jintori
         }
 
         // -----------------------------------------------------------------------------------	
-        IEnumerator LoadGame(CharacterDataFile file)
+        IEnumerator LoadGame(CharacterFile.File file)
         {
-            Game.source = file;
+            Game.Controller.sourceFile = file;
             Overlay.instance.ShowTransparentBlocker();
             yield return new WaitForSeconds(1);
             yield return StartCoroutine(Transition.instance.Show());

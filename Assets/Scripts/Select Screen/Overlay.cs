@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Jintori
+namespace Jintori.SelectScreen
 {
     // --- Class Declaration ------------------------------------------------------------------------
     /// <summary>
@@ -58,18 +58,18 @@ namespace Jintori
         /// <summary>
         /// Shows the base image for a given character and round
         /// </summary>
-        public void ShowBaseImage(int round, CharacterDataFile character)
+        public void ShowBaseImage(int round, CharacterFile.File file)
         {
             ShowTransparentBlocker();
-            StartCoroutine(ShowBaseImageCoroutine(round, character));
+            StartCoroutine(ShowBaseImageCoroutine(round, file));
         }
         
         // -----------------------------------------------------------------------------------	
-        IEnumerator ShowBaseImageCoroutine(int round, CharacterDataFile character)
+        IEnumerator ShowBaseImageCoroutine(int round, CharacterFile.File file)
         {
             // fade and load the image (this might take 2 or 3 secs in slow systems)
             yield return StartCoroutine(Transition.instance.Show());
-            baseImageViewer.texture = character.LoadRound(round).baseImage;
+            baseImageViewer.texture = file.LoadRound(round).baseImage;
             baseImageViewer.gameObject.SetActive(true);
             yield return StartCoroutine(Transition.instance.Hide());
 

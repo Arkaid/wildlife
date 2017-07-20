@@ -4,17 +4,17 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-namespace Jintori
+namespace Jintori.SelectScreen
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    public class CharacterIcon : MonoBehaviour, IPointerEnterHandler, ISelectHandler
+    public class Icon : MonoBehaviour, IPointerEnterHandler, ISelectHandler
     {
         // --- Events -----------------------------------------------------------------------------------
         /// <summary> Raised when the icon is switched </summary>
-        public event System.Action<CharacterDataFile> switched;
+        public event System.Action<CharacterFile.File> switched;
 
         /// <summary> Raised when the icon is selected </summary>
-        public event System.Action<CharacterDataFile> selected;
+        public event System.Action<CharacterFile.File> selected;
 
         // --- Constants --------------------------------------------------------------------------------
         /// <summary> Cycle time for the colors </summary>
@@ -49,7 +49,7 @@ namespace Jintori
         Toggle _toggle = null;
 
         /// <summary> Source file associated to this icon </summary>
-        CharacterDataFile characterFile;
+        CharacterFile.File characterFile;
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
@@ -78,10 +78,10 @@ namespace Jintori
 
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        public void Setup(CharacterDataFile characterFile)
+        public void Setup(CharacterFile.File file)
         {
-            iconImage.sprite = characterFile.characterSheet.icon;
-            this.characterFile = characterFile;
+            iconImage.sprite = file.baseSheet.icon;
+            this.characterFile = file;
         }
 
         // -----------------------------------------------------------------------------------	

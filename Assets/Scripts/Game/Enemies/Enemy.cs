@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Jintori
+namespace Jintori.Game
 {
     // --- Class Declaration ------------------------------------------------------------------------
     [RequireComponent(typeof(Collider2D))]
@@ -144,8 +144,8 @@ namespace Jintori
             while (true)
             {
                 Vector2 test = new Vector2();
-                test.x = Random.Range(bounds.extents.x, PlayArea.ImageWidth - bounds.extents.x);
-                test.y = Random.Range(bounds.extents.y, PlayArea.ImageHeight - bounds.extents.y);
+                test.x = Random.Range(bounds.extents.x, Config.ImageWidth - bounds.extents.x);
+                test.y = Random.Range(bounds.extents.y, Config.ImageHeight - bounds.extents.y);
                 
                 if (playerInitalSquare.Contains(test))
                     continue;

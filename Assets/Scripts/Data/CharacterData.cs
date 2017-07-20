@@ -7,14 +7,14 @@ using System.IO;
 using UnityEditor;
 #endif
 
-namespace Jintori
+namespace Jintori.CharacterFile
 {
     // --- Class Declaration ------------------------------------------------------------------------
     /// <summary>
     /// Contains the character sheet info for the select menu
     /// This is a texture with a few sprites on them, including icon, name, avatar, etc
     /// </summary>
-    public class CharacterSheet
+    public class BaseSheet
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
@@ -48,7 +48,7 @@ namespace Jintori
 
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        public CharacterSheet(byte[] rawData)
+        public BaseSheet(byte[] rawData)
         {
             source = new Texture2D(ImageWidth, ImageHeight, TextureFormat.RGBA32, false);
             source.filterMode = FilterMode.Point;
@@ -76,7 +76,7 @@ namespace Jintori
     /// <summary>
     /// Holds the images for a given game round, both base image and shadow
     /// </summary>
-    public class RoundData
+    public class RoundImages
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
@@ -95,16 +95,16 @@ namespace Jintori
         /// <summary>
         /// Creates the textures needed for the round
         /// </summary>
-        public RoundData(byte[] rawBase, byte[] rawShadow)
+        public RoundImages(byte[] rawBase, byte[] rawShadow)
         {
-            baseImage = new Texture2D(PlayArea.ImageWidth, PlayArea.ImageHeight, TextureFormat.RGB24, false);
+            baseImage = new Texture2D(Config.ImageWidth, Config.ImageHeight, TextureFormat.RGB24, false);
             baseImage.filterMode = FilterMode.Point;
             baseImage.alphaIsTransparency = true;
             baseImage.wrapMode = TextureWrapMode.Clamp;
             baseImage.LoadRawTextureData(rawBase);
             baseImage.Apply();
 
-            shadowImage = new Texture2D(PlayArea.ImageWidth, PlayArea.ImageHeight, TextureFormat.Alpha8, false);
+            shadowImage = new Texture2D(Config.ImageWidth, Config.ImageHeight, TextureFormat.Alpha8, false);
             baseImage.filterMode = FilterMode.Point;
             baseImage.alphaIsTransparency = true;
             baseImage.wrapMode = TextureWrapMode.Clamp;
@@ -117,7 +117,7 @@ namespace Jintori
     /// <summary>
     /// Saves and loads character datafiles.
     /// </summary>
-    public class CharacterDataFile
+    public class File
     {
         // --- Constants --------------------------------------------------------------------------------
         // unshuffled key is "8f8c06bdfc41a468ad379e34791cbf78581295ed90abf6118ea30082b561"
@@ -215,7 +215,7 @@ namespace Jintori
         /// <param name="roundFiles"> PNG files for each round (base, shadow) </param>
         public static void CreateFile(string filename, string guid, string charSheetFile, string [,] roundFiles)
         {
-            BinaryWriter bw = new BinaryWriter(File.Open(filename, FileMode.Create));
+            BinaryWriter bw = new BinaryWriter(System.IO.File.Open(filename, FileMode.Create));
             BlowFishCS.BlowFish blowfish = new BlowFishCS.BlowFish(IllogicGate.Data.EncryptedFile.RestoreKey(ShuffledKey));
             
             // save an empty header to make space for it
@@ -265,7 +265,7 @@ namespace Jintori
         static public byte[] GetRawTextureData(string pngFile, bool isShadow = false)
         {
             const string TempFile = "Assets/_temp_.png";
-            File.Copy(pngFile, Application.dataPath + "/_temp_.png", true);
+            System.IO.File.Copy(pngFile, Application.dataPath + "/_temp_.png", true);
 
             AssetDatabase.ImportAsset(TempFile);
 
@@ -302,7 +302,7 @@ namespace Jintori
         public string source { get; private set; }
 
         /// <summary> Character sheet. Call LoadCharacterSheet </summary>
-        public CharacterSheet characterSheet
+        public BaseSheet baseSheet
         {
             get
             {
@@ -311,13 +311,13 @@ namespace Jintori
                 return _characterSheet;
             }
         }
-        CharacterSheet _characterSheet;
+        BaseSheet _characterSheet;
 
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        public CharacterDataFile(string filename)
+        public File(string filename)
         {
-            BinaryReader br = new BinaryReader(File.Open(filename, FileMode.Open));
+            BinaryReader br = new BinaryReader(System.IO.File.Open(filename, FileMode.Open));
             header = new Header(br);
             source = filename;
             br.Close();
@@ -329,7 +329,7 @@ namespace Jintori
         /// </summary>
         public void LoadCharacterSheet()
         {
-            BinaryReader br = new BinaryReader(File.Open(source, FileMode.Open));
+            BinaryReader br = new BinaryReader(System.IO.File.Open(source, FileMode.Open));
             BlowFishCS.BlowFish blowfish = new BlowFishCS.BlowFish(IllogicGate.Data.EncryptedFile.RestoreKey(ShuffledKey));
 
             Header header = new Header(br);
@@ -341,7 +341,7 @@ namespace Jintori
             rawData = LZMAtools.DecompressLZMAByteArrayToByteArray(rawData);
             br.Close();
 
-            _characterSheet = new CharacterSheet(rawData);
+            _characterSheet = new BaseSheet(rawData);
         }
 
         // -----------------------------------------------------------------------------------	
@@ -349,9 +349,9 @@ namespace Jintori
         /// Loads the images for a given round
         /// </summary>
         /// <param name="round">round to load (0 to 2)</param>
-        public RoundData LoadRound(int round)
+        public RoundImages LoadRound(int round)
         {
-            BinaryReader br = new BinaryReader(File.Open(source, FileMode.Open));
+            BinaryReader br = new BinaryReader(System.IO.File.Open(source, FileMode.Open));
             BlowFishCS.BlowFish blowfish = new BlowFishCS.BlowFish(IllogicGate.Data.EncryptedFile.RestoreKey(ShuffledKey));
 
             Header header = new Header(br);
@@ -369,7 +369,7 @@ namespace Jintori
 
             br.Close();
 
-            return new RoundData(rawBase, rawShadow);
+            return new RoundImages(rawBase, rawShadow);
         }
     }
 }

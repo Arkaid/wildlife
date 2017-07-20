@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Jintori
+namespace Jintori.SelectScreen
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    public class CharacterIconGrid : MonoBehaviour
+    public class IconGrid : MonoBehaviour
     {
         // --- Events -----------------------------------------------------------------------------------
         /// <summary> Raised when the icon is switched </summary>
-        public event System.Action<CharacterDataFile> switched;
+        public event System.Action<CharacterFile.File> switched;
 
         /// <summary> Raised when the icon is selected </summary>
-        public event System.Action<CharacterDataFile> selected;
+        public event System.Action<CharacterFile.File> selected;
 
         // --- Constants --------------------------------------------------------------------------------
         // --- Static Properties ------------------------------------------------------------------------
@@ -21,7 +21,7 @@ namespace Jintori
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
         [SerializeField]
-        CharacterIcon sampleIcon = null;
+        Icon sampleIcon = null;
 
         // --- Properties -------------------------------------------------------------------------------
         // --- MonoBehaviour ----------------------------------------------------------------------------
@@ -70,9 +70,9 @@ namespace Jintori
         /// <summary>
         /// Adds an icon to the grid
         /// </summary>
-        public void Add(CharacterDataFile characterFile)
+        public void Add(CharacterFile.File characterFile)
         {
-            CharacterIcon newIcon = Instantiate(sampleIcon);
+            Icon newIcon = Instantiate(sampleIcon);
             newIcon.gameObject.SetActive(true);
             newIcon.Setup(characterFile);
 
