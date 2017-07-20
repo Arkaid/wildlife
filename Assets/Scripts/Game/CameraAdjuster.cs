@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Jintori
+namespace Jintori.Game
 {
     // --- Class Declaration ------------------------------------------------------------------------
     [RequireComponent(typeof(Camera))]
@@ -73,11 +73,11 @@ namespace Jintori
 
             // fit to image width or height, depending on the aspect ratio
             // of the screen
-            float end = PlayArea.ImageHeight * 0.5f;
-            float imageAspect = PlayArea.ImageWidth / (float)PlayArea.ImageHeight;
+            float end = Config.ImageHeight * 0.5f;
+            float imageAspect = Config.ImageWidth / (float)Config.ImageHeight;
             float screenAspect = Screen.width / (float)Screen.height;
             if (imageAspect > screenAspect)
-                end = PlayArea.ImageHeight * screenAspect * 0.5f;
+                end = Config.ImageHeight * screenAspect * 0.5f;
 
             // turn off auto adjusting
             autoAdjust = false;

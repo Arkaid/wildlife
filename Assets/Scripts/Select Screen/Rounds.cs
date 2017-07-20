@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Jintori
+namespace Jintori.SelectScreen
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    public class RoundPreviews : MonoBehaviour
+    public class Rounds : MonoBehaviour
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
@@ -22,7 +22,7 @@ namespace Jintori
 
         // --- Properties -------------------------------------------------------------------------------
         /// <summary> The data file for the currently assigned character </summary>
-        CharacterDataFile character;
+        CharacterFile.File characterFile;
 
         /// <summary> Stats for the current character </summary>
         Data.CharacterStats stats;
@@ -40,13 +40,13 @@ namespace Jintori
 
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        public void SetCharacter(CharacterDataFile character)
+        public void SetCharacter(CharacterFile.File file)
         {
-            this.character = character;
-            stats = Data.SaveFile.instance.GetCharacterStats(character.guid);
+            this.characterFile = file;
+            stats = Data.SaveFile.instance.GetCharacterStats(file.guid);
 
             // get the "cleared" state from file
-            Sprite[] roundIcons = character.characterSheet.roundIcons;
+            Sprite[] roundIcons = file.baseSheet.roundIcons;
 
             for (int i = 0; i < Config.Rounds; i++)
                 rounds[i].sprite = stats.rounds[i].cleared ? roundIcons[i] : notClearedIcon;
@@ -57,7 +57,7 @@ namespace Jintori
         {
             if (stats.rounds[idx].cleared)
             {
-                Overlay.instance.ShowBaseImage(idx, character);
+                Overlay.instance.ShowBaseImage(idx, characterFile);
             }
 
             // TODO: popup "clear the image in game to view it here"

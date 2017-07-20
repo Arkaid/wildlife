@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Jintori
+namespace Jintori.Game
 {
     // --- Class Declaration ------------------------------------------------------------------------
     public class PathRenderer : MonoBehaviour
@@ -71,9 +71,9 @@ namespace Jintori
             int x = 0;
             int y = 0;
             bool found = false;
-            for (; x < PlayArea.ImageWidth && !found; x++)
+            for (; x < Config.ImageWidth && !found; x++)
             {
-                for (; y < PlayArea.ImageHeight && !found; y++)
+                for (; y < Config.ImageHeight && !found; y++)
                     found = playArea.mask[x, y] == pathType;
             }
 
@@ -121,7 +121,7 @@ namespace Jintori
             oy = y;
 
             PlayArea.Mask mask = playArea.mask;
-            if (dir != Direction.Lt && x + 1 < PlayArea.ImageWidth && mask[x + 1, y] == pathType)
+            if (dir != Direction.Lt && x + 1 < Config.ImageWidth && mask[x + 1, y] == pathType)
             {
                 ox = x + 1;
                 return Direction.Rt;
@@ -131,7 +131,7 @@ namespace Jintori
                 ox = x - 1;
                 return Direction.Lt;
             }
-            if (dir != Direction.Dw && y + 1 < PlayArea.ImageHeight && mask[x, y + 1] == pathType)
+            if (dir != Direction.Dw && y + 1 < Config.ImageHeight && mask[x, y + 1] == pathType)
             {
                 oy = y + 1;
                 return Direction.Up;

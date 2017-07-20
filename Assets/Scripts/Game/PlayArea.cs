@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Jintori
+namespace Jintori.Game
 {
     // --- Class Declaration ------------------------------------------------------------------------
     public partial class PlayArea : MonoBehaviour
@@ -14,8 +14,8 @@ namespace Jintori
         public const byte Safe = 128;
         public const byte Cut = 64;
 
-        public const int ImageWidth = 960;
-        public const int ImageHeight = 540;
+        const int ImageWidth = Config.ImageWidth;
+        const int ImageHeight = Config.ImageHeight;
 
         static readonly Color CycleColor1 = new Color(0.2f, 0.2f, 0.4f, 1);
         static readonly Color CycleColor2 = new Color(0.4f, 0.4f, 0.7f, 1);

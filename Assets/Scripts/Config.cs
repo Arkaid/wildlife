@@ -9,6 +9,13 @@ namespace Jintori
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
+        /// <summary> Width of the main game image, in pixels </summary>
+        public const int ImageWidth = 960;
+
+        /// <summary> Height of the main game image, in pixels </summary>
+        public const int ImageHeight = 540;
+
+        /// <summary> Number of rounds to play </summary>
         public const int Rounds = 3;
 
         /// <summary> Levels of overall game difficulty </summary>

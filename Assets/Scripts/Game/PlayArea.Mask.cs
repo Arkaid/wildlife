@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Jintori
+namespace Jintori.Game
 {
     public partial class PlayArea : MonoBehaviour
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Jintori
+namespace Jintori.Game
 {
     // --- Class Declaration ------------------------------------------------------------------------
     /// <summary>
@@ -43,7 +43,7 @@ namespace Jintori
             currentSettings = System.Array.Find(
                 settings,
                 s => s.difficulty == Config.instance.difficulty &&
-                s.round == Game.instance.round);
+                s.round == Controller.instance.round);
 
             playArea.mask.maskCleared += KillIfOutsideShadow;
             killed += OnKilled;
