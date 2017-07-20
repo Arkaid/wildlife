@@ -14,6 +14,8 @@ public class Test : MonoBehaviour
     // --- Inspector --------------------------------------------------------------------------------
 
     // --- Properties -------------------------------------------------------------------------------
+    
+
     // --- MonoBehaviour ----------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------	
 
@@ -23,7 +25,6 @@ public class Test : MonoBehaviour
     {
         Jintori.Data.SaveFile.instance.Load();
         Jintori.Data.CharacterStats data = Jintori.Data.SaveFile.instance.GetCharacterStats("DB4477E3-96F4-43AC-BB66-B7BC59EA80C2");
-
         
         print(data.rounds[0].cleared);
         data.rounds[0].cleared = true;

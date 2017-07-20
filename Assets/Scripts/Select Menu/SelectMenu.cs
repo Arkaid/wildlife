@@ -32,6 +32,9 @@ namespace Jintori
         {
             Transition.instance.maskValue = 1;
 
+            // hide the overlay if it was showing
+            Overlay.instance.Hide();
+
             characterIconGrid.switched += OnCharacterSwitched;
             characterIconGrid.selected += OnCharacterSelected;
             yield return StartCoroutine(LoadCharacterSheets());
@@ -63,12 +66,15 @@ namespace Jintori
                 characterIconGrid.Add(charFile);
                 yield return null;
             }
+
+            characterIconGrid.SelectFirst();
         }
 
         // -----------------------------------------------------------------------------------	
         IEnumerator LoadGame(CharacterDataFile file)
         {
             Game.source = file;
+            Overlay.instance.ShowTransparentBlocker();
             yield return new WaitForSeconds(1);
             yield return StartCoroutine(Transition.instance.Show());
             SceneManager.LoadScene("Game");
