@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Jintori
 {
@@ -48,6 +49,22 @@ namespace Jintori
                 DestroyObject(child.gameObject);
             }
         }
+
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Selects the first icon in the grid. You usually
+        /// call this right after the menu screen opens
+        /// </summary>
+        public void SelectFirst()
+        {
+            Transform first = transform.GetChild(0);
+            if (first == sampleIcon.transform)
+                first = transform.GetChild(1);
+
+            Toggle toggle = first.GetComponent<Toggle>();
+            toggle.isOn = true;
+        }
+
 
         // -----------------------------------------------------------------------------------	
         /// <summary>
