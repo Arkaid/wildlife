@@ -40,6 +40,12 @@ namespace Jintori
         /// <summary> lives left </summary>
         public int livesLeft { get; private set; }
 
+        /// <summary> Last cleared percentage. Used to calculate how much it changes per clear move (delta percentage) </summary>
+        float lastPercentage;
+
+        /// <summary> Current score. Internally float but display floor int </summary>
+        float score;
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         void Start()
@@ -70,6 +76,12 @@ namespace Jintori
             currentPlay = Instantiate(playArea, playArea.transform.parent, true);
             currentPlay.gameObject.SetActive(true);
             currentPlay.Setup(roundData.baseImage, roundData.shadowImage, typeof(Slimy));
+
+            // reset percentage tracker to zero
+            lastPercentage = 0;
+
+            // reset score
+            score = 0;
 
             // check when the player spawns to count lives / game overs
             currentPlay.player.spawned += OnPlayerSpawned;
@@ -146,6 +158,9 @@ namespace Jintori
             // re-enable the player and put it in a corner of the square
             currentPlay.player.Spawn(rect.x, rect.y);
 
+            // set callbacks to check game progress
+            currentPlay.mask.maskCleared += OnMaskCleared;
+
             // create the square and destroy the "preview"
             currentPlay.CreateStartingZone(rect);
             initialSquare.gameObject.SetActive(false);
@@ -158,9 +173,6 @@ namespace Jintori
 
             // start timer
             Timer.instance.StartTimer();
-
-            // set callbacks to check game progress
-            currentPlay.mask.maskCleared += OnMaskCleared;
 
             yield break;
         }
@@ -280,12 +292,25 @@ namespace Jintori
             if (elapsed < records.bestTime)
                 records.bestTime = elapsed;
 
+            long scoreL = (long)score;
+            if (scoreL > records.highScore)
+                records.highScore = scoreL;
+
             Data.SaveFile.instance.Save();
         }
 
         // -----------------------------------------------------------------------------------	
         private void OnMaskCleared()
         {
+            // calculate score
+            float percentage = currentPlay.mask.clearedRatio * 100;
+            float delta = percentage - lastPercentage;
+
+            float deltaScore = Config.Score.CalculatePerPercentage(delta);
+            score += deltaScore;
+            lastPercentage = percentage;
+            UI.instance.scoreDisplay.score = (long)score;
+
             // Did we win?
             if (currentPlay.mask.clearedRatio >= Config.instance.clearRatio)
             {

@@ -80,8 +80,6 @@ namespace Jintori
             /// </summary>
             public void Clear(int bossX, int bossY)
             {
-                UnityEngine.Profiling.Profiler.BeginSample("Clear_FC");
-
                 // first pass:
                 // copy old path, leaving everything else cleared
                 for (int i = 0; i < ImageWidth * ImageHeight; i++)
@@ -141,8 +139,6 @@ namespace Jintori
                     if (this[ImageWidth - 1, i] == Cleared)
                         this[ImageWidth - 1, i] = Safe;
                 }
-
-                UnityEngine.Profiling.Profiler.EndSample();
 
                 if (maskCleared != null)
                     maskCleared();
