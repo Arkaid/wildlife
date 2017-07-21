@@ -10,9 +10,6 @@ namespace Jintori.SelectScreen
     {
         // --- Events -----------------------------------------------------------------------------------
         /// <summary> Raised when the icon is switched </summary>
-        public event System.Action<CharacterFile.File> switched;
-
-        /// <summary> Raised when the icon is selected </summary>
         public event System.Action<CharacterFile.File> selected;
 
         // --- Constants --------------------------------------------------------------------------------
@@ -62,6 +59,7 @@ namespace Jintori.SelectScreen
                 first = transform.GetChild(1);
 
             Toggle toggle = first.GetComponent<Toggle>();
+            toggle.Select();
             toggle.isOn = true;
         }
 
@@ -77,7 +75,6 @@ namespace Jintori.SelectScreen
             newIcon.Setup(characterFile);
 
             newIcon.selected += selected;
-            newIcon.switched += switched;
 
             newIcon.transform.SetParent(transform);
             newIcon.transform.localScale = Vector3.one;

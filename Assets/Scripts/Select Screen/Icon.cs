@@ -7,13 +7,10 @@ using UnityEngine.EventSystems;
 namespace Jintori.SelectScreen
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    public class Icon : MonoBehaviour, IPointerEnterHandler, ISelectHandler
+    public class Icon : MonoBehaviour
     {
         // --- Events -----------------------------------------------------------------------------------
         /// <summary> Raised when the icon is switched </summary>
-        public event System.Action<CharacterFile.File> switched;
-
-        /// <summary> Raised when the icon is selected </summary>
         public event System.Action<CharacterFile.File> selected;
 
         // --- Constants --------------------------------------------------------------------------------
@@ -24,12 +21,12 @@ namespace Jintori.SelectScreen
         static readonly Color ColorB = new Color32(255, 197, 165, 255);
 
         // --- Static Properties ------------------------------------------------------------------------
+        /// <summary> Using to de-highlight icons when hovering / changing to a new one </summary>
+        static GameObject lastHighlighted = null;
+
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
-        [SerializeField]
-        Image normalFrame = null;
-
         [SerializeField]
         Image selectedFrame = null;
 
@@ -55,43 +52,29 @@ namespace Jintori.SelectScreen
         // -----------------------------------------------------------------------------------	
         void Start()
         {
+            selectedFrame.gameObject.SetActive(false);
             toggle.onValueChanged.AddListener(OnToggleValueChanged);
         }
-
-        // -----------------------------------------------------------------------------------	
-        public void OnPointerEnter(PointerEventData eventData)
-        {
-            if (!toggle.isOn)
-            {
-                toggle.isOn = true;
-                if (switched != null)
-                    switched(characterFile);
-            }
-        }
-
-        // -----------------------------------------------------------------------------------	
-        public void OnSelect(BaseEventData eventData)
-        {
-            if (selected != null)
-                selected(characterFile);
-        }
-
+        
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         public void Setup(CharacterFile.File file)
         {
             iconImage.sprite = file.baseSheet.icon;
-            this.characterFile = file;
+            characterFile = file;
         }
 
         // -----------------------------------------------------------------------------------	
         void OnToggleValueChanged(bool value)
         {
             selectedFrame.gameObject.SetActive(value);
-            normalFrame.gameObject.SetActive(!value);
 
             if (value)
+            {
                 StartCoroutine(CycleColors());
+                if (selected != null)
+                    selected(characterFile);
+            }
         }
 
         // -----------------------------------------------------------------------------------	
