@@ -24,6 +24,9 @@ namespace Jintori.SelectScreen
         [SerializeField]
         Image nameImage= null;
 
+        [SerializeField]
+        Animation nameAnimation = null;
+
         // --- Properties -------------------------------------------------------------------------------
         /// <summary> Used to auto adjust the position on screen </summary>
         int lastWidth = -1;
@@ -70,6 +73,9 @@ namespace Jintori.SelectScreen
             characterFile = file;
             characterImage.sprite = file.baseSheet.avatarA;
             nameImage.sprite = file.baseSheet.name;
+
+            nameAnimation.Stop();
+            nameAnimation.Play();
         }
         
         // -----------------------------------------------------------------------------------	

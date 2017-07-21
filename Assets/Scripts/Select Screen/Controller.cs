@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 namespace Jintori.SelectScreen
@@ -18,15 +19,24 @@ namespace Jintori.SelectScreen
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
         [SerializeField]
-        IconGrid characterIconGrid = null;
+        IconGrid iconGrid = null;
 
         [SerializeField]
-        Avatar characterAvatar = null;
+        Avatar avatar = null;
 
         [SerializeField]
-        Rounds roundPreviews = null;
+        Rounds rounds = null;
+
+        [SerializeField]
+        Button startButton = null;
+
+        [SerializeField]
+        Button optionsButton = null;
 
         // --- Properties -------------------------------------------------------------------------------
+        /// <summary> Character we selected </summary>
+        CharacterFile.File selected;
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         // --- Methods ----------------------------------------------------------------------------------
@@ -38,24 +48,27 @@ namespace Jintori.SelectScreen
             // hide the overlay if it was showing
             Overlay.instance.Hide();
 
-            characterIconGrid.switched += OnCharacterSwitched;
-            characterIconGrid.selected += OnCharacterSelected;
+            // handle buttons
+            startButton.onClick.AddListener(OnStart);
+
+            iconGrid.selected += OnCharacterSelected;
             yield return StartCoroutine(LoadCharacterSheets());
             yield return StartCoroutine(Transition.instance.Hide());
+        }
+        
+        // -----------------------------------------------------------------------------------	
+        private void OnStart()
+        {
+            avatar.SetSelected();
+            StartCoroutine(LoadGame());
         }
 
         // -----------------------------------------------------------------------------------	
         private void OnCharacterSelected(CharacterFile.File file)
         {
-            characterAvatar.SetSelected();
-            StartCoroutine(LoadGame(file));
-        }
-
-        // -----------------------------------------------------------------------------------	
-        private void OnCharacterSwitched(CharacterFile.File file)
-        {
-            characterAvatar.SetCharacter(file);
-            roundPreviews.SetCharacter(file);
+            selected = file;
+            avatar.SetCharacter(file);
+            rounds.SetCharacter(file);
         }
 
         // -----------------------------------------------------------------------------------	
@@ -66,17 +79,17 @@ namespace Jintori.SelectScreen
             foreach (string file in files)
             {
                 CharacterFile.File charFile = new CharacterFile.File(file);
-                characterIconGrid.Add(charFile);
+                iconGrid.Add(charFile);
                 yield return null;
             }
 
-            characterIconGrid.SelectFirst();
+            iconGrid.SelectFirst();
         }
 
         // -----------------------------------------------------------------------------------	
-        IEnumerator LoadGame(CharacterFile.File file)
+        IEnumerator LoadGame()
         {
-            Game.Controller.sourceFile = file;
+            Game.Controller.sourceFile = selected;
             Overlay.instance.ShowTransparentBlocker();
             yield return new WaitForSeconds(1);
             yield return StartCoroutine(Transition.instance.Show());

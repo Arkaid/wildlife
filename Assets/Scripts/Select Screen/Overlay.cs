@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 namespace Jintori.SelectScreen
 {
@@ -27,6 +28,8 @@ namespace Jintori.SelectScreen
         // --- Properties -------------------------------------------------------------------------------
         Color defaultBackgroundColor;
 
+        GameObject selectedObject;
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         void Start()
@@ -38,6 +41,7 @@ namespace Jintori.SelectScreen
         // -----------------------------------------------------------------------------------	
         public void Hide()
         {
+            EventSystem.current.SetSelectedGameObject(selectedObject);
             gameObject.SetActive(false);
             baseImageViewer.gameObject.SetActive(false);
             background.color = defaultBackgroundColor;
@@ -50,6 +54,9 @@ namespace Jintori.SelectScreen
         /// </summary>
         public void ShowTransparentBlocker()
         {
+            selectedObject = EventSystem.current.currentSelectedGameObject;
+            EventSystem.current.SetSelectedGameObject(null);
+
             background.color = Color.clear;
             gameObject.SetActive(true);
         }
