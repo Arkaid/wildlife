@@ -187,6 +187,7 @@ namespace Jintori.CharacterFile
 
                 for (int i = 0; i < roundBase.Length; i++)
                 {
+                    isPortrait[i] = br.ReadBoolean();
                     roundBase[i] = new Entry(br);
                     roundShadow[i] = new Entry(br);
                 }
@@ -199,6 +200,7 @@ namespace Jintori.CharacterFile
                 characterSheet.Save(bw);
                 for (int i = 0; i < roundBase.Length; i++)
                 {
+                    bw.Write(isPortrait[i]);
                     roundBase[i].Save(bw);
                     roundShadow[i].Save(bw);
                 }
@@ -231,14 +233,16 @@ namespace Jintori.CharacterFile
             byte[] data;
 
             // encrypt and save the character sheet file
-            int img_w, img_h;
-            data = GetRawTextureData(charSheetFile, out img_w, out img_h);
+            data = GetRawTextureData(charSheetFile);
             data = LZMAtools.CompressByteArrayToLZMAByteArray(data);
             data = blowfish.Encrypt_ECB(data);
             header.characterSheet = new Entry((int)bw.BaseStream.Position, data.Length);
             bw.Write(data);
 
             // encrypt and save round images
+            // NOTE: we assume the images are the correct size
+            // although we should probably insert a check here...
+            int img_w, img_h;
             for (int i = 0; i < Config.Rounds; i++)
             {
                 data = GetRawTextureData(roundFiles[i, 0], out img_w, out img_h);
@@ -246,6 +250,8 @@ namespace Jintori.CharacterFile
                 data = blowfish.Encrypt_ECB(data);
                 header.roundBase[i] = new Entry((int)bw.BaseStream.Position, data.Length);
                 bw.Write(data);
+
+                header.isPortrait[i] = img_w == Game.PlayArea.LandscapeHeight;
 
                 data = GetRawTextureData(roundFiles[i, 1], out img_w, out img_h, true);
                 data = LZMAtools.CompressByteArrayToLZMAByteArray(data);
@@ -259,6 +265,15 @@ namespace Jintori.CharacterFile
             header.Save(bw);
 
             bw.Close();
+        }
+        
+        // -----------------------------------------------------------------------------------	
+
+        // -----------------------------------------------------------------------------------	
+        static public byte[] GetRawTextureData(string pngFile, bool isShadow = false)
+        {
+            int w, h;
+            return GetRawTextureData(pngFile, out w, out h, isShadow);
         }
 
         // -----------------------------------------------------------------------------------	

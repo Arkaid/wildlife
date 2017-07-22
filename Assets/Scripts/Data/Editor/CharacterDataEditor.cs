@@ -249,9 +249,10 @@ namespace Jintori.CharacterFile
             if (string.IsNullOrEmpty(roundFiles[round, 1]))
                 return;
 
+            int w, h;
             byte[] pngBase = File.GetRawTextureData(roundFiles[round, 0]);
-            byte [] pngShadow = File.GetRawTextureData(roundFiles[round, 1], true);
-            rounds[round] = new RoundImages(pngBase, pngShadow);
+            byte [] pngShadow = File.GetRawTextureData(roundFiles[round, 1], out w, out h, true);
+            rounds[round] = new RoundImages(pngBase, pngShadow, w == Game.PlayArea.LandscapeHeight);
             foldout[round + 1] = true;
         }
     }
