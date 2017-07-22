@@ -83,8 +83,8 @@ namespace Jintori.Game
             // create a fresh play area
             currentPlay = Instantiate(playArea, playArea.transform.parent, true);
             currentPlay.gameObject.SetActive(true);
-            //currentPlay.Setup(roundData.baseImage, roundData.shadowImage, typeof(Slimy));
-            currentPlay.Setup(DEBUG_baseImage, DEBUG_shadowImage, typeof(Slimy));
+            currentPlay.Setup(roundData.baseImage, roundData.shadowImage, typeof(Slimy));
+            //currentPlay.Setup(DEBUG_baseImage, DEBUG_shadowImage, typeof(Slimy));
 
             // reset percentage tracker to zero
             lastPercentage = 0;

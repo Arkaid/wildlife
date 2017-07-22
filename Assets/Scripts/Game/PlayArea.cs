@@ -108,9 +108,9 @@ namespace Jintori.Game
         public void Setup(Texture2D baseImage, Texture2D shadowImage, System.Type bossType)
         {
             // do some basic validity check
-            bool isPortraitMode = baseImage.width == LandscapeHeight && baseImage.height == LandscapeWidth;
-            bool isLandscapeMode = baseImage.width == LandscapeWidth && baseImage.height == LandscapeHeight;
-            if (!(isLandscapeMode || isPortraitMode))
+            bool isPortrait = baseImage.width == LandscapeHeight && baseImage.height == LandscapeWidth;
+            bool isLandscape = baseImage.width == LandscapeWidth && baseImage.height == LandscapeHeight;
+            if (!(isLandscape || isPortrait))
                 throw new System.Exception("Invalid Base image size");
 
             if (shadowImage.width != baseImage.width || shadowImage.height != baseImage.height)
@@ -119,8 +119,8 @@ namespace Jintori.Game
             if (shadowImage.format != TextureFormat.Alpha8)
                 throw new System.Exception("Shadow image is not of type Alpha8");
 
-            imageWidth = isLandscapeMode ? LandscapeWidth : LandscapeHeight;
-            imageHeight = isLandscapeMode ? LandscapeHeight: LandscapeWidth;
+            imageWidth = isLandscape ? LandscapeWidth : LandscapeHeight;
+            imageHeight = isLandscape ? LandscapeHeight: LandscapeWidth;
 
             // Deactivate all enemies
             Enemy[] enemies = GetComponentsInChildren<Enemy>();
