@@ -30,6 +30,14 @@ namespace Jintori.Game
         [SerializeField]
         MeshFilter initialSquare = null;
 
+#if UNITY_EDITOR
+        [SerializeField]
+        Texture2D DEBUG_baseImage = null;
+
+        [SerializeField]
+        Texture2D DEBUG_shadowImage = null;
+#endif
+
         // --- Properties -------------------------------------------------------------------------------
         /// <summary> Current round (1, 2 or 3) </summary>
         public int round { get; private set; }
@@ -75,7 +83,8 @@ namespace Jintori.Game
             // create a fresh play area
             currentPlay = Instantiate(playArea, playArea.transform.parent, true);
             currentPlay.gameObject.SetActive(true);
-            currentPlay.Setup(roundData.baseImage, roundData.shadowImage, typeof(Slimy));
+            //currentPlay.Setup(roundData.baseImage, roundData.shadowImage, typeof(Slimy));
+            currentPlay.Setup(DEBUG_baseImage, DEBUG_shadowImage, typeof(Slimy));
 
             // reset percentage tracker to zero
             lastPercentage = 0;
@@ -101,8 +110,12 @@ namespace Jintori.Game
             currentPlay.player.Hide();
 
             // Hide the transition
+#if UNITY_EDITOR
+            if (Transition.instance != null)
+                yield return StartCoroutine(Transition.instance.Hide());
+#else
             yield return StartCoroutine(Transition.instance.Hide());
-
+#endif
             // play the intro animation for the round
             yield return StartCoroutine(UI.instance.roundStart.Show(round));
 

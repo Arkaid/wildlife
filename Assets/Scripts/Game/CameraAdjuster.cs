@@ -73,11 +73,11 @@ namespace Jintori.Game
 
             // fit to image width or height, depending on the aspect ratio
             // of the screen
-            float end = Config.ImageHeight * 0.5f;
-            float imageAspect = Config.ImageWidth / (float)Config.ImageHeight;
+            float end = PlayArea.imageHeight * 0.5f;
+            float imageAspect = PlayArea.imageWidth / (float)PlayArea.imageHeight;
             float screenAspect = Screen.width / (float)Screen.height;
             if (imageAspect > screenAspect)
-                end = Config.ImageHeight * screenAspect * 0.5f;
+                end = PlayArea.imageHeight * screenAspect * 0.5f;
 
             // turn off auto adjusting
             autoAdjust = false;

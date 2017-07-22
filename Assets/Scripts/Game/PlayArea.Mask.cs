@@ -17,11 +17,15 @@ namespace Jintori.Game
             // --- Static Methods ---------------------------------------------------------------------------
             // -----------------------------------------------------------------------------------
             // --- Properties -------------------------------------------------------------------------------
+            int imageWidth;
+            int imageHeight;
+
+            // --- Properties -------------------------------------------------------------------------------
             /// <summary> Shorthand to access mask data </summary>
             public byte this[int x, int y]
             {
-                get { return data[y * ImageWidth + x]; }
-                set { data[y * ImageWidth + x] = value; }
+                get { return data[y * imageWidth + x]; }
+                set { data[y * imageWidth + x] = value; }
             }
 
             /// <summary> Mask data </summary>
@@ -51,12 +55,15 @@ namespace Jintori.Game
             /// </summary>
             public Mask(Texture2D shadowImage)
             {
-                texture = new Texture2D(ImageWidth, ImageHeight, TextureFormat.Alpha8, false);
+                imageWidth = PlayArea.imageWidth;
+                imageHeight = PlayArea.imageHeight;
+
+                texture = new Texture2D(imageWidth, imageHeight, TextureFormat.Alpha8, false);
                 texture.filterMode = FilterMode.Point;
                 this.shadowImage = shadowImage.GetRawTextureData();
 
-                data = new byte[ImageWidth * ImageHeight];
-                for (int i = 0; i < ImageWidth * ImageHeight; i++)
+                data = new byte[imageWidth * imageHeight];
+                for (int i = 0; i < imageWidth * imageHeight; i++)
                 {
                     data[i] = Shadowed;
                     totalShadowArea += this.shadowImage[i];
@@ -82,7 +89,7 @@ namespace Jintori.Game
             {
                 // first pass:
                 // copy old path, leaving everything else cleared
-                for (int i = 0; i < ImageWidth * ImageHeight; i++)
+                for (int i = 0; i < imageWidth * imageHeight; i++)
                     data[i] = (data[i] == Safe || data[i] == Cut) ? Safe : Cleared;
 
                 // second pass:
@@ -94,11 +101,11 @@ namespace Jintori.Game
                 // third pass:
                 // find invalid paths and erase them
                 clearedShadowArea = 0;
-                for (int i = 1; i < ImageWidth - 1; i++)
+                for (int i = 1; i < imageWidth - 1; i++)
                 {
-                    for (int j = 1; j < ImageHeight - 1; j++)
+                    for (int j = 1; j < imageHeight - 1; j++)
                     {
-                        int idx = j * ImageWidth + i;
+                        int idx = j * imageWidth + i;
 
                         if (data[idx] == Safe)
                         {
@@ -125,19 +132,19 @@ namespace Jintori.Game
                 // fourth pass:
                 // do the borders. If they're cleared, you
                 // can use them as safe paths
-                for (int i = 0; i < ImageWidth; i++)
+                for (int i = 0; i < imageWidth; i++)
                 {
                     if (this[i, 0] == Cleared)
                         this[i, 0] = Safe;
-                    if (this[i, ImageHeight - 1] == Cleared)
-                        this[i, ImageHeight - 1] = Safe;
+                    if (this[i, imageHeight - 1] == Cleared)
+                        this[i, imageHeight - 1] = Safe;
                 }
-                for (int i = 0; i < ImageHeight; i++)
+                for (int i = 0; i < imageHeight; i++)
                 {
                     if (this[0, i] == Cleared)
                         this[0, i] = Safe;
-                    if (this[ImageWidth - 1, i] == Cleared)
-                        this[ImageWidth - 1, i] = Safe;
+                    if (this[imageWidth - 1, i] == Cleared)
+                        this[imageWidth - 1, i] = Safe;
                 }
 
                 if (maskCleared != null)
@@ -170,7 +177,7 @@ namespace Jintori.Game
                     xx++;
 
                     // fill until the end of the scanline (or color changes)
-                    while (xx < ImageWidth && this[xx, y] == refColor)
+                    while (xx < imageWidth && this[xx, y] == refColor)
                     {
                         this[xx, y] = value;
                         if (y > 0)
@@ -186,7 +193,7 @@ namespace Jintori.Game
                                 pushDw = true; // start checking again
                         }
 
-                        if (y < ImageHeight - 1)
+                        if (y < imageHeight - 1)
                         {
                             // can the line above be filled?
                             if (pushUp && this[xx, y + 1] == refColor)

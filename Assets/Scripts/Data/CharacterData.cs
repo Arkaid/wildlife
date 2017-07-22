@@ -95,16 +95,19 @@ namespace Jintori.CharacterFile
         /// <summary>
         /// Creates the textures needed for the round
         /// </summary>
-        public RoundImages(byte[] rawBase, byte[] rawShadow)
+        public RoundImages(byte[] rawBase, byte[] rawShadow, bool isPortrait)
         {
-            baseImage = new Texture2D(Config.ImageWidth, Config.ImageHeight, TextureFormat.RGB24, false);
+            int img_w = isPortrait ? Game.PlayArea.LandscapeHeight : Game.PlayArea.LandscapeWidth;
+            int img_h = isPortrait ? Game.PlayArea.LandscapeWidth: Game.PlayArea.LandscapeHeight;
+             
+            baseImage = new Texture2D(img_w, img_h, TextureFormat.RGB24, false);
             baseImage.filterMode = FilterMode.Point;
             baseImage.alphaIsTransparency = true;
             baseImage.wrapMode = TextureWrapMode.Clamp;
             baseImage.LoadRawTextureData(rawBase);
             baseImage.Apply();
 
-            shadowImage = new Texture2D(Config.ImageWidth, Config.ImageHeight, TextureFormat.Alpha8, false);
+            shadowImage = new Texture2D(img_w, img_h, TextureFormat.Alpha8, false);
             baseImage.filterMode = FilterMode.Point;
             baseImage.alphaIsTransparency = true;
             baseImage.wrapMode = TextureWrapMode.Clamp;
@@ -159,6 +162,7 @@ namespace Jintori.CharacterFile
             public byte version;
             public string guid;
             public Entry characterSheet;
+            public bool[] isPortrait;
             public Entry[] roundBase;
             public Entry[] roundShadow;
 
@@ -167,6 +171,7 @@ namespace Jintori.CharacterFile
                 this.version = version;
                 this.guid = guid;
                 characterSheet = new Entry();
+                isPortrait = new bool[Config.Rounds];
                 roundBase = new Entry[Config.Rounds];
                 roundShadow = new Entry[Config.Rounds];
             }
@@ -176,6 +181,7 @@ namespace Jintori.CharacterFile
                 version = br.ReadByte();
                 guid = br.ReadString();
                 characterSheet = new Entry(br);
+                isPortrait = new bool[Config.Rounds];
                 roundBase = new Entry[Config.Rounds];
                 roundShadow = new Entry[Config.Rounds];
 
@@ -225,8 +231,8 @@ namespace Jintori.CharacterFile
             byte[] data;
 
             // encrypt and save the character sheet file
-            //data = File.ReadAllBytes(charSheetFile);
-            data = GetRawTextureData(charSheetFile);
+            int img_w, img_h;
+            data = GetRawTextureData(charSheetFile, out img_w, out img_h);
             data = LZMAtools.CompressByteArrayToLZMAByteArray(data);
             data = blowfish.Encrypt_ECB(data);
             header.characterSheet = new Entry((int)bw.BaseStream.Position, data.Length);
@@ -235,13 +241,13 @@ namespace Jintori.CharacterFile
             // encrypt and save round images
             for (int i = 0; i < Config.Rounds; i++)
             {
-                data = GetRawTextureData(roundFiles[i, 0]);
+                data = GetRawTextureData(roundFiles[i, 0], out img_w, out img_h);
                 data = LZMAtools.CompressByteArrayToLZMAByteArray(data);
                 data = blowfish.Encrypt_ECB(data);
                 header.roundBase[i] = new Entry((int)bw.BaseStream.Position, data.Length);
                 bw.Write(data);
 
-                data = GetRawTextureData(roundFiles[i, 1], true);
+                data = GetRawTextureData(roundFiles[i, 1], out img_w, out img_h, true);
                 data = LZMAtools.CompressByteArrayToLZMAByteArray(data);
                 data = blowfish.Encrypt_ECB(data);
                 header.roundShadow[i] = new Entry((int)bw.BaseStream.Position, data.Length);
@@ -262,7 +268,7 @@ namespace Jintori.CharacterFile
         /// <param name="pngFile"></param>
         /// <param name="isShadow"></param>
         /// <returns></returns>
-        static public byte[] GetRawTextureData(string pngFile, bool isShadow = false)
+        static public byte[] GetRawTextureData(string pngFile, out int width, out int height, bool isShadow = false)
         {
             const string TempFile = "Assets/_temp_.png";
             System.IO.File.Copy(pngFile, Application.dataPath + "/_temp_.png", true);
@@ -284,8 +290,10 @@ namespace Jintori.CharacterFile
                 TextureImporterType.Default;
             importer.SaveAndReimport();
 
-            Texture2D test = AssetDatabase.LoadAssetAtPath<Texture2D>(TempFile);
-            byte [] rawData = test.GetRawTextureData();
+            Texture2D temp = AssetDatabase.LoadAssetAtPath<Texture2D>(TempFile);
+            byte [] rawData = temp.GetRawTextureData();
+            width = temp.width;
+            height = temp.height;
             AssetDatabase.DeleteAsset(TempFile);
 
             return rawData;
@@ -369,7 +377,7 @@ namespace Jintori.CharacterFile
 
             br.Close();
 
-            return new RoundImages(rawBase, rawShadow);
+            return new RoundImages(rawBase, rawShadow, header.isPortrait[round]);
         }
     }
 }

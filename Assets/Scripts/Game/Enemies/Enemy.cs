@@ -144,8 +144,8 @@ namespace Jintori.Game
             while (true)
             {
                 Vector2 test = new Vector2();
-                test.x = Random.Range(bounds.extents.x, Config.ImageWidth - bounds.extents.x);
-                test.y = Random.Range(bounds.extents.y, Config.ImageHeight - bounds.extents.y);
+                test.x = Random.Range(bounds.extents.x, PlayArea.imageWidth - bounds.extents.x);
+                test.y = Random.Range(bounds.extents.y, PlayArea.imageHeight - bounds.extents.y);
                 
                 if (playerInitalSquare.Contains(test))
                     continue;

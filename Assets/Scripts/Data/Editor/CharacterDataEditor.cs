@@ -237,7 +237,7 @@ namespace Jintori.CharacterFile
 
         // -----------------------------------------------------------------------------------	
         /// <summary>
-        /// Load a PNG into preview and save the file name
+        /// Loads a pair of images for a round, and previews them
         /// </summary>
         void LoadRoundSet(int round)
         {
