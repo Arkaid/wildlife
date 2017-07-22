@@ -22,7 +22,7 @@ namespace Jintori.Game
             {
                 _x = value;
                 Vector3 pos = transform.localPosition;
-                pos.x = _x - Config.ImageWidth * 0.5f;
+                pos.x = _x - PlayArea.imageWidth * 0.5f;
                 transform.localPosition = pos;
             }
         }
@@ -36,7 +36,7 @@ namespace Jintori.Game
             {
                 _y = value;
                 Vector3 pos = transform.localPosition;
-                pos.y = _y - Config.ImageHeight * 0.5f;
+                pos.y = _y - PlayArea.imageHeight * 0.5f;
                 transform.localPosition = pos;
             }
         }
@@ -79,11 +79,11 @@ namespace Jintori.Game
         {
             Vector2 pos = transform.localPosition;
 
-            _x = Mathf.RoundToInt(pos.x + Config.ImageWidth * 0.5f);
-            _x = Mathf.Clamp(_x, 0, Config.ImageWidth - 1);
+            _x = Mathf.RoundToInt(pos.x + PlayArea.imageWidth * 0.5f);
+            _x = Mathf.Clamp(_x, 0, PlayArea.imageWidth - 1);
 
-            _y = Mathf.RoundToInt(pos.y + Config.ImageHeight * 0.5f);
-            _y = Mathf.Clamp(_y, 0, Config.ImageHeight - 1);
+            _y = Mathf.RoundToInt(pos.y + PlayArea.imageHeight * 0.5f);
+            _y = Mathf.Clamp(_y, 0, PlayArea.imageHeight - 1);
         }
     }
 }

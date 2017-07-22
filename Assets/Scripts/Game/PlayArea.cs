@@ -14,9 +14,6 @@ namespace Jintori.Game
         public const byte Safe = 128;
         public const byte Cut = 64;
 
-        const int ImageWidth = Config.ImageWidth;
-        const int ImageHeight = Config.ImageHeight;
-
         static readonly Color CycleColor1 = new Color(0.2f, 0.2f, 0.4f, 1);
         static readonly Color CycleColor2 = new Color(0.4f, 0.4f, 0.7f, 1);
         const float CycleTime = 3f;
@@ -28,7 +25,19 @@ namespace Jintori.Game
             layerMask = EdgesLayerMask
         };
 
+        /// <summary> Width of the main game image in landscape mode, in pixels </summary>
+        public const int LandscapeWidth = 960;
+
+        /// <summary> Height of the main game image in landscape mode, in pixels </summary>
+        public const int LandscapeHeight = 540;
+
         // --- Static Properties ------------------------------------------------------------------------
+        /// <summary> Image width. Changes if it's portrait mode or not </summary>
+        public static int imageWidth { get; private set; }
+
+        /// <summary> Image height . Changes if it's portrait mode or not </summary>
+        public static int imageHeight { get; private set; }
+
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
@@ -99,12 +108,19 @@ namespace Jintori.Game
         public void Setup(Texture2D baseImage, Texture2D shadowImage, System.Type bossType)
         {
             // do some basic validity check
-            if (baseImage.width != ImageWidth || baseImage.height != ImageHeight)
+            bool isPortraitMode = baseImage.width == LandscapeHeight && baseImage.height == LandscapeWidth;
+            bool isLandscapeMode = baseImage.width == LandscapeWidth && baseImage.height == LandscapeHeight;
+            if (!(isLandscapeMode || isPortraitMode))
                 throw new System.Exception("Invalid Base image size");
-            if (shadowImage.width != ImageWidth || shadowImage.height != ImageHeight)
-                throw new System.Exception("Invalid Shadow image size");
+
+            if (shadowImage.width != baseImage.width || shadowImage.height != baseImage.height)
+                throw new System.Exception("Shadow image does not match base image size");
+
             if (shadowImage.format != TextureFormat.Alpha8)
                 throw new System.Exception("Shadow image is not of type Alpha8");
+
+            imageWidth = isLandscapeMode ? LandscapeWidth : LandscapeHeight;
+            imageHeight = isLandscapeMode ? LandscapeHeight: LandscapeWidth;
 
             // Deactivate all enemies
             Enemy[] enemies = GetComponentsInChildren<Enemy>();
@@ -136,8 +152,8 @@ namespace Jintori.Game
             // transform the path's local position
             // to account for quad size
             Vector3 pos = safePath.transform.localPosition;
-            pos.x = -ImageWidth * 0.5f;
-            pos.y = -ImageHeight * 0.5f;
+            pos.x = -imageWidth * 0.5f;
+            pos.y = -imageHeight * 0.5f;
             safePath.transform.localPosition = pos;
             cutPath.transform.localPosition = pos;
         }
@@ -149,9 +165,9 @@ namespace Jintori.Game
             cutPath.Clear();
 
             bool cancelWait = false;
-            for (int y = ImageHeight - 1; y >= 0; y--)
+            for (int y = imageHeight - 1; y >= 0; y--)
             {
-                for (int x = 0; x < ImageWidth; x++)
+                for (int x = 0; x < imageWidth; x++)
                     mask[x, y] = Cleared;
 
                 // cancel the slow "discover" and just clear the whole image
@@ -216,8 +232,8 @@ namespace Jintori.Game
         /// </summary>
         void CreateQuad()
         {
-            float w = ImageWidth * 0.5f;
-            float h = ImageHeight * 0.5f;
+            float w = imageWidth * 0.5f;
+            float h = imageHeight * 0.5f;
 
             Vector3[] corners = new Vector3[]
             {
@@ -268,10 +284,10 @@ namespace Jintori.Game
             float scr_h = Screen.height / cameraZoom;
 
             float w2 = 0, h2 = 0;
-            if (scr_w <= ImageWidth)
-                w2 = (ImageWidth - scr_w) * 0.5f;
-            if (scr_h <= ImageHeight)
-                h2 = (ImageHeight - scr_h) * 0.5f;
+            if (scr_w <= imageWidth)
+                w2 = (imageWidth - scr_w) * 0.5f;
+            if (scr_h <= imageHeight)
+                h2 = (imageHeight - scr_h) * 0.5f;
 
             Vector2 offset = player.transform.position;
             Vector2 position = (Vector2)transform.position - offset;
