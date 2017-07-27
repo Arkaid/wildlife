@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 using System.IO;
 
 #if UNITY_EDITOR
@@ -44,7 +45,7 @@ namespace Jintori.CharacterFile
         public Sprite[] roundIcons { get; private set; }
 
         /// <summary> Source texture </summary>
-        Texture2D source;
+        public Texture2D source { get; private set; }
 
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
@@ -128,6 +129,16 @@ namespace Jintori.CharacterFile
 
         /// <summary> File version 1 </summary>
         const byte Version1 = 1;
+
+#if UNITY_EDITOR
+        /// <summary> Used to check image orientation when saving </summary>
+        enum Orientation
+        {
+            Invalid,
+            Portrait,
+            Landscape
+        }
+#endif
 
         /// <summary> A file entry in the data file </summary>
         struct Entry
@@ -219,11 +230,36 @@ namespace Jintori.CharacterFile
         /// encrypting them separately
         /// </summary>
         /// <param name="filename">File to save to</param>
+        /// <param name="guid"> Unique id to identify the character </param>
         /// <param name="charSheetFile"> PNG file with the character sheet </param>
         /// <param name="roundFiles"> PNG files for each round (base, shadow) </param>
-        public static void CreateFile(string filename, string guid, string charSheetFile, string [,] roundFiles)
+        /// <param name="updateFile"> File to update. If null, a new one is created </param>
+        public static void CreateFile(string filename, string guid, string charSheetFile, string [,] roundFiles, File updateFile = null)
         {
-            BinaryWriter bw = new BinaryWriter(System.IO.File.Open(filename, FileMode.Create));
+            string tempFile = Application.temporaryCachePath + "/temp_charfile.chr";
+
+            // ----- Validation check -----
+            // the update file is null, so all other png files must exist and be set
+            string errors = "";
+            if (updateFile == null)
+            {
+                if (string.IsNullOrEmpty(charSheetFile))
+                    errors += "You must set the character sheet file\n";
+                for (int i = 0; i < Config.Rounds; i++)
+                {
+                    if (string.IsNullOrEmpty(roundFiles[i, 0]))
+                        errors += string.Format("You must set the base image file for round {0}\n", i + 1);
+                    if (string.IsNullOrEmpty(roundFiles[i, 1]))
+                        errors += string.Format("You must set the shadow image file for round {0}\n", i + 1);
+                }
+            }
+
+            // no need to continue at this point
+            if (!string.IsNullOrEmpty(errors))
+                throw new Exception(errors);
+
+            // ----- File creation -----
+            BinaryWriter bw = new BinaryWriter(System.IO.File.Open(tempFile, FileMode.Create));
             BlowFishCS.BlowFish blowfish = new BlowFishCS.BlowFish(IllogicGate.Data.EncryptedFile.RestoreKey(ShuffledKey));
             
             // save an empty header to make space for it
@@ -233,31 +269,64 @@ namespace Jintori.CharacterFile
             byte[] data;
 
             // encrypt and save the character sheet file
-            data = GetRawTextureData(charSheetFile);
+            if (string.IsNullOrEmpty(charSheetFile))
+                data = updateFile.baseSheet.source.GetRawTextureData();
+            else
+                data = GetRawTextureData(charSheetFile);
             data = LZMAtools.CompressByteArrayToLZMAByteArray(data);
             data = blowfish.Encrypt_ECB(data);
             header.characterSheet = new Entry((int)bw.BaseStream.Position, data.Length);
             bw.Write(data);
 
             // encrypt and save round images
-            // NOTE: we assume the images are the correct size
-            // although we should probably insert a check here...
             int img_w, img_h;
+            Orientation orientation;
             for (int i = 0; i < Config.Rounds; i++)
             {
-                data = GetRawTextureData(roundFiles[i, 0], out img_w, out img_h);
+                // load original images if available
+                RoundImages original = null;
+                if (updateFile != null)
+                    original = updateFile.LoadRound(i);
+
+                if (string.IsNullOrEmpty(roundFiles[i, 0]))
+                {
+                    data = original.baseImage.GetRawTextureData();
+                    img_w = original.baseImage.width;
+                    img_h = original.baseImage.height;
+                }
+                else
+                    data = GetRawTextureData(roundFiles[i, 0], out img_w, out img_h);
+
+                orientation = CheckOrientation(img_w, img_h);
+                if (orientation == Orientation.Invalid)
+                    throw new Exception("Invalid image size for base image " + (i + 1));
+
                 data = LZMAtools.CompressByteArrayToLZMAByteArray(data);
                 data = blowfish.Encrypt_ECB(data);
                 header.roundBase[i] = new Entry((int)bw.BaseStream.Position, data.Length);
                 bw.Write(data);
 
-                header.isPortrait[i] = img_w == Game.PlayArea.LandscapeHeight;
 
-                data = GetRawTextureData(roundFiles[i, 1], out img_w, out img_h, true);
+                if (string.IsNullOrEmpty(roundFiles[i, 1]))
+                {
+                    data = original.shadowImage.GetRawTextureData();
+                    img_w = original.shadowImage.width;
+                    img_h = original.shadowImage.height;
+                }
+                else
+                    data = GetRawTextureData(roundFiles[i, 1], out img_w, out img_h, true);
+
+                orientation = CheckOrientation(img_w, img_h);
+                if (orientation == Orientation.Invalid)
+                    throw new Exception("Invalid image size for shadow image " + (i + 1));
+
+
                 data = LZMAtools.CompressByteArrayToLZMAByteArray(data);
                 data = blowfish.Encrypt_ECB(data);
                 header.roundShadow[i] = new Entry((int)bw.BaseStream.Position, data.Length);
                 bw.Write(data);
+
+                header.isPortrait[i] = orientation == Orientation.Portrait;
             }
 
             // rewind and overwrite header
@@ -265,10 +334,26 @@ namespace Jintori.CharacterFile
             header.Save(bw);
 
             bw.Close();
-        }
-        
-        // -----------------------------------------------------------------------------------	
 
+            // replace files
+            if (System.IO.File.Exists(filename))
+                System.IO.File.Delete(filename);
+            System.IO.File.Move(tempFile, filename);
+        }
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Check if the image is portrait or landscape. 
+        /// </summary>
+        static Orientation CheckOrientation(int width, int height)
+        {
+            bool isPortrait = width == Game.PlayArea.LandscapeHeight && height == Game.PlayArea.LandscapeWidth;
+            bool isLandscape = height == Game.PlayArea.LandscapeHeight && width == Game.PlayArea.LandscapeWidth;
+            if (!isPortrait && !isLandscape)
+                return Orientation.Invalid;
+            if (isPortrait)
+                return Orientation.Portrait;
+            return Orientation.Landscape;
+        }
         // -----------------------------------------------------------------------------------	
         static public byte[] GetRawTextureData(string pngFile, bool isShadow = false)
         {
@@ -324,7 +409,7 @@ namespace Jintori.CharacterFile
         /// <summary> original file with character data </summary>
         public string source { get; private set; }
 
-        /// <summary> Character sheet. Call LoadCharacterSheet </summary>
+        /// <summary> Character sheet.</summary>
         public BaseSheet baseSheet
         {
             get
@@ -338,6 +423,10 @@ namespace Jintori.CharacterFile
 
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Loads a character file
+        /// </summary>
+        /// <param name="filename"></param>
         public File(string filename)
         {
             BinaryReader br = new BinaryReader(System.IO.File.Open(filename, FileMode.Open));
@@ -350,7 +439,7 @@ namespace Jintori.CharacterFile
         /// <summary>
         /// Loads and decrypts a character sheet from file
         /// </summary>
-        public void LoadCharacterSheet()
+        void LoadCharacterSheet()
         {
             BinaryReader br = new BinaryReader(System.IO.File.Open(source, FileMode.Open));
             BlowFishCS.BlowFish blowfish = new BlowFishCS.BlowFish(IllogicGate.Data.EncryptedFile.RestoreKey(ShuffledKey));

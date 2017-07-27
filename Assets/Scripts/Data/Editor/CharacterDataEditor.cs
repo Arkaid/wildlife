@@ -31,6 +31,9 @@ namespace Jintori.CharacterFile
         /// <summary> Unique id to identify the character file. Used for saving / loading progress </summary>
         string guid;
 
+        /// <summary> loaded file, if any </summary>
+        File loadedFile;
+
         /// <summary> Character sheet used for previewing puroses </summary>
         BaseSheet baseSheet;
 
@@ -66,14 +69,14 @@ namespace Jintori.CharacterFile
                 LoadRoundSet(2);
             if (GUILayout.Button("Save"))
                 Save();
-            if (GUILayout.Button("Test"))
-                Test();
+            if (GUILayout.Button("Load"))
+                Load();
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("New ID", GUILayout.Width(200)))
                 guid = System.Guid.NewGuid().ToString().ToUpper();
-            EditorGUILayout.SelectableLabel(guid);
+            guid = EditorGUILayout.TextField(guid);
             GUILayout.EndHorizontal();
 
             scroll = GUILayout.BeginScrollView(scroll);
@@ -120,7 +123,7 @@ namespace Jintori.CharacterFile
             for (int i = 0; i < Config.Rounds; i++)
             {
                 foldout[i + 1] = EditorGUILayout.Foldout(foldout[i + 1], string.Format("Round {0}", i + 1));
-                if (foldout[i + 1] && !string.IsNullOrEmpty(roundFiles[i, 0]) && !string.IsNullOrEmpty(roundFiles[0, 1]))
+                if (foldout[i + 1] && rounds[i] != null)
                 {
                     GUILayout.BeginHorizontal();
                     DrawTexture(rounds[i].baseImage);
@@ -139,6 +142,7 @@ namespace Jintori.CharacterFile
         /// </summary>
         void Clear()
         {
+            loadedFile = null;
             guid = System.Guid.NewGuid().ToString().ToUpper();
             baseSheet = null;
             rounds = new RoundImages[Config.Rounds];
@@ -158,14 +162,14 @@ namespace Jintori.CharacterFile
             if (string.IsNullOrEmpty(target))
                 return;
 
-            File.CreateFile(target, guid, characterSheetFile, roundFiles);
+            File.CreateFile(target, guid, characterSheetFile, roundFiles, loadedFile);
         }
         
         // -----------------------------------------------------------------------------------	
         /// <summary>
         /// Loads a created character file to test if it was saved correctly
         /// </summary>
-        void Test()
+        void Load()
         {
             Clear();
 
@@ -173,18 +177,13 @@ namespace Jintori.CharacterFile
             if (string.IsNullOrEmpty(target))
                 return;
 
-            File charFile = new File(target);
-            characterSheetFile = "_TEST_";
-            baseSheet = charFile.baseSheet;
+            loadedFile = new File(target);
+            baseSheet = loadedFile.baseSheet;
 
-            guid = charFile.guid;
+            guid = loadedFile.guid;
 
             for (int i = 0; i < Config.Rounds; i++)
-            {
-                roundFiles[i, 0] = "_TEST_";
-                roundFiles[i, 1] = "_TEST_";
-                rounds[i] = charFile.LoadRound(i);
-            }
+                rounds[i] = loadedFile.LoadRound(i);
         }
 
         // -----------------------------------------------------------------------------------	
@@ -199,7 +198,6 @@ namespace Jintori.CharacterFile
 
             Rect spriteRect = new Rect(sprite.rect.x / sprite.texture.width, sprite.rect.y / sprite.texture.height,
                                        sprite.rect.width / sprite.texture.width, sprite.rect.height / sprite.texture.height);
-
             
             GUILayout.Box(GUIContent.none, GUILayout.Width(sprite.rect.width + 4), GUILayout.Height(sprite.rect.height + 4));
             Rect rect = GUILayoutUtility.GetLastRect();
