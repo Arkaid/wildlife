@@ -68,6 +68,7 @@ namespace Jintori.Game
         /// </summary>
         public void Run()
         {
+            gameObject.SetActive(true);
             subEnemies = new List<Enemy>();
             StartCoroutine(RunCoroutine());
         }
