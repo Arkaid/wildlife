@@ -107,18 +107,7 @@ namespace Jintori.Game
         /// <param name="bossType">Boss to activate for this playthrough</param>
         public void Setup(Texture2D baseImage, Texture2D shadowImage, System.Type bossType)
         {
-            // do some basic validity check
-            bool isPortrait = baseImage.width == LandscapeHeight && baseImage.height == LandscapeWidth;
             bool isLandscape = baseImage.width == LandscapeWidth && baseImage.height == LandscapeHeight;
-            if (!(isLandscape || isPortrait))
-                throw new System.Exception("Invalid Base image size");
-
-            if (shadowImage.width != baseImage.width || shadowImage.height != baseImage.height)
-                throw new System.Exception("Shadow image does not match base image size");
-
-            if (shadowImage.format != TextureFormat.Alpha8)
-                throw new System.Exception("Shadow image is not of type Alpha8");
-
             imageWidth = isLandscape ? LandscapeWidth : LandscapeHeight;
             imageHeight = isLandscape ? LandscapeHeight: LandscapeWidth;
 
