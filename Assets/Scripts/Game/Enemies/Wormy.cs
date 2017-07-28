@@ -79,8 +79,17 @@ namespace Jintori.Game
             rotationHistory = new List<Quaternion>();
             for (int i = 0; i < currentSettings.historyLength; i++)
             {
-                positionHistory.Add(transform.position);
+                positionHistory.Add(transform.localPosition);
                 rotationHistory.Add(Quaternion.identity);
+            }
+
+            // reparent the segments to share the same 
+            // parent as the head
+            foreach (Transform part in parts)
+            {
+                part.GetComponent<WormySegment>().Run();
+                part.SetParent(transform.parent, true);
+                part.localPosition = transform.localPosition;
             }
 
             SetNextTarget();
@@ -141,7 +150,7 @@ namespace Jintori.Game
         {
             // enqueue current position and rotation
             positionHistory.RemoveAt(0);
-            positionHistory.Add(transform.position);
+            positionHistory.Add(transform.localPosition);
 
             rotationHistory.RemoveAt(0);
             rotationHistory.Add(transform.rotation);
@@ -152,8 +161,9 @@ namespace Jintori.Game
             // apply delayed position and rotation
             for (int i = 0; i < parts.Length; i++)
             {
-                parts[i].position = positionHistory[idxJump * i];
-                parts[i].rotation = rotationHistory[idxJump * i];
+                int idx = idxJump * (parts.Length - 1 - i);
+                parts[i].localPosition = positionHistory[idx];
+                parts[i].rotation = rotationHistory[idx];
             }
         }
 
