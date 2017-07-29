@@ -27,7 +27,7 @@ namespace Jintori.Game
         protected bool isAlive;
 
         /// <summary> Collider for the enemy </summary>
-        protected new Collider2D collider
+        public new Collider2D collider
         {
             get
             {
