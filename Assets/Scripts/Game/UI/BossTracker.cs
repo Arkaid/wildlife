@@ -108,16 +108,17 @@ namespace Jintori.Game
 
             while (boss != null)
             {
-                yield return null;
-
                 up.gameObject.SetActive(false);
                 down.gameObject.SetActive(false);
                 left.gameObject.SetActive(false);
                 right.gameObject.SetActive(false);
-                
+
                 // no need to track here
                 if (collider.IsTouching(boss.collider))
-                    continue;           
+                {
+                    yield return null;
+                    continue;
+                }
 
                 // get boss position in viewport coordinates
                 Vector2 bossPos = Camera.main.WorldToViewportPoint(boss.transform.position);
@@ -128,34 +129,33 @@ namespace Jintori.Game
                 float angle = SignedAngle(tr, boss.transform.position);
 
                 // show correct arrow and place it at boss level
+                RectTransform target = null;
                 if (angle < tp)
                 {
                     bossPos.y = 1;
-                    up.gameObject.SetActive(true);
-                    up.anchorMin = bossPos;
-                    up.anchorMax = bossPos;    
+                    target = up;
                 }
                 else if (angle < lt)
                 {
                     bossPos.x = 0;
-                    left.gameObject.SetActive(true);
-                    left.anchorMin = bossPos;
-                    left.anchorMax = bossPos;
+                    target = left;
                 }
                 else if (angle < bt)
                 {
                     bossPos.y = 0;
-                    down.gameObject.SetActive(true);
-                    down.anchorMin = bossPos;
-                    down.anchorMax = bossPos;
+                    target = down;
                 }
                 else
                 {
                     bossPos.x = 1;
-                    right.gameObject.SetActive(true);
-                    right.anchorMin = bossPos;
-                    right.anchorMax = bossPos;
+                    target = right;
                 }
+
+                target.gameObject.SetActive(true);
+                target.anchorMin = bossPos;
+                target.anchorMax = bossPos;
+
+                yield return null;
             }
         }
     }
