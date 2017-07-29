@@ -93,13 +93,14 @@ namespace Jintori.Game
         // -----------------------------------------------------------------------------------	
         IEnumerator RunCoroutine()
         {
+            YieldInstruction wffu = new WaitForFixedUpdate();
             isAlive = true;
             Setup();
             while (isAlive)
             {
                 UpdatePosition();
                 CheckPlayerHit();
-                yield return null;
+                yield return wffu;
             }
             Finish();
         }
