@@ -203,7 +203,8 @@ namespace Jintori.Data
 
             JSONObject json = IllogicGate.Data.EncryptedFile.ReadJSONObject(filePath);
 
-            string version = json["version"].str;
+            // unused for now, but will become useful later
+            // string version = json["version"].str;
 
             characterDataByGUID = new Dictionary<string, CharacterStats>();
             foreach (JSONObject item in json["characters"].list)
