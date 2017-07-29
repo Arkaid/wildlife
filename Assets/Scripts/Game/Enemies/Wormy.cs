@@ -8,7 +8,7 @@ namespace Jintori.Game
     // --- Class Declaration ------------------------------------------------------------------------
     public class Wormy : Enemy
     {
-        [System.Serializable]
+        [Serializable]
         struct Settings
         {
             public Config.Difficulty difficulty;
@@ -66,6 +66,8 @@ namespace Jintori.Game
         // -----------------------------------------------------------------------------------	
         protected override void Setup()
         {
+            killed += OnKilled;
+
             currentSettings = Array.Find(
                 settings,
                 s => s.difficulty == Config.instance.difficulty &&
@@ -93,6 +95,16 @@ namespace Jintori.Game
             }
 
             SetNextTarget();
+        }
+
+        // -----------------------------------------------------------------------------------	
+        private void OnKilled(Enemy obj)
+        {
+            animator.SetTrigger("Die");
+
+            // wait a few seconds to destroy the object
+            // to give the animation time to finish
+            DestroyObject(gameObject, 10);
         }
 
         // -----------------------------------------------------------------------------------	
