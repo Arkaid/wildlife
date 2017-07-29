@@ -184,6 +184,9 @@ namespace Jintori.Game
             currentPlay.boss.SetBossStartPosition(rect);
             currentPlay.boss.Run();
 
+            // start tracking it
+            UI.instance.bossTracker.StartTracking(currentPlay.boss);
+
             // start timer
             Timer.instance.StartTimer();
 

@@ -36,6 +36,10 @@ namespace Jintori.Game
         ScoreDisplay _scoreDisplay = null;
         public ScoreDisplay scoreDisplay {  get { return _scoreDisplay; } }
 
+        [SerializeField]
+        BossTracker _bossTracker = null;
+        public BossTracker bossTracker { get { return _bossTracker; } }
+
         // --- Properties -------------------------------------------------------------------------------
         /// <summary> Total lives to show </summary>
         public int lives { set { livesText.text = string.Format("x{0:00}", value); } }
@@ -61,6 +65,7 @@ namespace Jintori.Game
             roundStart.Reset();
             gameResult.Reset();
             scoreDisplay.Reset();
+            bossTracker.Reset();
         }
 
         // -----------------------------------------------------------------------------------	
