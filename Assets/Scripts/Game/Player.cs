@@ -172,11 +172,9 @@ namespace Jintori.Game
                 isSkillActive = true;
                 animator.SetBool(skill.ToString(), true);
 
-                // if the shield is on, move the cut path
-                // to the edges layer, so enemies will bounce off of it, rather
-                // than going through
+                // start shielding the path
                 if (skill == Skill.Shield)
-                    playArea.cutPath.gameObject.layer = LayerMask.NameToLayer("Edges");
+                    playArea.ProtectCutPath(true);
             }
 
             // do we have to deactivate the skill
@@ -185,8 +183,9 @@ namespace Jintori.Game
                 isSkillActive = false;
                 animator.SetBool(skill.ToString(), false);
 
-                // restore layer
-                playArea.cutPath.gameObject.layer = LayerMask.NameToLayer("Default");
+                // stop protecting
+                if (skill == Skill.Shield)
+                    playArea.ProtectCutPath(false);
             }
 
             if (isSkillActive)

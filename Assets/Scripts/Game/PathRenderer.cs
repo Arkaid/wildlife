@@ -47,6 +47,14 @@ namespace Jintori.Game
         /// <summary> Edge collider </summary>
         public new EdgeCollider2D collider { get; private set; }
 
+        /// <summary> Color of the line renderer </summary>
+        public Color color
+        {
+            get { return lineRenderer.material.color; }
+            set { lineRenderer.material.color = value; }
+        }
+        
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         void Awake()
