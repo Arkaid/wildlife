@@ -210,7 +210,7 @@ namespace Jintori.Game
         private void OnTimerTimedOut()
         {
             livesLeft = 0;
-            currentPlay.player.Hit();
+            currentPlay.player.Hit(true);
         }
 
         // -----------------------------------------------------------------------------------	
