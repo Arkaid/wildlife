@@ -80,11 +80,15 @@ namespace Jintori.Game
         /// <summary> Zoom used for the pixel perfect adjuster </summary>
         float cameraZoom;
 
+        /// <summary> Color of the cut path </summary>
+        Color cutPathColor;
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         void Start()
         {
             cameraZoom = Camera.main.GetComponent<CameraAdjuster>().zoom;
+            cutPathColor = cutPath.color;
         }
 
         // -----------------------------------------------------------------------------------	
@@ -148,6 +152,9 @@ namespace Jintori.Game
         }
 
         // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Called after winning the game to discover the remainings of the shadow
+        /// </summary>
         public IEnumerator DiscoverShadow()
         {
             safePath.Clear();
@@ -173,6 +180,28 @@ namespace Jintori.Game
 
             if (cancelWait)
                 mask.Apply();
+        }
+
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Used by the Shield skill to protect the cut path, by changing it
+        /// to a safe path. Enemies will bounce off from it rather than go
+        /// through it (although colliders may be still activated and Hit() can happen)
+        /// </summary>
+        /// <param name="protect"></param>
+        public void ProtectCutPath(bool protect)
+        {
+            if (protect)
+            {
+                cutPath.color = safePath.color;
+                cutPath.gameObject.layer = LayerMask.NameToLayer("Edges");
+            }
+
+            else
+            {
+                cutPath.color = cutPathColor;
+                cutPath.gameObject.layer = LayerMask.NameToLayer("Default");
+            }
         }
 
         // -----------------------------------------------------------------------------------	
