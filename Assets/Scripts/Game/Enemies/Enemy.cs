@@ -110,7 +110,7 @@ namespace Jintori.Game
         {
             Physics2D.Simulate(0.005f);
             if (collider.IsTouching(playArea.cutPath.collider))
-                playArea.player.Hit();
+                playArea.player.Hit(false);
         }
 
         // -----------------------------------------------------------------------------------	

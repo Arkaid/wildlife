@@ -44,6 +44,13 @@ namespace Jintori
             3
         };
 
+        /// <summary> Speed multiplier for the speed skill, per difficulty </summary>
+        public static readonly float[] SpeedSkillMultiplier = new float[]
+        {
+            2f,
+            1.75f,
+            1.5f,
+        };
 
         /// <summary> Calculates score </summary>
         public static class Score
@@ -144,6 +151,9 @@ namespace Jintori
 
         /// <summary> Needed clear percentage to win, adjusted for difficulty </summary>
         public int clearPercentage { get { return Mathf.FloorToInt(clearRatio * 100); } }
+
+        /// <summary> Speed multiplier for the speed skill, adjusted for difficulty </summary>
+        public float speedSkillMultiplier { get { return SpeedSkillMultiplier[(int)difficulty]; } }
 
         /// <summary> Starting amount of lives, adjusted for difficulty </summary>
         public int lives { get { return Lives[(int)difficulty]; } }

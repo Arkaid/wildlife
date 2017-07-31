@@ -1,35 +1,32 @@
 fileFormatVersion: 2
-guid: 9ef2af12fccb9e04d962376b44564084
-timeCreated: 1501396524
+guid: c2e59876f0439e547b2af272d940319f
+timeCreated: 1501396320
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
-    21300000: player_spawn_0
-    21300002: player_spawn_1
-    21300004: player_spawn_2
-    21300006: player_spawn_3
-    21300008: player_spawn_4
-    21300010: player_spawn_5
-    21300012: player_spawn_6
-    21300014: player_spawn_7
-    21300016: player_spawn_8
-    21300018: player_spawn_9
-    21300020: player_spawn_10
-    21300022: player_spawn_11
-    21300024: player_spawn_12
-    21300026: player_spawn_13
-    21300028: player_spawn_14
-    21300030: player_spawn_15
-    21300032: player_spawn_16
-    21300034: player_spawn_17
-    21300036: player_spawn_18
-    21300038: player_spawn_19
-    21300040: player_spawn_20
-    21300042: player_spawn_21
-    21300044: player_spawn_22
-    21300046: player_spawn_23
-    21300048: player_spawn_24
-    21300050: player_spawn_25
+    21300000: player_effect_1_0
+    21300002: player_effect_1_1
+    21300004: player_effect_1_2
+    21300006: player_effect_1_3
+    21300008: player_effect_1_4
+    21300010: player_effect_1_5
+    21300012: player_effect_1_6
+    21300014: player_effect_1_7
+    21300016: player_effect_1_8
+    21300018: player_effect_1_9
+    21300020: player_effect_1_10
+    21300022: player_effect_1_11
+    21300024: player_effect_1_12
+    21300026: player_effect_1_13
+    21300028: player_effect_1_14
+    21300030: player_effect_1_15
+    21300032: player_effect_1_16
+    21300034: player_effect_1_17
+    21300036: player_effect_1_18
+    21300038: player_effect_1_19
+    21300040: player_effect_1_20
+    21300042: player_effect_1_21
+    21300044: player_effect_1_22
   serializedVersion: 4
   mipmaps:
     mipMapMode: 0
@@ -101,13 +98,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: player_spawn_0
+      name: player_effect_1_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 300
-        width: 60
-        height: 60
+        y: 160
+        width: 40
+        height: 40
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,13 +112,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: player_spawn_1
+      name: player_effect_1_1
       rect:
         serializedVersion: 2
-        x: 60
-        y: 300
-        width: 60
-        height: 60
+        x: 40
+        y: 160
+        width: 40
+        height: 40
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -129,13 +126,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: player_spawn_2
+      name: player_effect_1_2
       rect:
         serializedVersion: 2
-        x: 120
-        y: 300
-        width: 60
-        height: 60
+        x: 80
+        y: 160
+        width: 40
+        height: 40
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -143,69 +140,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: player_spawn_3
-      rect:
-        serializedVersion: 2
-        x: 180
-        y: 300
-        width: 60
-        height: 60
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: player_spawn_4
-      rect:
-        serializedVersion: 2
-        x: 240
-        y: 300
-        width: 60
-        height: 60
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: player_spawn_5
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 240
-        width: 60
-        height: 60
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: player_spawn_6
-      rect:
-        serializedVersion: 2
-        x: 60
-        y: 240
-        width: 60
-        height: 60
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: player_spawn_7
+      name: player_effect_1_3
       rect:
         serializedVersion: 2
         x: 120
-        y: 240
-        width: 60
-        height: 60
+        y: 160
+        width: 40
+        height: 40
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -213,13 +154,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: player_spawn_8
+      name: player_effect_1_4
       rect:
         serializedVersion: 2
-        x: 180
-        y: 240
-        width: 60
-        height: 60
+        x: 160
+        y: 160
+        width: 40
+        height: 40
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -227,97 +168,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: player_spawn_9
-      rect:
-        serializedVersion: 2
-        x: 240
-        y: 240
-        width: 60
-        height: 60
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: player_spawn_10
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 180
-        width: 60
-        height: 60
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: player_spawn_11
-      rect:
-        serializedVersion: 2
-        x: 60
-        y: 180
-        width: 60
-        height: 60
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: player_spawn_12
-      rect:
-        serializedVersion: 2
-        x: 120
-        y: 180
-        width: 60
-        height: 60
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: player_spawn_13
-      rect:
-        serializedVersion: 2
-        x: 180
-        y: 180
-        width: 60
-        height: 60
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: player_spawn_14
-      rect:
-        serializedVersion: 2
-        x: 240
-        y: 180
-        width: 60
-        height: 60
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: player_spawn_15
+      name: player_effect_1_5
       rect:
         serializedVersion: 2
         x: 0
         y: 120
-        width: 60
-        height: 60
+        width: 40
+        height: 40
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -325,13 +182,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: player_spawn_16
+      name: player_effect_1_6
       rect:
         serializedVersion: 2
-        x: 60
+        x: 40
         y: 120
-        width: 60
-        height: 60
+        width: 40
+        height: 40
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -339,13 +196,27 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: player_spawn_17
+      name: player_effect_1_7
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 120
+        width: 40
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: player_effect_1_8
       rect:
         serializedVersion: 2
         x: 120
         y: 120
-        width: 60
-        height: 60
+        width: 40
+        height: 40
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -353,13 +224,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: player_spawn_18
+      name: player_effect_1_9
       rect:
         serializedVersion: 2
-        x: 180
+        x: 160
         y: 120
-        width: 60
-        height: 60
+        width: 40
+        height: 40
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -367,27 +238,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: player_spawn_19
-      rect:
-        serializedVersion: 2
-        x: 240
-        y: 120
-        width: 60
-        height: 60
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: player_spawn_20
+      name: player_effect_1_10
       rect:
         serializedVersion: 2
         x: 0
-        y: 60
-        width: 60
-        height: 60
+        y: 80
+        width: 40
+        height: 40
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -395,13 +252,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: player_spawn_21
+      name: player_effect_1_11
       rect:
         serializedVersion: 2
-        x: 60
-        y: 60
-        width: 60
-        height: 60
+        x: 40
+        y: 80
+        width: 40
+        height: 40
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -409,13 +266,27 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: player_spawn_22
+      name: player_effect_1_12
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 80
+        width: 40
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: player_effect_1_13
       rect:
         serializedVersion: 2
         x: 120
-        y: 60
-        width: 60
-        height: 60
+        y: 80
+        width: 40
+        height: 40
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -423,13 +294,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: player_spawn_23
+      name: player_effect_1_14
       rect:
         serializedVersion: 2
-        x: 180
-        y: 60
-        width: 60
-        height: 60
+        x: 160
+        y: 80
+        width: 40
+        height: 40
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -437,13 +308,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: player_spawn_24
+      name: player_effect_1_15
       rect:
         serializedVersion: 2
-        x: 240
-        y: 60
-        width: 60
-        height: 60
+        x: 0
+        y: 40
+        width: 40
+        height: 40
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -451,13 +322,97 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: player_spawn_25
+      name: player_effect_1_16
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 40
+        width: 40
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: player_effect_1_17
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 40
+        width: 40
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: player_effect_1_18
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 40
+        width: 40
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: player_effect_1_19
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 40
+        width: 40
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: player_effect_1_20
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 60
-        height: 60
+        width: 40
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: player_effect_1_21
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 0
+        width: 40
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: player_effect_1_22
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 0
+        width: 40
+        height: 40
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
