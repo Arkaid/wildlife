@@ -5,13 +5,13 @@ using UnityEngine;
 namespace Jintori
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    public class Config : IllogicGate.Singleton<Config>
+    public partial class Config : IllogicGate.Singleton<Config>
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
         /// <summary> Number of rounds to play </summary>
         public const int Rounds = 3;
-
+        
         /// <summary> Levels of overall game difficulty </summary>
         public enum Difficulty
         {
@@ -20,38 +20,7 @@ namespace Jintori
             Hard,
         }
 
-        /// <summary> Time needed to clear rounds in each difficulty </summary>
-        public static readonly int[] RoundTime = new int[]
-        {
-            300, 
-            180, 
-            120,
-        };
-
-        /// <summary> Amount of percentage (ratio) needed to clear in order to finish the round, per difficulty </summary>
-        public static readonly float[] ClearRatio = new float[]
-        {
-            0.80f,
-            0.90f,
-            0.95f
-        };
-
-        /// <summary> Starting amount of lives for each difficulty </summary>
-        public static readonly int[] Lives = new int[]
-        {
-            4,
-            3,
-            3
-        };
-
-        /// <summary> Speed multiplier for the speed skill, per difficulty </summary>
-        public static readonly float[] SpeedSkillMultiplier = new float[]
-        {
-            2f,
-            1.75f,
-            1.5f,
-        };
-
+        /*
         /// <summary> Calculates score </summary>
         public static class Score
         {
@@ -67,6 +36,7 @@ namespace Jintori
                 public float percentage;
                 public float points;
             }
+
 
             /// <summary>
             /// How much points to assign per 
@@ -133,38 +103,82 @@ namespace Jintori
                 throw new System.Exception("Unexpected error");
             }
         }
-
+        */
 
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
-        // --- Inspector --------------------------------------------------------------------------------
+
         // --- Properties -------------------------------------------------------------------------------
+        /// <summary> JSON object with the settings data </summary>
+        JSONObject settings;
+
+        /// <summary> shortcut to the JSON branch for the current difficulty </summary>
+        JSONObject json { get { return settings[difficulty.ToString()]; } }
+
         /// <summary> Game difficulty </summary>
-        public Difficulty difficulty { get; private set; }
+        public Difficulty difficulty;
 
         /// <summary> Time for one round, adjusted for difficulty </summary>
-        public int roundTime { get { return RoundTime[(int)difficulty]; } }
+        public int roundTime { get { return (int)json["round_time"].i; } }
 
         /// <summary> Needed clear ratio to win, adjusted for difficulty </summary>
-        public float clearRatio { get { return ClearRatio[(int)difficulty]; } }
+        public float clearRatio { get { return json["clear_ratio"].f; } }
 
         /// <summary> Needed clear percentage to win, adjusted for difficulty </summary>
         public int clearPercentage { get { return Mathf.FloorToInt(clearRatio * 100); } }
 
         /// <summary> Speed multiplier for the speed skill, adjusted for difficulty </summary>
-        public float speedSkillMultiplier { get { return SpeedSkillMultiplier[(int)difficulty]; } }
+        public float speedSkillMultiplier { get { return json["skill_speed_multiplier"].f; } }
 
         /// <summary> Starting amount of lives, adjusted for difficulty </summary>
-        public int lives { get { return Lives[(int)difficulty]; } }
+        public int startLives { get { return (int)json["start_lives"].i; } }
 
-        // --- MonoBehaviour ----------------------------------------------------------------------------
-        // -----------------------------------------------------------------------------------	
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         protected override void OnInstanceCreated()
         {
-            difficulty = Difficulty.Easy;
+            settings = new JSONObject(Resources.Load<TextAsset>("settings").text);
+
+            difficulty = Difficulty.Normal;
         }
+
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Returns how much score to assign per 1%, depending on how much you cleared
+        /// </summary>
+        public float CalculatePerPercentage(float clearedPercentage)
+        {
+            List<JSONObject> list = json["score_table"].list;
+            for (int i = 0; i < list.Count; i++)
+            {
+                // first entry in is percentage, second one is score
+                List<JSONObject> item = list[i].list;
+                if (item[0].f >= clearedPercentage)
+                    return clearedPercentage * item[1].f;
+            }
+            throw new System.Exception("Unexpected error");
+        }
+
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Maximum skill time
+        /// </summary>
+        /// <param name="skill"></param>
+        /// <returns></returns>
+        public float GetSkillTime(Game.Skill.Type skill)
+        {
+            return json["skills"][skill.ToString()]["max_time"].f;
+        }
+
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Calculate how much skill to charge according to percentage cleared in one move
+        /// </summary>
+        public float CalculateSkillCharge(Game.Skill.Type skill, float percentage)
+        {
+            return json["skills"][skill.ToString()]["time_charge_per_percentage"].f * percentage;
+        }
+
     }
 }

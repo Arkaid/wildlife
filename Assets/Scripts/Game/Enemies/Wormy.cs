@@ -214,6 +214,7 @@ namespace Jintori.Game
                 //Debug.DrawRay(transform.position, direction, Color.red, 5);
             }
 
+#if UNITY_EDITOR
             if (retries == 0)
             {
                 print("failed");
@@ -221,6 +222,9 @@ namespace Jintori.Game
                 print(string.Format("{0}, {1}", x, y));
                 Debug.Break();
             }
+#else
+            ^^^ YOU SHOULD FIX THIS, YOU LAZY MOTHERFUCKER ^^^
+#endif
 
             target = next;
         }

@@ -1,0 +1,33 @@
+{
+	"Normal": {
+		"round_time": 180,
+		"clear_ratio": 0.85,
+		"start_lives": 3,
+		"skill_speed_multiplier": 1.75,
+
+		"skills": {
+			"Speed": {
+				"max_time": 5,
+				"time_charge_per_percentage": 0.1
+			},
+			"Shield": {
+				"max_time": 3,
+				"time_charge_per_percentage": 0.12
+			}
+		},
+
+		"score_table": [
+			[2.5, 200],
+			[5.0, 400],
+			[7.5, 600],
+			[10, 1500],
+			[20, 3000],
+			[50, 20000],
+			[75, 40000],
+			[85, 50000],
+			[95, 60000],
+			[100, 70000]
+		]
+
+	}
+}
