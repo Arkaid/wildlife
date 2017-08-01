@@ -313,7 +313,7 @@ namespace Jintori.Game
             roundData.cleared = true;
 
             float elapsed = Timer.instance.totalTime - Timer.instance.remainingTime;
-            if (elapsed < records.bestTime)
+            if (records.bestTime == -1 || elapsed < records.bestTime)
                 records.bestTime = elapsed;
 
             long scoreL = (long)score;
