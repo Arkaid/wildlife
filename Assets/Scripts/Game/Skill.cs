@@ -19,10 +19,22 @@ namespace Jintori.Game
         public enum Type
         {
             Shield,
-            Speed
+            Speed,
+            COUNT
         }
 
         // --- Static Properties ------------------------------------------------------------------------
+        /// <summary> Color to paint the player, according to skill </summary>
+        public static readonly Dictionary<Type, Color> playerColor = new Dictionary<Type, Color>()
+        {
+            { Type.Speed, new Color32(255, 204, 49, 255) },
+            { Type.Shield, new Color32(49, 161, 255, 255) },
+
+        };
+
+        /// <summary> Skill type </summary>
+        public static Type type;
+
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         // --- Properties -------------------------------------------------------------------------------
@@ -34,9 +46,6 @@ namespace Jintori.Game
 
         /// <summary> true if the skill is being used </summary>
         public bool isActive { get; private set; }
-        
-        /// <summary> Skill type </summary>
-        public Type type { get; private set; }
 
         /// <summary> Speed skill multiplier. 1 if inactive or skill is not Speed </summary>
         public float speedMultiplier { get; private set; }
@@ -93,7 +102,5 @@ namespace Jintori.Game
             remainingTime = Mathf.Min(remainingTime, maxTime);
             UI.instance.skillBar.remainingTime = remainingTime;
         }
-
-
     }
 }
