@@ -26,6 +26,10 @@ namespace Jintori.Game
         public PercentageBar percentageBar { get { return _percentageBar; } }
 
         [SerializeField]
+        SkillBar _skillBar = null;
+        public SkillBar skillBar { get { return _skillBar; } }
+
+        [SerializeField]
         RoundStart _roundStart = null;
         public RoundStart roundStart { get { return _roundStart; } }
 
@@ -54,7 +58,7 @@ namespace Jintori.Game
         /// </summary>
         /// <param name="clearPercentage"> percentage needed to clear the round </param>
         /// <param name="livesLeft"> lives left in the round </param>
-        public void Reset(int livesLeft, int clearPercentage, int roundTime)
+        public void Reset(int livesLeft, int clearPercentage, int roundTime, float maxSkillTime, float remainingSkillTime)
         {
             gameObject.SetActive(true);
 
@@ -62,6 +66,7 @@ namespace Jintori.Game
 
             timeDisplay.Reset(roundTime);
             percentageBar.Reset(clearPercentage);
+            skillBar.Reset(maxSkillTime, remainingSkillTime);
             roundStart.Reset();
             gameResult.Reset();
             scoreDisplay.Reset();

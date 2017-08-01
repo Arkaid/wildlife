@@ -62,9 +62,12 @@ namespace Jintori.Game
             if (sourceFile == null)
                 sourceFile = new CharacterFile.File(DEBUG_file);
 #endif
-            round = 0;
             Timer.instance.timedOut += OnTimerTimedOut;
-            livesLeft = Config.instance.lives;
+
+            round = 0;
+            livesLeft = Config.instance.startLives;
+            Skill.instance.Initialize();
+
             playArea.gameObject.SetActive(false);
             StartCoroutine(InitializeRound());
         }
@@ -101,7 +104,12 @@ namespace Jintori.Game
             camAdjuster.autoAdjust = true;
 
             // reset the UI
-            UI.instance.Reset(livesLeft, Config.instance.clearPercentage, Config.instance.roundTime);
+            UI.instance.Reset(
+                livesLeft,
+                Config.instance.clearPercentage,
+                Config.instance.roundTime,
+                Skill.instance.maxTime,
+                Skill.instance.remainingTime);
 
             // reset the timer
             Timer.instance.ResetTimer(Config.instance.roundTime);
@@ -322,10 +330,13 @@ namespace Jintori.Game
             float percentage = currentPlay.mask.clearedRatio * 100;
             float delta = percentage - lastPercentage;
 
-            float deltaScore = Config.Score.CalculatePerPercentage(delta);
+            float deltaScore = Config.instance.CalculatePerPercentage(delta);
             score += deltaScore;
             lastPercentage = percentage;
             UI.instance.scoreDisplay.score = (long)score;
+
+            // calculate skill recharge
+            Skill.instance.Recharge(delta);
 
             // Did we win?
             if (currentPlay.mask.clearedRatio >= Config.instance.clearRatio)

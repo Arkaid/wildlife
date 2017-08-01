@@ -33,19 +33,11 @@ namespace Jintori.Game
             Vertical
         }
 
-        /// <summary> Available skill moves</summary>
-        public enum Skill
-        {
-            None,
-            Shield,
-            Speed
-        }
-
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------       
-        
+
         // --- Properties -------------------------------------------------------------------------------
         /// <summary> Player speed </summary>
         int speed = 120;
@@ -62,38 +54,18 @@ namespace Jintori.Game
         /// <summary> First point in the cut path (used for the renderer) </summary>
         Point cutPathStart;
 
-        /// <summary> Used to select the skill move </summary>
-        [HideInInspector]
-        public Skill skill = Skill.Shield;
-
-        /// <summary> Remaining time for the skill move (in seconds) </summary>
-        float skillTime;
-
-        /// <summary> True, if the skill is currently active </summary>
-        bool isSkillActive;
-
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         void Start()
         {
             playArea.cutPath.Clear();
-            skillTime = 5;
-            skill = Skill.Shield;
         }
-        
+
         // -----------------------------------------------------------------------------------	
         void Update()
         {
-            // update skill
-            if (skill != Skill.None)
-                UpdateSkill();
-
-            // activate / deactive speed multiplier
-            float skillSpeed = skill == Skill.Speed && isSkillActive ? 
-                Config.instance.speedSkillMultiplier : 1;
-
             // number of moves left
-            int left = Mathf.RoundToInt(speed * skillSpeed * Time.deltaTime);
+            int left = Mathf.RoundToInt(speed * Skill.instance.speedMultiplier * Time.deltaTime);
 
             // See if we need to change state first
             switch (state)
@@ -161,37 +133,25 @@ namespace Jintori.Game
 
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        /// <summary>
-        /// Updates and activates / deactivates skills
-        /// </summary>
-        void UpdateSkill()
+        private void OnSkillReleased()
         {
-            // can we activate the skill?
-            if (!isSkillActive && skillTime > 0 && Input.GetButton("Fire2"))
-            {
-                isSkillActive = true;
-                animator.SetBool(skill.ToString(), true);
+            animator.SetBool(Skill.instance.type.ToString(), false);
 
-                // start shielding the path
-                if (skill == Skill.Shield)
-                    playArea.ProtectCutPath(true);
-            }
-
-            // do we have to deactivate the skill
-            else if (isSkillActive && (skillTime <= 0 || !Input.GetButton("Fire2")))
-            {
-                isSkillActive = false;
-                animator.SetBool(skill.ToString(), false);
-
-                // stop protecting
-                if (skill == Skill.Shield)
-                    playArea.ProtectCutPath(false);
-            }
-
-            if (isSkillActive)
-                skillTime -= Time.deltaTime;
+            // stop protecting
+            if (Skill.instance.type == Skill.Type.Shield)
+                playArea.ProtectCutPath(false);
         }
 
+        // -----------------------------------------------------------------------------------	
+        private void OnSkillTriggered()
+        {
+            animator.SetBool(Skill.instance.type.ToString(), true);
+
+            // start shielding the path
+            if (Skill.instance.type == Skill.Type.Shield)
+                playArea.ProtectCutPath(true);
+        }
+        
         // -----------------------------------------------------------------------------------	
         /// <summary> Hides and disables the player </summary>
         public void Hide(int x = -1, int y = -1)
@@ -214,6 +174,9 @@ namespace Jintori.Game
             this.y = y;
             gameObject.SetActive(true);
             state = State.SafePath;
+
+            Skill.instance.skillTriggered += OnSkillTriggered;
+            Skill.instance.skillReleased += OnSkillReleased;
         }
 
         // -----------------------------------------------------------------------------------	
@@ -223,9 +186,12 @@ namespace Jintori.Game
         /// <param name="isTimeout"> If true, the hit is from the timer running out (shield does not apply)</param>
         public void Hit(bool isTimeout)
         {
-            bool safe = skill == Skill.Shield && isSkillActive;
-            if (!isTimeout && safe)
+            // can't be hit at this time, since we're protected by the shield
+            if (!isTimeout && Skill.instance.isShieldActive)
                 return;
+
+            Skill.instance.skillTriggered -= OnSkillTriggered;
+            Skill.instance.skillReleased -= OnSkillReleased;
 
             state = State.Dying;
             playArea.cutPath.Clear();
