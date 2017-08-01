@@ -25,6 +25,9 @@ namespace Jintori.SelectScreen
         [SerializeField]
         RawImage baseImageViewer = null;
 
+        [SerializeField]
+        Stats statsViewer = null;
+
         // --- Properties -------------------------------------------------------------------------------
         Color defaultBackgroundColor;
 
@@ -41,6 +44,8 @@ namespace Jintori.SelectScreen
         // -----------------------------------------------------------------------------------	
         public void Hide()
         {
+            statsViewer.Hide();
+
             EventSystem.current.SetSelectedGameObject(selectedObject);
             gameObject.SetActive(false);
             baseImageViewer.gameObject.SetActive(false);
@@ -79,6 +84,14 @@ namespace Jintori.SelectScreen
             baseImageViewer.texture = file.LoadRound(round).baseImage;
             baseImageViewer.gameObject.SetActive(true);
             yield return StartCoroutine(Transition.instance.Hide());
+
+            // wait until the user presses fire
+            while (!Input.GetButtonDown("Fire1"))
+                yield return null;
+
+            // show stats
+            statsViewer.Show(round, file.guid);
+            yield return null;
 
             // wait until the user presses fire
             while (!Input.GetButtonDown("Fire1"))

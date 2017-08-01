@@ -13,7 +13,7 @@ namespace Jintori.Data
     /// </summary>
     public class Records
     {
-        /// <summary> Best time. -1 = N/A. </summary>
+        /// <summary> Best time. -1 = N/A. - Seconds </summary>
         public float bestTime;
 
         /// <summary> High score. -1 = N/A </summary>
