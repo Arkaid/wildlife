@@ -55,8 +55,14 @@ namespace Jintori.SelectScreen
         Records hard = null;
 
         // --- Properties -------------------------------------------------------------------------------
+        new Animation animation;
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
+        private void Start()
+        {
+            animation = GetComponent<Animation>();
+        }
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         public void Hide()
@@ -68,6 +74,7 @@ namespace Jintori.SelectScreen
         public void Show(int round, string guid)
         {
             gameObject.SetActive(true);
+            animation.Play();
 
             CharacterStats stats = SaveFile.instance.GetCharacterStats(guid);
 
