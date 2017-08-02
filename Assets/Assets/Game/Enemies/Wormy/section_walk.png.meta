@@ -1,17 +1,15 @@
 fileFormatVersion: 2
-guid: 5b5486f212684334fa1ee90b5cf23c61
-timeCreated: 1501245754
+guid: 90f980c5ea9d9f145ad327b088d2016e
+timeCreated: 1501636370
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
-    21300000: section_0
-    21300002: section_1
-    21300004: section_2
-    21300006: section_3
-    21300008: section_4
-    21300010: section_5
-    21300012: section_6
-    21300014: section_7
+    21300000: section_walk_0
+    21300002: section_walk_1
+    21300004: section_walk_2
+    21300006: section_walk_3
+    21300008: section_walk_4
+    21300010: section_walk_5
   serializedVersion: 4
   mipmaps:
     mipMapMode: 0
@@ -83,49 +81,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: section_0
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 256
-        width: 128
-        height: 128
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: section_1
-      rect:
-        serializedVersion: 2
-        x: 128
-        y: 256
-        width: 128
-        height: 128
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: section_2
-      rect:
-        serializedVersion: 2
-        x: 256
-        y: 256
-        width: 128
-        height: 128
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: section_3
+      name: section_walk_0
       rect:
         serializedVersion: 2
         x: 0
@@ -139,7 +95,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: section_4
+      name: section_walk_1
       rect:
         serializedVersion: 2
         x: 128
@@ -153,7 +109,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: section_5
+      name: section_walk_2
       rect:
         serializedVersion: 2
         x: 256
@@ -167,7 +123,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: section_6
+      name: section_walk_3
       rect:
         serializedVersion: 2
         x: 0
@@ -181,10 +137,24 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: section_7
+      name: section_walk_4
       rect:
         serializedVersion: 2
         x: 128
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: section_walk_5
+      rect:
+        serializedVersion: 2
+        x: 256
         y: 0
         width: 128
         height: 128
