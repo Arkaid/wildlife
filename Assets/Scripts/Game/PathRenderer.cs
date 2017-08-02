@@ -8,6 +8,9 @@ namespace Jintori.Game
     public class PathRenderer : MonoBehaviour
     {
         // --- Events -----------------------------------------------------------------------------------
+        /// <summary> Called after the path changed shape. Argument is array of points for the new path </summary>
+        public event System.Action<Vector3[]> pathRedrawn;
+
         // --- Constants --------------------------------------------------------------------------------
         /// <summary> 4 possible directions to search the path in</summary>
         enum Direction { Rt, Dw, Lt, Up, End }
@@ -44,6 +47,9 @@ namespace Jintori.Game
         }
         LineRenderer _lineRenderer;
 
+        /// <summary> List of 3D points used by the line renderer (local coordinates) </summary>
+        public Vector3 [] points { get; private set; }
+
         /// <summary> Edge collider </summary>
         public new EdgeCollider2D collider { get; private set; }
 
@@ -73,6 +79,7 @@ namespace Jintori.Game
         }
 
         // -----------------------------------------------------------------------------------	
+        /*
         public void RedrawPath()
         {
             // find at least one point in the path
@@ -88,7 +95,7 @@ namespace Jintori.Game
             if (found)
                 RedrawPath(x, y);
         }
-
+        */
         // -----------------------------------------------------------------------------------	
         public void RedrawPath(int x, int y)
         {
@@ -109,17 +116,24 @@ namespace Jintori.Game
                     points.Add(new Vector2(tx, ty));
                 }
             };
+            this.points = points.ToArray();
 
             lineRenderer.positionCount = points.Count;
-            lineRenderer.SetPositions(points.ToArray());
+            lineRenderer.SetPositions(this.points);
 
+            // update line renderer
             System.Converter<Vector3, Vector2> Vec3ToVec2 = (Vector3 v3) => { return v3; };
             List<Vector2> points2 = points.ConvertAll(Vec3ToVec2);
             if (lineRenderer.loop)
                 points2.Add(points2[0]);
 
+            // update collider
             if (points.Count > 1)
                 collider.points = points2.ToArray();
+
+            // raise event
+            if (pathRedrawn != null)
+                pathRedrawn(this.points);
         }
         
         // -----------------------------------------------------------------------------------	

@@ -25,7 +25,7 @@ namespace Jintori.Game
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
         [SerializeField]
-        PlayArea playArea = null;
+        PlayArea sourcePlayArea = null;
 
         [SerializeField]
         MeshFilter initialSquare = null;
@@ -43,7 +43,7 @@ namespace Jintori.Game
         public int round { get; private set; }
 
         /// <summary> Play area currently active </summary>
-        PlayArea currentPlay;
+        PlayArea playArea;
 
         /// <summary> lives left </summary>
         public int livesLeft { get; private set; }
@@ -52,7 +52,7 @@ namespace Jintori.Game
         float lastPercentage;
 
         /// <summary> Current score. Internally float but display floor int </summary>
-        float score;
+        public float score { get; private set; }
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
@@ -68,7 +68,7 @@ namespace Jintori.Game
             livesLeft = Config.instance.startLives;
             Skill.instance.Initialize();
 
-            playArea.gameObject.SetActive(false);
+            sourcePlayArea.gameObject.SetActive(false);
             StartCoroutine(InitializeRound());
         }
 
@@ -77,16 +77,16 @@ namespace Jintori.Game
         IEnumerator InitializeRound()
         {
             // destroy previous area
-            if (currentPlay != null)
-                Destroy(currentPlay.gameObject);
+            if (playArea != null)
+                Destroy(playArea.gameObject);
 
             // Load the images
             CharacterFile.RoundImages roundData = sourceFile.LoadRound(round);
 
             // create a fresh play area
-            currentPlay = Instantiate(playArea, playArea.transform.parent, true);
-            currentPlay.gameObject.SetActive(true);
-            currentPlay.Setup(roundData.baseImage, roundData.shadowImage, typeof(Wormy));
+            playArea = Instantiate(sourcePlayArea, sourcePlayArea.transform.parent, true);
+            playArea.gameObject.SetActive(true);
+            playArea.Setup(roundData.baseImage, roundData.shadowImage, typeof(Wormy));
             //currentPlay.Setup(DEBUG_baseImage, DEBUG_shadowImage, typeof(Slimy));
 
             // reset percentage tracker to zero
@@ -96,8 +96,8 @@ namespace Jintori.Game
             score = 0;
 
             // check when the player spawns to count lives / game overs
-            currentPlay.player.spawned += OnPlayerSpawned;
-            currentPlay.player.died += OnPlayerDied;
+            playArea.player.spawned += OnPlayerSpawned;
+            playArea.player.died += OnPlayerDied;
 
             // set the camera to auto adjust
             CameraAdjuster camAdjuster = Camera.main.GetComponent<CameraAdjuster>();
@@ -115,7 +115,7 @@ namespace Jintori.Game
             Timer.instance.ResetTimer(Config.instance.roundTime);
 
             // Hide the player
-            currentPlay.player.Hide();
+            playArea.player.Hide();
 
             // Hide the transition
 #if UNITY_EDITOR
@@ -170,30 +170,34 @@ namespace Jintori.Game
 
             IntRect rect = new IntRect()
             {
-                x = currentPlay.player.x - Mathf.FloorToInt(w),
-                y = currentPlay.player.y - Mathf.FloorToInt(h),
+                x = playArea.player.x - Mathf.FloorToInt(w),
+                y = playArea.player.y - Mathf.FloorToInt(h),
                 width = Mathf.RoundToInt(w * 2),
                 height = Mathf.RoundToInt(h * 2)
             };
 
             // re-enable the player and put it in a corner of the square
-            currentPlay.player.Spawn(rect.x, rect.y);
+            playArea.player.Spawn(rect.x, rect.y);
 
             // set callbacks to check game progress
-            currentPlay.mask.maskCleared += OnMaskCleared;
+            playArea.mask.maskCleared += OnMaskCleared;
 
             // create the square and destroy the "preview"
-            currentPlay.CreateStartingZone(rect);
+            playArea.CreateStartingZone(rect);
             initialSquare.gameObject.SetActive(false);
+
+            // setup the play area ffects
+            // we have to do it here since we need the initial path
+            playArea.effects.Setup(playArea.safePath);
 
             // now that the play area has colliders, 
             // place the boss safely in the shadow
-            currentPlay.boss.gameObject.SetActive(true);
-            currentPlay.boss.SetBossStartPosition(rect);
-            currentPlay.boss.Run();
+            playArea.boss.gameObject.SetActive(true);
+            playArea.boss.SetBossStartPosition(rect);
+            playArea.boss.Run();
 
             // start tracking it
-            UI.instance.bossTracker.StartTracking(currentPlay.boss);
+            UI.instance.bossTracker.StartTracking(playArea.boss);
 
             // start timer
             Timer.instance.StartTimer();
@@ -218,7 +222,7 @@ namespace Jintori.Game
         private void OnTimerTimedOut()
         {
             livesLeft = 0;
-            currentPlay.player.Hit(true);
+            playArea.player.Hit(true);
         }
 
         // -----------------------------------------------------------------------------------	
@@ -234,7 +238,7 @@ namespace Jintori.Game
             UI.instance.PlayResult(false);
 
             // hide the player at its current position
-            currentPlay.player.Hide(currentPlay.player.x, currentPlay.player.y);
+            playArea.player.Hide(playArea.player.x, playArea.player.y);
 
             // wait until the player hits fire again
             yield return null;
@@ -258,8 +262,8 @@ namespace Jintori.Game
             Timer.instance.StopTimer();
 
             // kill boss and hide player
-            currentPlay.boss.Kill();
-            currentPlay.player.Hide();
+            playArea.boss.Kill();
+            playArea.player.Hide();
 
             // save results
             SaveResults();
@@ -273,7 +277,7 @@ namespace Jintori.Game
             camAdjuster.ZoomToImage();
 
             // unhide all the shadow
-            yield return StartCoroutine(currentPlay.DiscoverShadow());
+            yield return StartCoroutine(playArea.DiscoverShadow());
 
             // wait until the player hits fire again
             yield return null;
@@ -327,7 +331,7 @@ namespace Jintori.Game
         private void OnMaskCleared()
         {
             // calculate score
-            float percentage = currentPlay.mask.clearedRatio * 100;
+            float percentage = playArea.mask.clearedRatio * 100;
             float delta = percentage - lastPercentage;
 
             float deltaScore = Config.instance.CalculatePerPercentage(delta);
@@ -339,9 +343,9 @@ namespace Jintori.Game
             Skill.instance.Recharge(delta);
 
             // Did we win?
-            if (currentPlay.mask.clearedRatio >= Config.instance.clearRatio)
+            if (playArea.mask.clearedRatio >= Config.instance.clearRatio)
             {
-                currentPlay.mask.maskCleared -= OnMaskCleared;
+                playArea.mask.maskCleared -= OnMaskCleared;
                 StartCoroutine(WinRound());
             }
         }
