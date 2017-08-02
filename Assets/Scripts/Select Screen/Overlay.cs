@@ -100,6 +100,7 @@ namespace Jintori.SelectScreen
             // fade and go back to menu
             yield return StartCoroutine(Transition.instance.Show());
             baseImageViewer.gameObject.SetActive(false);
+            statsViewer.Hide();
             yield return StartCoroutine(Transition.instance.Hide());
             Hide();
         }
