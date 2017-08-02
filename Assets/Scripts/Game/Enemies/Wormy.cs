@@ -18,6 +18,8 @@ namespace Jintori.Game
             public float maxSteering;
             [Tooltip("Used for the segments, how much history positions to keep. The faster it moves, the shorter it needs to be")]
             public int historyLength;
+            public float timeBetweenBugs;
+            public int bugCount;
         }
 
         // --- Events -----------------------------------------------------------------------------------
@@ -95,6 +97,8 @@ namespace Jintori.Game
             }
 
             SetNextTarget();
+
+            StartCoroutine(SpawnBugsCoroutine());
         }
 
         // -----------------------------------------------------------------------------------	
@@ -227,6 +231,37 @@ namespace Jintori.Game
 #endif
 
             target = next;
+        }
+
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Coroutine in charge of spawning new blobs
+        /// </summary>
+        IEnumerator SpawnBugsCoroutine()
+        {
+            Bug sourceBug = GetComponentInChildren<Bug>(true);
+            YieldInstruction wait = new WaitForSeconds(currentSettings.timeBetweenBugs);
+
+            while (isAlive)
+            {
+                yield return wait;
+                while (subEnemies.Count == currentSettings.bugCount)
+                    yield return null;
+                if (isAlive)
+                {
+                    Bug newBug = Instantiate(sourceBug);
+                    subEnemies.Add(newBug);
+
+                    newBug.gameObject.SetActive(true);
+                    newBug.killed += (Enemy e) => { subEnemies.Remove(e); };
+
+                    newBug.transform.SetParent(transform.parent, true);
+                    newBug.transform.position = sourceBug.transform.position;
+                    newBug.transform.localScale = Vector3.one;
+                    newBug.SetXYFromLocalPosition();
+                    newBug.Run();
+                }
+            }
         }
     }
 }
