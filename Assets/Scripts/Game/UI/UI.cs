@@ -58,7 +58,9 @@ namespace Jintori.Game
         /// </summary>
         /// <param name="clearPercentage"> percentage needed to clear the round </param>
         /// <param name="livesLeft"> lives left in the round </param>
-        public void Reset(int livesLeft, int clearPercentage, int roundTime, float maxSkillTime, float remainingSkillTime)
+        public void Reset(
+            int livesLeft, int clearPercentage, int roundTime, 
+            float maxSkillTime, float remainingSkillTime)
         {
             gameObject.SetActive(true);
 

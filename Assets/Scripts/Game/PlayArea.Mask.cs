@@ -94,9 +94,7 @@ namespace Jintori.Game
 
                 // second pass:
                 // fill area from boss into "shadowed"
-                UnityEngine.Profiling.Profiler.BeginSample("Fill");
                 Fill(bossX, bossY, Shadowed);
-                UnityEngine.Profiling.Profiler.EndSample();
 
                 // third pass:
                 // find invalid paths and erase them

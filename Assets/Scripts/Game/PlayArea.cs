@@ -68,6 +68,18 @@ namespace Jintori.Game
         }
         Player _player;
 
+        /// <summary> Effects available on the play area </summary>
+        public Effects effects
+        {
+            get
+            {
+                if (_effects == null)
+                    _effects = GetComponentInChildren<Effects>();
+                return _effects;
+            }
+        }
+        Effects _effects;
+
         /// <summary> Collider around the edges of the play area </summary>
         EdgeCollider2D edgeCollider;
 
