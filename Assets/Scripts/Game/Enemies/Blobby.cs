@@ -10,28 +10,15 @@ namespace Jintori.Game
     /// </summary>
     public class Blobby : Bouncy
     {
-        [System.Serializable]
-        struct Settings
-        {
-            public Config.Difficulty difficulty;
-            [Range(0,2)]
-            public int round;
-            public float speed;
-            public int maxBounces;
-        }
-
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
-        [SerializeField]
-        Settings [] settings;
-
         // --- Properties -------------------------------------------------------------------------------
         /// <summary> Settings for the current difficulty </summary>
-        Settings currentSettings;
+        JSONObject roundSettings;
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
@@ -40,15 +27,10 @@ namespace Jintori.Game
         // -----------------------------------------------------------------------------------	
         protected override void Setup()
         {
-            currentSettings = System.Array.Find(
-                settings,
-                s => s.difficulty == Config.instance.difficulty &&
-                s.round == Controller.instance.round);
-
             playArea.mask.maskCleared += KillIfOutsideShadow;
             killed += OnKilled;
 
-            InitialVelocity(currentSettings.speed);
+            InitialVelocity(settings["speed"].f);
         }
 
         // -----------------------------------------------------------------------------------	

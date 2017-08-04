@@ -7,30 +7,14 @@ namespace Jintori.Game
     // --- Class Declaration ------------------------------------------------------------------------
     public class Slimy : Bouncy
     {
-        [System.Serializable]
-        struct Settings
-        {
-            public Config.Difficulty difficulty;
-            [Range(0, 2)]
-            public int round;
-            public float speed;
-            public int blobCount;
-            public float timeBetweenBlobs;
-        }
-
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
-        [SerializeField]
-        Settings [] settings;
 
         // --- Properties -------------------------------------------------------------------------------
-        /// <summary> Settings for the current difficulty level and round </summary>
-        Settings currentSettings;
-
         /// <summary> Blobby object we use to copy and spawn new instances </summary>
         Blobby sourceBlobby;
 
@@ -47,17 +31,12 @@ namespace Jintori.Game
         // -----------------------------------------------------------------------------------	
         protected override void Setup()
         {
-            currentSettings = System.Array.Find(
-                settings, 
-                s => s.difficulty == Config.instance.difficulty && 
-                s.round == Controller.instance.round);
-
             sourceBlobby = GetComponentInChildren<Blobby>(true);
 
             playArea.mask.maskCleared += OnMaskCleared;
             killed += OnKilled;
 
-            InitialVelocity(currentSettings.speed);
+            InitialVelocity(settings["speed"].f);
 
             StartCoroutine(SpawnBlobsCoroutine());
         }
@@ -75,11 +54,14 @@ namespace Jintori.Game
         /// </summary>
         IEnumerator SpawnBlobsCoroutine()
         {
-            YieldInstruction wait = new WaitForSeconds(currentSettings.timeBetweenBlobs);
+            float spawnTime = settings["blob_spawn_time"].f;
+            int blobCount = (int)settings["blob_max_count"].i;
+
+            YieldInstruction wait = new WaitForSeconds(spawnTime);
             while(isAlive)
             {
                 yield return wait;
-                while (subEnemies.Count == currentSettings.blobCount)
+                while (subEnemies.Count == blobCount)
                     yield return null;
                 if (isAlive)
                     animator.SetTrigger("Spawn Blob");

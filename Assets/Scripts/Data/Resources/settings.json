@@ -27,7 +27,84 @@
 			[85, 50000],
 			[95, 60000],
 			[100, 70000]
-		]
+		],
 
+		"enemies": {
+			"Slimy": [{
+					"speed": 200,
+					"blob_max_count": 2,
+					"blob_spawn_time": 6
+				},
+				{
+					"speed": 200,
+					"blob_max_count": 3,
+					"blob_spawn_time": 6
+				},
+				{
+					"speed": 250,
+					"blob_max_count": 4,
+					"blob_spawn_time": 6
+				}
+			],
+			"Blobby": [{
+					"speed": 100,
+					"bounces": 2
+				},
+				{
+					"speed": 100,
+					"bounces": 3
+				},
+				{
+					"speed": 120,
+					"bounces": 4
+				}
+			],
+			"Wormy": [{
+					"max_speed": 300,
+					"max_steering": 10,
+					"history_length": 22,
+					"bug_spawn_time": 6,
+					"bug_max_count": 1
+				},
+				{
+					"max_speed": 300,
+					"max_steering": 10,
+					"history_length": 22,
+					"bug_spawn_time": 6,
+					"bug_max_count": 2
+				},
+				{
+					"max_speed": 350,
+					"max_steering": 20,
+					"history_length": 18,
+					"bug_spawn_time": 6,
+					"bug_max_count": 3
+				}
+			],
+			"Buggy": [{
+					"speed": 100
+				},
+				{
+					"speed": 100
+				},
+				{
+					"speed": 100
+				}
+			],
+			"Tanky": [{
+					"speed": 50,
+					"rotation_speed_angle": 0.02
+				},
+				{
+					"speed": 50,
+					"rotation_speed_angle": 0.007
+				},
+				{
+					"speed": 50,
+					"rotation_speed_angle": 0.007
+				}
+			]
+
+		}
 	}
 }

@@ -40,6 +40,9 @@ namespace Jintori.Game
 
         protected List<Enemy> subEnemies { get; private set; }
 
+        /// <summary> Settings for the current difficulty level and round </summary>
+        protected JSONObject settings { get; private set; }
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         // --- Methods ----------------------------------------------------------------------------------
@@ -68,6 +71,11 @@ namespace Jintori.Game
         /// </summary>
         public void Run()
         {
+            // get settings (if available)
+            settings = Config.instance.GetEnemySettings(GetType().Name);
+            if (settings != null)
+                settings = settings[Controller.instance.round];
+
             gameObject.SetActive(true);
             subEnemies = new List<Enemy>();
             StartCoroutine(RunCoroutine());

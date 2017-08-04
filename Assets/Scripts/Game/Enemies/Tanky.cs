@@ -94,8 +94,6 @@ namespace Jintori.Game
         /// <returns></returns>
         IEnumerator RotateTowardsTarget()
         {
-            const float RotSpeedAngle = 0.007f;
-
             isStopped = true;
             velocity = (target - position).normalized;
 
@@ -104,7 +102,7 @@ namespace Jintori.Game
             float angle = Vector2.Angle(start, velocity);
 
             // calculate rotation time and final rotation
-            float time = angle * RotSpeedAngle;
+            float time = angle * settings["rotation_speed_angle"].f;
             Quaternion rot = Quaternion.FromToRotation(start, velocity);
 
             // rotate
@@ -119,7 +117,7 @@ namespace Jintori.Game
             }
 
             // apply speed
-            velocity *= 100;
+            velocity *= settings["speed"].f;
             isStopped = false;
         }
 
