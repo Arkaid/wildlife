@@ -104,7 +104,24 @@ namespace Jintori.Game
             }
             Finish();
         }
-        
+
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Returns a scale value based on the amount of mask remaining
+        /// </summary>
+        /// <returns></returns>
+        protected float ScaleBasedOnMaskSize()
+        {
+            const float MinSize = 0.4f;
+            const float MaxSize = 1.0f;
+            const float MinRatio = 0.25f; // start getting small here
+            const float MaxRatio = 0.75f; // stop getting small here
+
+            float t = Mathf.Clamp(playArea.mask.clearedRatio, MinRatio, MaxRatio);
+            t = (t - MinRatio) / (MaxRatio - MinRatio);
+            return Mathf.Lerp(MaxSize, MinSize, t);
+        }
+
         // -----------------------------------------------------------------------------------	
         void CheckPlayerHit()
         {
@@ -162,5 +179,58 @@ namespace Jintori.Game
                 break;
             }
         }
+
+        // -----------------------------------------------------------------------------------	
+        RaycastHit2D[] hits = new RaycastHit2D[8];
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Finds a random point on the shadow it can move to without being interrupted
+        /// </summary>
+        protected Vector2 FindValidTarget(Vector2 from, float bossRadius)
+        {
+            Vector2 target = Vector2.zero;
+            int nHits = 1;
+            int retries = 200;
+
+            // search until a valid zone is found or it fails
+            // TODO: when it fails, there is no recovery
+            while (nHits > 0 && retries > 0)
+            {
+                // find a random position in the play area
+                target = new Vector2()
+                {
+                    x = Random.Range(bossRadius, PlayArea.imageWidth - bossRadius),
+                    y = Random.Range(bossRadius, PlayArea.imageHeight - bossRadius)
+                };
+
+                retries--;
+
+                // target is not in the shadow (cannot move there)
+                if (playArea.mask[(int)target.x, (int)target.y] != PlayArea.Shadowed)
+                    continue;
+
+                // cast a circle to see if it collides with something
+                Vector2 direction = target - from;
+                nHits = Physics2D.CircleCast(
+                    transform.position, bossRadius, direction,
+                    PlayArea.EdgeContactFilter, hits, direction.magnitude);
+                //Debug.DrawRay(transform.position, direction, Color.red, 5);
+            }
+
+#if UNITY_EDITOR
+            if (retries == 0)
+            {
+                print("failed");
+                print(transform.position);
+                print(string.Format("{0}, {1}", x, y));
+                Debug.Break();
+            }
+#else
+            ^^^ YOU SHOULD FIX THIS, YOU LAZY MOTHERFUCKER ^^^
+#endif
+
+            return target;
+        }
+
     }
 }

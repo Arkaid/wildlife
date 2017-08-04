@@ -41,17 +41,7 @@ namespace Jintori.Game
         // -----------------------------------------------------------------------------------	
         private void OnMaskCleared()
         {
-            // resizes the boss to a smaller 
-            // size as you take away parts of the shadow
-            const float MinSize = 0.4f;
-            const float MaxSize = 1.0f;
-            const float MinRatio = 0.25f; // start getting small here
-            const float MaxRatio = 0.75f; // stop getting small here
-
-            float t = Mathf.Clamp(playArea.mask.clearedRatio, MinRatio, MaxRatio);
-            t = (t - MinRatio) / (MaxRatio - MinRatio);
-            float size = Mathf.Lerp(MaxSize, MinSize, t);
-            transform.localScale = Vector3.one * size;
+            transform.localScale = Vector3.one * ScaleBasedOnMaskSize();
         }
 
         // -----------------------------------------------------------------------------------	
