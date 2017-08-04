@@ -60,9 +60,11 @@ namespace Jintori.Game
             YieldInstruction wait = new WaitForSeconds(spawnTime);
             while(isAlive)
             {
-                yield return wait;
                 while (subEnemies.Count == blobCount)
                     yield return null;
+
+                yield return wait;
+
                 if (isAlive)
                     animator.SetTrigger("Spawn Blob");
             }

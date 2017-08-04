@@ -173,9 +173,11 @@ namespace Jintori.Game
 
             while (isAlive)
             {
-                yield return wait;
                 while (subEnemies.Count == bugCount)
                     yield return null;
+
+                yield return wait;
+
                 if (isAlive)
                 {
                     Buggy newBug = Instantiate(sourceBug);
