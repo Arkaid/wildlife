@@ -96,8 +96,7 @@ namespace Jintori.Game
                 part.localPosition = transform.localPosition;
             }
 
-            SetNextTarget();
-
+            target = FindValidTarget(position, Radius);
             StartCoroutine(SpawnBugsCoroutine());
         }
 
@@ -123,7 +122,7 @@ namespace Jintori.Game
             {
                 // hard steering began, switch target
                 if (!hardSteering)
-                    SetNextTarget();
+                    target = FindValidTarget(position, Radius);
                 hardSteering = true;
 
                 // calculate the steering force as a function of distance
@@ -155,7 +154,7 @@ namespace Jintori.Game
 
             // about to reach the target, move to next
             if (Vector2.Distance(target, position) < Radius)
-                SetNextTarget();
+                target = FindValidTarget(position, Radius);
         }
 
         // -----------------------------------------------------------------------------------	
@@ -182,57 +181,7 @@ namespace Jintori.Game
                 parts[i].rotation = rotationHistory[idx];
             }
         }
-
-        // -----------------------------------------------------------------------------------	
-        /// <summary>
-        /// Finds the next target to move to
-        /// </summary>
-        void SetNextTarget()
-        {
-            Vector2 next = Vector2.zero;
-            int nHits = 1;
-            int retries = 200;
-
-            // search until a valid zone is found or it fails
-            // TODO: when it fails, there is no recovery
-            while (nHits > 0 && retries > 0)
-            {
-                // find a random position in the play area
-                next = new Vector2()
-                {
-                    x = UnityEngine.Random.Range(Radius, PlayArea.imageWidth - Radius),
-                    y = UnityEngine.Random.Range(Radius, PlayArea.imageHeight - Radius)
-                };
-
-                retries--;
-
-                // target is not in the shadow (cannot move there)
-                if (playArea.mask[(int)next.x, (int)next.y] != PlayArea.Shadowed)
-                    continue;
-
-                // cast a circle to see if it collides with something
-                Vector2 direction = next - position;
-                nHits = Physics2D.CircleCast(
-                    transform.position, Radius, direction, 
-                    PlayArea.EdgeContactFilter, hits, direction.magnitude);
-                //Debug.DrawRay(transform.position, direction, Color.red, 5);
-            }
-
-#if UNITY_EDITOR
-            if (retries == 0)
-            {
-                print("failed");
-                print(transform.position);
-                print(string.Format("{0}, {1}", x, y));
-                Debug.Break();
-            }
-#else
-            ^^^ YOU SHOULD FIX THIS, YOU LAZY MOTHERFUCKER ^^^
-#endif
-
-            target = next;
-        }
-
+        
         // -----------------------------------------------------------------------------------	
         /// <summary>
         /// Coroutine in charge of spawning new blobs
