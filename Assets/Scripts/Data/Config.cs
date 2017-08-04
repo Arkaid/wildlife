@@ -145,6 +145,20 @@ namespace Jintori
 
         // -----------------------------------------------------------------------------------	
         /// <summary>
+        /// Return enemy settings JSON for current difficulty
+        /// </summary>
+        public JSONObject GetEnemySettings(string enemyClassName)
+        {
+            JSONObject enemies = json["enemies"];
+
+            if (enemies.HasField(enemyClassName))
+                return enemies[enemyClassName];
+            else
+                return null;
+        }
+
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
         /// Returns how much score to assign per 1%, depending on how much you cleared
         /// </summary>
         public float CalculatePerPercentage(float clearedPercentage)

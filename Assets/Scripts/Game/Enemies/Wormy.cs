@@ -8,20 +8,6 @@ namespace Jintori.Game
     // --- Class Declaration ------------------------------------------------------------------------
     public class Wormy : Enemy
     {
-        [Serializable]
-        struct Settings
-        {
-            public Config.Difficulty difficulty;
-            [Range(0, 2)]
-            public int round;
-            public float maxSpeed;
-            public float maxSteering;
-            [Tooltip("Used for the segments, how much history positions to keep. The faster it moves, the shorter it needs to be")]
-            public int historyLength;
-            public float timeBetweenBugs;
-            public int bugCount;
-        }
-
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
         /// <summary> Radius of the sprite / collider, used for avoiding going out of bounds </summary>
@@ -34,13 +20,7 @@ namespace Jintori.Game
         [SerializeField]
         Transform [] parts = null;
 
-        [SerializeField]
-        Settings[] settings = null;
-
         // --- Properties -------------------------------------------------------------------------------
-        /// <summary> Current settings for this difficulty and round </summary>
-        Settings currentSettings;
-
         /// <summary> Target the worm head is going to move to </summary>
         Vector2 target = Vector2.zero;
 
@@ -70,18 +50,13 @@ namespace Jintori.Game
         {
             killed += OnKilled;
 
-            currentSettings = Array.Find(
-                settings,
-                s => s.difficulty == Config.instance.difficulty &&
-                s.round == Controller.instance.round);
-
             position = new Vector2(x, y);
             target = position;
 
             // create an empty list first
             positionHistory = new List<Vector2>();
             rotationHistory = new List<Quaternion>();
-            for (int i = 0; i < currentSettings.historyLength; i++)
+            for (int i = 0; i < settings["history_length"].i; i++)
             {
                 positionHistory.Add(transform.localPosition);
                 rotationHistory.Add(Quaternion.identity);
@@ -116,7 +91,8 @@ namespace Jintori.Game
             // Check if we're about to hit path,
             // in which case, steer harder and set a diffent target
             const float LookAhead = Radius * 4;
-            float maxSteering = currentSettings.maxSteering;
+            float maxSteering = settings["max_steering"].f;
+            float maxSpeed = settings["max_speed"].f;
             int nHits = Physics2D.CircleCast(transform.position, Radius, velocity, PlayArea.EdgeContactFilter, hits, LookAhead);
             if (nHits > 0)
             {
@@ -135,12 +111,13 @@ namespace Jintori.Game
                 hardSteering = false;
 
             // calculate new velocity based on steering
-            Vector2 desired = (target - position).normalized * currentSettings.maxSpeed;
+
+            Vector2 desired = (target - position).normalized * maxSpeed;
             Vector2 steering = desired - velocity;
             steering = Vector2.ClampMagnitude(steering, maxSteering);
 
             velocity = velocity + steering;
-            velocity = Vector2.ClampMagnitude(velocity, currentSettings.maxSpeed);
+            velocity = Vector2.ClampMagnitude(velocity, maxSpeed);
 
             // rotate the sprite to face the forward movement
             transform.localRotation = Quaternion.FromToRotation(Vector2.up, velocity);
@@ -188,17 +165,20 @@ namespace Jintori.Game
         /// </summary>
         IEnumerator SpawnBugsCoroutine()
         {
-            Bug sourceBug = GetComponentInChildren<Bug>(true);
-            YieldInstruction wait = new WaitForSeconds(currentSettings.timeBetweenBugs);
+            float spawnTime = settings["bug_spawn_time"].f;
+            int bugCount = (int)settings["bug_max_count"].i;
+
+            Buggy sourceBug = GetComponentInChildren<Buggy>(true);
+            YieldInstruction wait = new WaitForSeconds(spawnTime);
 
             while (isAlive)
             {
                 yield return wait;
-                while (subEnemies.Count == currentSettings.bugCount)
+                while (subEnemies.Count == bugCount)
                     yield return null;
                 if (isAlive)
                 {
-                    Bug newBug = Instantiate(sourceBug);
+                    Buggy newBug = Instantiate(sourceBug);
                     subEnemies.Add(newBug);
 
                     newBug.gameObject.SetActive(true);
