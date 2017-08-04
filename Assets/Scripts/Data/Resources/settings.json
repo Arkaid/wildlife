@@ -93,7 +93,10 @@
 			],
 			"Tanky": [{
 					"speed": 50,
-					"rotation_speed_angle": 0.02
+					"rotation_speed_angle": 0.02,
+					"shoot_time": 6,
+					"cannonballs_per_shot": 3,
+					"max_cannonballs" : 6
 				},
 				{
 					"speed": 50,

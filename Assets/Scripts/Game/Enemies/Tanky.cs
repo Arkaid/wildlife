@@ -52,6 +52,7 @@ namespace Jintori.Game
             position = new Vector2(x, y);
             target = FindValidTarget(position, Radius * scale);
             StartCoroutine(RotateTowardsTarget());
+            StartCoroutine(ShootCoroutine());
         }
 
         // -----------------------------------------------------------------------------------	
@@ -84,6 +85,42 @@ namespace Jintori.Game
             {
                 target = FindValidTarget(position, scaledRadius);
                 StartCoroutine(RotateTowardsTarget());
+            }
+        }
+        
+        // -----------------------------------------------------------------------------------	
+        IEnumerator ShootCoroutine()
+        {
+            float shootTime = settings["shoot_time"].f;
+            int ballCount = (int)settings["max_cannonballs"].i;
+            int ballsPerShot = (int)settings["cannonballs_per_shot"].i;
+
+            YieldInstruction wait = new WaitForSeconds(shootTime);
+
+            while (isAlive)
+            {
+                while (isAlive)
+                {
+                    while (subEnemies.Count == ballCount)
+                        yield return null;
+
+                    yield return wait;
+
+                    if (isAlive)
+                    {
+                        for (int i = 0; i < ballsPerShot && subEnemies.Count < ballCount; i++)
+                        {
+                            animator.SetTrigger("Shoot");
+                            while (animator.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+                                yield return null;
+                            while (animator.GetCurrentAnimatorStateInfo(0).IsName("Shoot"))
+                                yield return null;
+                        }
+                        animator.ResetTrigger("Shoot");
+                    }
+                }
+
+                yield return null;
             }
         }
 
