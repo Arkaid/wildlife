@@ -16,6 +16,9 @@ namespace Jintori.Game
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
+        [SerializeField]
+        Transform turretTransform = null;
+
         // --- Properties -------------------------------------------------------------------------------
         float scale = 1;
 
@@ -28,14 +31,25 @@ namespace Jintori.Game
         /// <summary> Current position (play area coordinates) </summary>
         Vector2 position = Vector2.zero;
 
-        /// <summary> Do not move while stopped.... DUH </summary>
-        bool isStopped = true;
+        /// <summary> true while the tank is rotating (do not move) </summary>
+        bool isRotating = false;
+
+        /// <summary> True if the turret is shooting </summary>
+        bool isShooting = false;
 
         /// <summary> Used by CircleCast </summary>
         RaycastHit2D[] hits = new RaycastHit2D[8];
 
+        /// <summary> Source cannonball </summary>
+        Bally sourceBally;
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
+        void Start()
+        {
+            sourceBally = GetComponentInChildren<Bally>(true);
+        }
+
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         private void OnMaskCleared()
@@ -58,7 +72,8 @@ namespace Jintori.Game
         // -----------------------------------------------------------------------------------	
         protected override void UpdatePosition()
         {
-            if (isStopped)
+            // don't update position while rotating or shooting
+            if (isRotating || isShooting)
                 return;
 
             float scaledRadius = Radius * scale;
@@ -108,20 +123,59 @@ namespace Jintori.Game
 
                     if (isAlive)
                     {
+                        isShooting = true;
                         for (int i = 0; i < ballsPerShot && subEnemies.Count < ballCount; i++)
-                        {
-                            animator.SetTrigger("Shoot");
-                            while (animator.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
-                                yield return null;
-                            while (animator.GetCurrentAnimatorStateInfo(0).IsName("Shoot"))
-                                yield return null;
-                        }
+                            yield return StartCoroutine(AimAndShoot());
+                        isShooting = false;
                         animator.ResetTrigger("Shoot");
                     }
                 }
 
                 yield return null;
             }
+        }
+        
+        // -----------------------------------------------------------------------------------	
+        IEnumerator AimAndShoot()
+        {
+            const float RotateAngle = 22.5f;
+            const float RotateTime = 0.5f;
+
+            Vector2 start = turretTransform.up;
+            float elapsed = 0;
+
+            while (elapsed <= RotateTime)
+            {
+                elapsed += Time.deltaTime;
+                float t = Mathf.Clamp01(elapsed / RotateTime);
+                turretTransform.up = Quaternion.Euler(0, 0, RotateAngle * t) * start;
+                yield return null;
+            }
+
+            animator.SetTrigger("Shoot");
+            while (animator.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+                yield return null;
+            while (animator.GetCurrentAnimatorStateInfo(0).IsName("Shoot"))
+                yield return null;
+        }
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Instances a new cannonball and shoots it in the direction
+        /// of the turret (called from the animation)
+        /// </summary>
+        void AnimationCallback_SpawnCannonball()
+        {
+            Bally newBall = Instantiate(sourceBally, playArea.transform, true);
+            subEnemies.Add(newBall);
+
+            newBall.gameObject.SetActive(true);
+            newBall.killed += (Enemy e) => { subEnemies.Remove(e); };
+
+            newBall.transform.position = newBall.transform.position;
+            newBall.transform.localScale = Vector3.one;
+            newBall.SetXYFromLocalPosition();
+            newBall.Initialize(turretTransform.up * 100, false);
+            newBall.Run();
         }
 
         // -----------------------------------------------------------------------------------	
@@ -131,7 +185,7 @@ namespace Jintori.Game
         /// <returns></returns>
         IEnumerator RotateTowardsTarget()
         {
-            isStopped = true;
+            isRotating = true;
             velocity = (target - position).normalized;
 
             // find angle between the current direction and the new one
@@ -146,6 +200,10 @@ namespace Jintori.Game
             float elapsed = 0;
             while (elapsed < time)
             {
+                // hold on rotating if it began shooting
+                while (isShooting)
+                    yield return null;
+
                 elapsed += Time.deltaTime;
                 float t = Mathf.Clamp01(elapsed / time);
                 // t = IllogicGate.Tweener.EaseInOut(t, IllogicGate.Tweener.Mode.Sine);
@@ -155,7 +213,7 @@ namespace Jintori.Game
 
             // apply speed
             velocity *= settings["speed"].f;
-            isStopped = false;
+            isRotating = false;
         }
 
         // -----------------------------------------------------------------------------------	
