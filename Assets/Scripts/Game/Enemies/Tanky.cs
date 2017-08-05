@@ -173,6 +173,7 @@ namespace Jintori.Game
 
             newBall.transform.position = newBall.transform.position;
             newBall.transform.localScale = Vector3.one;
+            newBall.transform.rotation = Quaternion.identity;
             newBall.SetXYFromLocalPosition();
             newBall.Initialize(turretTransform.up * settings["cannonball_speed"].f, false);
             newBall.Run();

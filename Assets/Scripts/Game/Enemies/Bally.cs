@@ -49,7 +49,7 @@ namespace Jintori.Game
         private void OnKilled(Enemy sender)
         {
             playArea.mask.maskCleared -= KillIfOutsideShadow;
-            //animator.SetTrigger("Die");
+            animator.SetTrigger("Die");
 
             // wait a few seconds to destroy the object
             // to give the animation time to finish
