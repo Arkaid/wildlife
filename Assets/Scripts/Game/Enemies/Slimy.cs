@@ -36,7 +36,7 @@ namespace Jintori.Game
             playArea.mask.maskCleared += OnMaskCleared;
             killed += OnKilled;
 
-            InitialVelocity(settings["speed"].f);
+            Initialize(settings["speed"].f);
 
             StartCoroutine(SpawnBlobsCoroutine());
         }

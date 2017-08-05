@@ -8,7 +8,7 @@ namespace Jintori.Game
     /// <summary>
     /// Wormy's bug
     /// </summary>
-    public class Buggy : Bouncy
+    public class Bally : Bouncy
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
@@ -20,7 +20,10 @@ namespace Jintori.Game
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-
+        void Start()
+        {
+            Run();
+        }
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         protected override void Setup()
@@ -28,27 +31,25 @@ namespace Jintori.Game
             playArea.mask.maskCleared += KillIfOutsideShadow;
             killed += OnKilled;
 
-            Initialize(settings["speed"].f);
+            //InitialVelocity(settings["speed"].f);
+            Initialize(100, false);
         }
 
         // -----------------------------------------------------------------------------------	
         private void OnKilled(Enemy sender)
         {
             playArea.mask.maskCleared -= KillIfOutsideShadow;
-            animator.SetTrigger("Die");
+            //animator.SetTrigger("Die");
 
             // wait a few seconds to destroy the object
             // to give the animation time to finish
-            DestroyObject(gameObject, 5); 
+            DestroyObject(gameObject, 5);
         }
 
         // -----------------------------------------------------------------------------------	
         protected override void UpdatePosition()
         {
             MoveAndBounce();
-
-            // rotate the sprite to face the forward movement
-            transform.localRotation = Quaternion.FromToRotation(Vector2.up, velocity);
         }
     }
 }

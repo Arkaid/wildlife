@@ -30,7 +30,7 @@ namespace Jintori.Game
             playArea.mask.maskCleared += KillIfOutsideShadow;
             killed += OnKilled;
 
-            InitialVelocity(settings["speed"].f);
+            Initialize(settings["speed"].f);
         }
 
         // -----------------------------------------------------------------------------------	
