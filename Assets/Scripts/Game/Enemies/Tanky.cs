@@ -165,7 +165,7 @@ namespace Jintori.Game
         /// </summary>
         void AnimationCallback_SpawnCannonball()
         {
-            Bally newBall = Instantiate(sourceBally, playArea.transform, true);
+            Bally newBall = Instantiate(sourceBally, transform.parent, true);
             subEnemies.Add(newBall);
 
             newBall.gameObject.SetActive(true);
@@ -174,7 +174,7 @@ namespace Jintori.Game
             newBall.transform.position = newBall.transform.position;
             newBall.transform.localScale = Vector3.one;
             newBall.SetXYFromLocalPosition();
-            newBall.Initialize(turretTransform.up * 100, false);
+            newBall.Initialize(turretTransform.up * settings["cannonball_speed"].f, false);
             newBall.Run();
         }
 
