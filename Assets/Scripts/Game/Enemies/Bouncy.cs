@@ -39,9 +39,24 @@ namespace Jintori.Game
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         /// <summary>
+        /// Initializes bouncy with a given velocity (direction and speed)
+        /// </summary>
+        public void Initialize(Vector2 velocity, bool lock45 = true)
+        {
+            this.lock45 = lock45;
+            this.velocity = velocity;
+            position = new Vector2(x, y);
+            speed = velocity.magnitude;
+
+            if (lock45)
+                ClampVelocity45();
+        }
+
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
         /// Initializes this bouncy. Call during Setup()
         /// </summary>
-        protected void Initialize(float speed, bool lock45 = true)
+        public void Initialize(float speed, bool lock45 = true)
         {
             this.lock45 = lock45;
             position = new Vector2(x, y);
