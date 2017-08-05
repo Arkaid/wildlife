@@ -27,6 +27,22 @@ namespace Jintori.Game
         {
             playArea.mask.maskCleared += KillIfOutsideShadow;
             killed += OnKilled;
+
+            StartCoroutine(FixZDepth());
+        }
+
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// The ball spawns under the turret, but when in flight, it should render above it
+        /// This waits a little bit before fixing the z coordinate of the ball
+        /// </summary>
+        /// <returns></returns>
+        IEnumerator FixZDepth()
+        {
+            yield return new WaitForSeconds(1f);
+            Vector3 position = transform.localPosition;
+            position.z = -1.5f;
+            transform.localPosition = position;
         }
 
         // -----------------------------------------------------------------------------------	

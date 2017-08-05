@@ -96,15 +96,24 @@
 					"rotation_speed_angle": 0.02,
 					"shoot_time": 6,
 					"cannonballs_per_shot": 3,
-					"max_cannonballs" : 6
+					"max_cannonballs" : 6,
+					"cannonball_speed" : 150
 				},
 				{
 					"speed": 50,
-					"rotation_speed_angle": 0.007
+					"rotation_speed_angle": 0.02,
+					"shoot_time": 6,
+					"cannonballs_per_shot": 3,
+					"max_cannonballs" : 6,
+					"cannonball_speed" : 75
 				},
 				{
 					"speed": 50,
-					"rotation_speed_angle": 0.007
+					"rotation_speed_angle": 0.02,
+					"shoot_time": 6,
+					"cannonballs_per_shot": 3,
+					"max_cannonballs" : 6,
+					"cannonball_speed" : 75
 				}
 			]
 
