@@ -4,16 +4,23 @@ using UnityEngine;
 
 namespace Jintori.Game
 {
+    /// <summary>
+    /// Event raised when the minion dies
+    /// </summary>
+    /// <param name="enemy"> Enemy that was killed </param>
+    /// <param name="wasKilledByPlayer"> True, if the player killed it. False if it died naturally </param>
+    public delegate void EnemyKilledEvent(Enemy enemy, bool wasKilledByPlayer);
+
     // --- Class Declaration ------------------------------------------------------------------------
     [RequireComponent(typeof(Collider2D))]
     public abstract class Enemy : PlayAreaObject
     {
         // --- Events -----------------------------------------------------------------------------------
         /// <summary> Raised when the enemy dies </summary>
-        public event System.Action<Enemy> killed = null;
+        public event EnemyKilledEvent killed = null;
 
         /// <summary> Raised when one of the minions spawned by this enemy dies </summary>
-        public event System.Action<Enemy> minionKilled = null;
+        public event EnemyKilledEvent minionKilled = null;
 
         // --- Constants --------------------------------------------------------------------------------
 
@@ -49,6 +56,9 @@ namespace Jintori.Game
 
         /// <summary> Settings for the current difficulty level and round </summary>
         protected JSONObject settings { get; private set; }
+
+        /// <summary> Score for killing this enemy, if available (0 otherwise)</summary>
+        public int score { get { return settings.HasField("score") ? (int)settings["score"].i : 0; } }
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
@@ -93,17 +103,17 @@ namespace Jintori.Game
         /// <summary>
         /// Stops the enemy
         /// </summary>
-        public void Kill()
+        public void Kill(bool killedByPlayer)
         {
             if (killed != null)
-                killed(this);
+                killed(this, killedByPlayer);
 
             isAlive = false;
 
             // kill all sub enemies
             // (use a copy, since kill tends to remove enemies from the sublist)
             foreach (Enemy enemy in minions.ToArray())
-                enemy.Kill();
+                enemy.Kill(killedByPlayer);
         }
 
         // -----------------------------------------------------------------------------------	
@@ -157,21 +167,24 @@ namespace Jintori.Game
         void KillIfOutsideShadow()
         {
             if (playArea.mask[x, y] != PlayArea.Shadowed)
-                Kill();
+                Kill(true);
         }
 
         // -----------------------------------------------------------------------------------	
         public void AddMinion(Enemy enemy)
         {
-            enemy.minionKilled += OnMinionKilled;
+            enemy.killed += OnMinionKilled;
             minions.Add(enemy);
         }
 
         // -----------------------------------------------------------------------------------	
-        private void OnMinionKilled(Enemy enemy)
+        private void OnMinionKilled(Enemy enemy, bool killedByPlayer)
         {
-            enemy.minionKilled -= OnMinionKilled;
+            enemy.killed -= OnMinionKilled;
             minions.Remove(enemy);
+
+            if (minionKilled != null)
+                minionKilled(enemy, killedByPlayer);
         }
 
         // -----------------------------------------------------------------------------------	

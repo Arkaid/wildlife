@@ -217,7 +217,7 @@ namespace Jintori.Game
         }
 
         // -----------------------------------------------------------------------------------	
-        private void OnKilled(Enemy obj)
+        private void OnKilled(Enemy obj, bool killedByPlayer)
         {
             animator.SetTrigger("Die");
             animator.SetBool("Running", false);

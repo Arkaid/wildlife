@@ -188,12 +188,13 @@ namespace Jintori.Game
 
             // setup the play area ffects
             // we have to do it here since we need the initial path
-            playArea.effects.Setup(playArea.safePath);
+            playArea.effects.Setup();
 
             // now that the play area has colliders, 
             // place the boss safely in the shadow
             playArea.boss.gameObject.SetActive(true);
             playArea.boss.SetBossStartPosition(rect);
+            playArea.boss.minionKilled += OnMinionKilled;
             playArea.boss.Run();
 
             // start tracking it
@@ -203,6 +204,13 @@ namespace Jintori.Game
             Timer.instance.StartTimer();
 
             yield break;
+        }
+
+        // -----------------------------------------------------------------------------------	
+        private void OnMinionKilled(Enemy minion, bool killedByPlayer)
+        {
+            if (killedByPlayer)
+                score += minion.score;
         }
 
         // -----------------------------------------------------------------------------------	
@@ -262,7 +270,7 @@ namespace Jintori.Game
             Timer.instance.StopTimer();
 
             // kill boss and hide player
-            playArea.boss.Kill();
+            playArea.boss.Kill(false);
             playArea.player.Hide();
 
             // calculate bonus score due to remaining time
