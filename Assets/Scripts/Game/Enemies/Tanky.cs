@@ -116,7 +116,7 @@ namespace Jintori.Game
             {
                 while (isAlive)
                 {
-                    while (subEnemies.Count == ballCount)
+                    while (minionCount == ballCount)
                         yield return null;
 
                     yield return wait;
@@ -124,7 +124,7 @@ namespace Jintori.Game
                     if (isAlive)
                     {
                         isShooting = true;
-                        for (int i = 0; i < ballsPerShot && subEnemies.Count < ballCount; i++)
+                        for (int i = 0; i < ballsPerShot && minionCount < ballCount; i++)
                             yield return StartCoroutine(AimAndShoot());
                         isShooting = false;
                         animator.ResetTrigger("Shoot");
@@ -166,10 +166,9 @@ namespace Jintori.Game
         void AnimationCallback_SpawnCannonball()
         {
             Bally newBall = Instantiate(sourceBally, transform.parent, true);
-            subEnemies.Add(newBall);
+            AddMinion(newBall);
 
             newBall.gameObject.SetActive(true);
-            newBall.killed += (Enemy e) => { subEnemies.Remove(e); };
 
             newBall.transform.position = newBall.transform.position;
             newBall.transform.localScale = Vector3.one;

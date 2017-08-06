@@ -9,8 +9,11 @@ namespace Jintori.Game
     public abstract class Enemy : PlayAreaObject
     {
         // --- Events -----------------------------------------------------------------------------------
-        /// <summary> Raised when the blobby dies </summary>
+        /// <summary> Raised when the enemy dies </summary>
         public event System.Action<Enemy> killed = null;
+
+        /// <summary> Raised when one of the minions spawned by this enemy dies </summary>
+        public event System.Action<Enemy> minionKilled = null;
 
         // --- Constants --------------------------------------------------------------------------------
 
@@ -38,7 +41,11 @@ namespace Jintori.Game
         }
         private Collider2D _collider;
 
-        protected List<Enemy> subEnemies { get; private set; }
+        /// <summary> List of minions that can be spawned by a boss</summary>
+        List<Enemy> minions;
+
+        /// <summary> List of active minions </summary>
+        protected int minionCount { get { return minions.Count; } }
 
         /// <summary> Settings for the current difficulty level and round </summary>
         protected JSONObject settings { get; private set; }
@@ -76,8 +83,9 @@ namespace Jintori.Game
             if (settings != null)
                 settings = settings[Controller.instance.round];
 
+
             gameObject.SetActive(true);
-            subEnemies = new List<Enemy>();
+            minions = new List<Enemy>();
             StartCoroutine(RunCoroutine());
         }
 
@@ -94,7 +102,7 @@ namespace Jintori.Game
 
             // kill all sub enemies
             // (use a copy, since kill tends to remove enemies from the sublist)
-            foreach (Enemy enemy in subEnemies.ToArray())
+            foreach (Enemy enemy in minions.ToArray())
                 enemy.Kill();
         }
 
@@ -103,6 +111,7 @@ namespace Jintori.Game
         {
             YieldInstruction wffu = new WaitForFixedUpdate();
             isAlive = true;
+            playArea.mask.maskCleared += KillIfOutsideShadow;
             Setup();
             while (isAlive)
             {
@@ -111,6 +120,7 @@ namespace Jintori.Game
                 yield return wffu;
             }
             Finish();
+            playArea.mask.maskCleared -= KillIfOutsideShadow;
         }
 
         // -----------------------------------------------------------------------------------	
@@ -144,10 +154,24 @@ namespace Jintori.Game
         /// bosses, but it does happen for non-boss enemies that get cut out.
         /// It "kills" the enemy, if that is the case
         /// </summary>
-        protected void KillIfOutsideShadow()
+        void KillIfOutsideShadow()
         {
             if (playArea.mask[x, y] != PlayArea.Shadowed)
                 Kill();
+        }
+
+        // -----------------------------------------------------------------------------------	
+        public void AddMinion(Enemy enemy)
+        {
+            enemy.minionKilled += OnMinionKilled;
+            minions.Add(enemy);
+        }
+
+        // -----------------------------------------------------------------------------------	
+        private void OnMinionKilled(Enemy enemy)
+        {
+            enemy.minionKilled -= OnMinionKilled;
+            minions.Remove(enemy);
         }
 
         // -----------------------------------------------------------------------------------	

@@ -25,16 +25,13 @@ namespace Jintori.Game
         // -----------------------------------------------------------------------------------	
         protected override void Setup()
         {
-            playArea.mask.maskCleared += KillIfOutsideShadow;
             killed += OnKilled;
-
             Initialize(settings["speed"].f);
         }
 
         // -----------------------------------------------------------------------------------	
         private void OnKilled(Enemy sender)
         {
-            playArea.mask.maskCleared -= KillIfOutsideShadow;
             animator.SetTrigger("Die");
 
             // wait a few seconds to destroy the object
