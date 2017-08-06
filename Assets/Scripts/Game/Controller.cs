@@ -265,8 +265,14 @@ namespace Jintori.Game
             playArea.boss.Kill();
             playArea.player.Hide();
 
+            // calculate bonus score due to remaining time
+            long beforeScore = (long)score;
+            long bonusScore = (long)(Timer.instance.remainingTime * Config.instance.bonusTimeScore);
+            score = beforeScore + bonusScore;
+
             // save results
-            SaveResults();
+            bool isBestTime, isHighScore;
+            SaveResults(out isBestTime, out isHighScore);
 
             // played the final result before hiding the UI
             UI.instance.PlayResult(true);
@@ -278,6 +284,22 @@ namespace Jintori.Game
 
             // unhide all the shadow
             yield return StartCoroutine(playArea.DiscoverShadow());
+            UI.instance.HideResult();
+
+            // wait until the player hits fire again
+            yield return null;
+            while (!Input.GetButtonDown("Fire1"))
+                yield return null;
+
+            // show score results
+            UI.instance.scoreResults.Show(
+                Timer.instance.elapsedTime,
+                Timer.instance.remainingTime,
+                beforeScore, (long)score,
+                isBestTime, isHighScore
+            );
+            while (!UI.instance.scoreResults.isDone)
+                yield return null;
 
             // wait until the player hits fire again
             yield return null;
@@ -309,19 +331,21 @@ namespace Jintori.Game
         /// <summary>
         /// Saves game results into the save file
         /// </summary>
-        private void SaveResults()
+        private void SaveResults(out bool isBestTime, out bool isHighScore)
         {
             Data.CharacterStats stats = Data.SaveFile.instance.GetCharacterStats(sourceFile.guid);
             Data.RoundData roundData = stats.rounds[round];
             Data.Records records = roundData.records[Config.instance.difficulty];
             roundData.cleared = true;
 
-            float elapsed = Timer.instance.totalTime - Timer.instance.remainingTime;
-            if (records.bestTime == -1 || elapsed < records.bestTime)
+            float elapsed = Timer.instance.elapsedTime;
+            isBestTime = records.bestTime == -1 || elapsed < records.bestTime;
+            if (isBestTime)
                 records.bestTime = elapsed;
 
             long scoreL = (long)score;
-            if (scoreL > records.highScore)
+            isHighScore = scoreL > records.highScore;
+            if (isHighScore)
                 records.highScore = scoreL;
 
             Data.SaveFile.instance.Save();

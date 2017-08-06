@@ -44,6 +44,11 @@ namespace Jintori.Game
         BossTracker _bossTracker = null;
         public BossTracker bossTracker { get { return _bossTracker; } }
 
+        [SerializeField]
+        ScoreResults _scoreResults = null;
+        public ScoreResults scoreResults { get { return _scoreResults; } }
+
+
         // --- Properties -------------------------------------------------------------------------------
         /// <summary> Total lives to show </summary>
         public int lives { set { livesText.text = string.Format("x{0:00}", value); } }
@@ -63,6 +68,7 @@ namespace Jintori.Game
             float maxSkillTime, float remainingSkillTime)
         {
             gameObject.SetActive(true);
+            ShowHeader(true);
 
             lives = livesLeft;
 
@@ -77,34 +83,40 @@ namespace Jintori.Game
 
         // -----------------------------------------------------------------------------------	
         /// <summary>
-        /// Hides the UI completely
-        /// </summary>
-        public void Hide()
-        {
-            gameObject.SetActive(false);
-        }
-
-        // -----------------------------------------------------------------------------------	
-        /// <summary>
         /// Play the game result
         /// </summary>
         public void PlayResult(bool cleared)
         {
-            StartCoroutine(PlayResultCoroutine(cleared));
+            ShowHeader(false);
+            gameResult.gameObject.SetActive(true);
+            // show "cleared / game over"
+            if (cleared)
+                StartCoroutine(gameResult.PlayCleared());
+            else
+                StartCoroutine(gameResult.PlayGameOver());
         }
         
         // -----------------------------------------------------------------------------------	
-        IEnumerator PlayResultCoroutine(bool cleared)
+        /// <summary>
+        /// Hides the "cleared / game over" part of the UI
+        /// </summary>
+        public void HideResult()
         {
-            // hide the top / down UI parts
+            gameResult.gameObject.SetActive(false);
+        }
 
-            if (cleared)
-            {
-                yield return StartCoroutine(gameResult.PlayCleared());
-                Hide();
-            }
-            else
-                yield return StartCoroutine(gameResult.PlayGameOver());
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Shows / Hides the "header" part of the UI (percentage, lives, score, etc)
+        /// </summary>
+        void ShowHeader(bool show)
+        {
+            timeDisplay.gameObject.SetActive(show);
+            scoreDisplay.gameObject.SetActive(show);
+            percentageBar.gameObject.SetActive(show);
+            skillBar.gameObject.SetActive(show);
+            livesText.gameObject.SetActive(show);
+            bossTracker.gameObject.SetActive(show);
         }
     }
 }

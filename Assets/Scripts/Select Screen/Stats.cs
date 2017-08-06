@@ -23,19 +23,12 @@ namespace Jintori.SelectScreen
                 if (records.bestTime == -1)
                     bestTime.text = "N/A";
                 else
-                {
-                    float time = Mathf.FloorToInt(records.bestTime * 1000f);
-
-                    int mili = Mathf.FloorToInt(time % 1000); time -= mili; time /= 1000f;
-                    int secs = Mathf.FloorToInt(time % 60); time -= secs; time /= 60f;
-                    int mins = Mathf.FloorToInt(time);
-                    bestTime.text = string.Format("{0:00}:{1:00}:{2:000}", mins, secs, mili);
-                }
+                    bestTime.text = Util.FormatTime(records.bestTime);
 
                 if (records.highScore == -1)
                     highScore.text = "N/A";
                 else
-                    highScore.text = string.Format("{0:##,###,###,##0}", records.highScore);
+                    highScore.text = Util.FormatScore(records.highScore);
             }
         }
 
