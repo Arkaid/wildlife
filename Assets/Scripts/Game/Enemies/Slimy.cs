@@ -60,7 +60,7 @@ namespace Jintori.Game
             YieldInstruction wait = new WaitForSeconds(spawnTime);
             while(isAlive)
             {
-                while (subEnemies.Count == blobCount)
+                while (minionCount == blobCount)
                     yield return null;
 
                 yield return wait;
@@ -77,10 +77,9 @@ namespace Jintori.Game
         void AnimationCallback_SpawnBlob()
         {
             Blobby newBlobby = Instantiate(sourceBlobby);
-            subEnemies.Add(newBlobby);
+            AddMinion(newBlobby);
 
             newBlobby.gameObject.SetActive(true);
-            newBlobby.killed += (Enemy e) => { subEnemies.Remove(e); };
 
             newBlobby.transform.SetParent(transform.parent, true);
             newBlobby.transform.position = sourceBlobby.transform.position;

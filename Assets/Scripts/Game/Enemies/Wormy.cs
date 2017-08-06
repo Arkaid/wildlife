@@ -173,7 +173,7 @@ namespace Jintori.Game
 
             while (isAlive)
             {
-                while (subEnemies.Count == bugCount)
+                while (minionCount == bugCount)
                     yield return null;
 
                 yield return wait;
@@ -181,10 +181,9 @@ namespace Jintori.Game
                 if (isAlive)
                 {
                     Buggy newBug = Instantiate(sourceBug);
-                    subEnemies.Add(newBug);
+                    AddMinion(newBug);
 
                     newBug.gameObject.SetActive(true);
-                    newBug.killed += (Enemy e) => { subEnemies.Remove(e); };
 
                     newBug.transform.SetParent(transform.parent, true);
                     newBug.transform.position = sourceBug.transform.position;
