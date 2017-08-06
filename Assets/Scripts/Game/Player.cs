@@ -264,28 +264,10 @@ namespace Jintori.Game
         {
             // this allowes me to move in one direction only
             // much like the original Qix or Gals Panic
-            if (Input.GetButtonDown("Horizontal"))
-                direction = Direction.Horizontal;
-            else if (Input.GetButtonUp("Horizontal") && Input.GetButton("Vertical"))
-                direction = Direction.Vertical;
-
-            if (Input.GetButtonDown("Vertical"))
-                direction = Direction.Vertical;
-            else if (Input.GetButtonUp("Vertical") && Input.GetButton("Horizontal"))
-                direction = Direction.Horizontal;
-
-            int dx = 0, dy = 0;
-            if (direction == Direction.Horizontal)
-            {
-                dx = Mathf.RoundToInt(Input.GetAxisRaw("Horizontal"));
-                dy = 0;
-            }
-
-            if (direction == Direction.Vertical)
-            {
-                dx = 0;
-                dy = Mathf.RoundToInt(Input.GetAxisRaw("Vertical"));
-            }
+            float hz = Input.GetAxisRaw("Horizontal");
+            float vt = Input.GetAxisRaw("Vertical");
+            int dx = Mathf.RoundToInt(hz);
+            int dy = Mathf.RoundToInt(vt);
 
             // no movement
             if (dx == 0 && dy == 0)
@@ -293,6 +275,21 @@ namespace Jintori.Game
                 direction = Direction.None;
                 return;
             }
+
+            // check if we need to switch directions
+            if (direction == Direction.None)
+                direction = Mathf.Abs(hz) > Mathf.Abs(vt) ? 
+                    Direction.Horizontal : Direction.Vertical;
+            else if (direction == Direction.Horizontal && dx == 0)
+                direction = Direction.Vertical;
+            else if (direction == Direction.Vertical && dy == 0)
+                direction = Direction.Horizontal;
+
+            // nullify remaining direction
+            if (direction == Direction.Horizontal)
+                dy = 0;
+            else 
+                dx = 0;
 
             // next position
             int nx = x;
