@@ -131,6 +131,9 @@ namespace Jintori
         /// <summary> Speed multiplier for the speed skill, adjusted for difficulty </summary>
         public float speedSkillMultiplier { get { return json["skill_speed_multiplier"].f; } }
 
+        /// <summary> Bonus time score, in bonus points per second remaining </summary>
+        public float bonusTimeScore { get { return json["bonus_time_score"].f; } }
+
         /// <summary> Starting amount of lives, adjusted for difficulty </summary>
         public int startLives { get { return (int)json["start_lives"].i; } }
 

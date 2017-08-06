@@ -15,6 +15,29 @@ namespace Jintori
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         /// <summary>
+        /// Formats a number of seconds in mm:ss:mili
+        /// </summary>
+        public static string FormatTime(float seconds)
+        {
+            float time = Mathf.FloorToInt(seconds * 1000f);
+
+            int mili = Mathf.FloorToInt(time % 1000); time -= mili; time /= 1000f;
+            int secs = Mathf.FloorToInt(time % 60); time -= secs; time /= 60f;
+            int mins = Mathf.FloorToInt(time);
+            return string.Format("{0:00}:{1:00}:{2:000}", mins, secs, mili);
+        }
+
+        // -----------------------------------------------------------------------------------
+        /// <summary>
+        /// Formats the score into a string
+        /// </summary>
+        public static string FormatScore(long score)
+        {
+            return string.Format("{0:##,###,###,##0}", score);
+        }
+
+        // -----------------------------------------------------------------------------------
+        /// <summary>
         /// Find the difference between the safe path before and after cutting,
         /// then returning the center of that difference plus the difference path
         /// </summary>

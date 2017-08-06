@@ -1,7 +1,7 @@
 {
 	"Normal": {
 		"round_time": 180,
-		"clear_ratio": 0.85,
+		"clear_ratio": 0.05,
 		"start_lives": 3,
 		"skill_speed_multiplier": 1.75,
 
@@ -29,6 +29,8 @@
 			[100, 70000]
 		],
 
+		"bonus_time_score" : 20,
+		
 		"enemies": {
 			"Slimy": [{
 					"speed": 200,

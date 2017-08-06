@@ -20,6 +20,8 @@ namespace Jintori.Game
 
         public float remainingTime { get; private set; }
 
+        public float elapsedTime { get { return totalTime - remainingTime; } }
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
 
