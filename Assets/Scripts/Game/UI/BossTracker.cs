@@ -56,7 +56,7 @@ namespace Jintori.Game
             Debug.Assert(boss.isBoss);
 
             this.boss = boss;
-            boss.killed += (Enemy e) => { this.boss = null; };
+            boss.killed += (Enemy e, bool killedByPlayer) => { this.boss = null; };
 
             SetupCollider();
 

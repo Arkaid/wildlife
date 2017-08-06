@@ -23,8 +23,9 @@ namespace Jintori.Game
         /// <summary> Used to take the differences of paths between mask clearings </summary>
         Vector3[] prevPath;
 
-        /// <summary> Pointer to currently active safe path instance </summary>
-        PathRenderer safePath;
+        /// <summary> Play area we play the effects on </summary>
+        PlayArea playArea;
+
 
         float prevScore;
         // --- MonoBehaviour ----------------------------------------------------------------------------
@@ -32,18 +33,36 @@ namespace Jintori.Game
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         /// <summary>
-        /// Resets the ee for the new round
+        /// Resets the effects for the new round
+        /// You MUST call this after creating the initial square
         /// </summary>
-        /// <param name="safePath">Instance of the safe path AFTER creating initial square</param>
-        public void Setup(PathRenderer safePath)
+        public void Setup()
         {
+            playArea = GetComponentInParent<PlayArea>();
+
+            // assert that the safe path has been initialzied
+            Debug.Assert(playArea.safePath.points.Length > 0);
+
             // save the initial square path and score
-            prevPath = safePath.points.Clone() as Vector3[];
+            prevPath = playArea.safePath.points.Clone() as Vector3[];
             prevScore = Controller.instance.score;
 
             // callback to update the cleared area effects after the safe path is redrawn
-            safePath.pathRedrawn += OnSafePathRedrawn;
-            this.safePath = safePath;
+            playArea.safePath.pathRedrawn += OnSafePathRedrawn;
+
+            // callback to display score effects on minions' deaths
+            playArea.boss.minionKilled += OnMinionKilled;
+        }
+
+        // -----------------------------------------------------------------------------------	
+        private void OnMinionKilled(Enemy enemy, bool killedByPlayer)
+        {
+            if (!killedByPlayer)
+                return;
+
+            TextMeshEffect tme = Instantiate(textMeshEffect, transform, true);
+            tme.gameObject.SetActive(true);
+            tme.ShowScore(enemy.score, enemy.transform.position);
         }
 
         // -----------------------------------------------------------------------------------	
@@ -63,7 +82,7 @@ namespace Jintori.Game
             prevScore = Controller.instance.score;
 
             // we need the centroid in world coordinates
-            centroid = safePath.transform.TransformPoint(centroid);
+            centroid = playArea.safePath.transform.TransformPoint(centroid);
             /*
             List<Vector3> tmp = new List<Vector3>(result);
             tmp.Add(result[0]);

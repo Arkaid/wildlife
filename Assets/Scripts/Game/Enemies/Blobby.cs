@@ -32,7 +32,7 @@ namespace Jintori.Game
         }
 
         // -----------------------------------------------------------------------------------	
-        private void OnKilled(Enemy sender)
+        private void OnKilled(Enemy sender, bool killedByPlayer)
         {
             animator.SetTrigger("Die");
 

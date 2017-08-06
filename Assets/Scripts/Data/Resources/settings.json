@@ -1,7 +1,7 @@
 {
 	"Normal": {
 		"round_time": 180,
-		"clear_ratio": 0.05,
+		"clear_ratio": 0.85,
 		"start_lives": 3,
 		"skill_speed_multiplier": 1.75,
 
@@ -50,15 +50,18 @@
 			],
 			"Blobby": [{
 					"speed": 100,
-					"bounces": 2
+					"bounces": 2,
+					"score" : 150
 				},
 				{
 					"speed": 100,
-					"bounces": 3
+					"bounces": 3,
+					"score" : 150
 				},
 				{
 					"speed": 120,
-					"bounces": 4
+					"bounces": 4,
+					"score" : 150
 				}
 			],
 			"Wormy": [{
@@ -84,13 +87,16 @@
 				}
 			],
 			"Buggy": [{
-					"speed": 100
+					"speed": 100,
+					"score" : 150
 				},
 				{
-					"speed": 100
+					"speed": 100,
+					"score" : 150
 				},
 				{
-					"speed": 100
+					"speed": 100,
+					"score" : 150
 				}
 			],
 			"Tanky": [{
@@ -116,6 +122,16 @@
 					"cannonballs_per_shot": 3,
 					"max_cannonballs" : 6,
 					"cannonball_speed" : 75
+				}
+			],
+			"Bally": [{
+					"score" : 150
+				},
+				{
+					"score" : 150
+				},
+				{
+					"score" : 150
 				}
 			]
 
