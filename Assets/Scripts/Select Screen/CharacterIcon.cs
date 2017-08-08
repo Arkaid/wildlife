@@ -7,8 +7,79 @@ using UnityEngine.EventSystems;
 namespace Jintori.SelectScreen
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    public class Icon : MonoBehaviour
+    public class CharacterIcon : Selectable
     {
+        // --- Events -----------------------------------------------------------------------------------
+        // --- Constants --------------------------------------------------------------------------------
+        // --- Static Properties ------------------------------------------------------------------------
+        /// <summary> Keep track of the last icon we selected </summary>
+        static CharacterIcon lastSelected = null;
+
+        // --- Static Methods ---------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------
+        // --- Inspector --------------------------------------------------------------------------------
+        [SerializeField]
+        Image background;
+
+        [SerializeField]
+        Image hover;
+
+        [SerializeField]
+        Image selected;
+
+        // --- Properties -------------------------------------------------------------------------------
+        bool isSelected = false;
+
+        // --- MonoBehaviour ----------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------	
+        protected override void Start()
+        {
+            hoverIn += OnHoverIn;
+            hoverOut += OnHoverHour;
+            select += OnSelect;
+        }
+
+        // --- Methods ----------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------	
+        void Deselect()
+        {
+            isSelected = false;
+            selected.enabled = false;
+            background.enabled = false;
+        }
+        // -----------------------------------------------------------------------------------	
+        private void OnSelect(Selectable obj)
+        {
+            // can only select one icon at the time
+            if (lastSelected != null)
+                lastSelected.Deselect();
+
+            lastSelected = this;
+
+            // change selected icon
+            hover.enabled = false;
+            isSelected = true;
+            selected.enabled = true;
+            background.enabled = true;
+            background.color = selected.color;
+        }
+
+        // -----------------------------------------------------------------------------------	
+        private void OnHoverHour(Selectable obj)
+        {
+            hover.enabled = false;
+            background.enabled = isSelected;
+        }
+
+        // -----------------------------------------------------------------------------------	
+        private void OnHoverIn(Selectable obj)
+        {
+            hover.enabled = true;
+            background.enabled = true;
+            background.color = hover.color;
+        }
+
+#if OLD
         // --- Events -----------------------------------------------------------------------------------
         /// <summary> Raised when the icon is switched </summary>
         public event System.Action<CharacterFile.File> selected;
@@ -87,5 +158,6 @@ namespace Jintori.SelectScreen
                 yield return null;
             }
         }
+#endif
     }
 }

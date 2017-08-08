@@ -6,65 +6,39 @@ using UnityEngine.UI;
 namespace Jintori.SelectScreen
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    public class Rounds : MonoBehaviour
+    public class RoundIcon : Selectable
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
+        static readonly Color HoverColor = new Color32(224, 192, 131, 255);
+
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
-        [SerializeField]
-        Image [] rounds;
-
-        [SerializeField]
-        Sprite notClearedIcon;
-
         // --- Properties -------------------------------------------------------------------------------
-        /// <summary> The data file for the currently assigned character </summary>
-        CharacterFile.File characterFile;
-
-        /// <summary> Stats for the current character </summary>
-        Data.CharacterStats stats;
+        Image frame;
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        void Start()
+        protected override void Start()
         {
-            for (int i = 0; i < Config.Rounds; i++)
-            {
-                int idx = i;
-                rounds[i].GetComponent<Button>().onClick.AddListener(delegate { OnPreviewSelected(idx); });
-            }
+            frame = GetComponent<Image>();
+            hoverIn += OnHoverIn;
+            hoverOut += OnHoverOut;
         }
 
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        public void SetCharacter(CharacterFile.File file)
+        private void OnHoverIn(Selectable obj)
         {
-            this.characterFile = file;
-            stats = Data.SaveFile.instance.GetCharacterStats(file.guid);
-
-            // get the "cleared" state from file
-            Sprite[] roundIcons = file.baseSheet.roundIcons;
-
-            for (int i = 0; i < Config.Rounds; i++)
-                rounds[i].sprite = stats.rounds[i].cleared ? roundIcons[i] : notClearedIcon;
+            frame.color = HoverColor;
         }
 
         // -----------------------------------------------------------------------------------	
-        void OnPreviewSelected(int idx)
+        private void OnHoverOut(Selectable obj)
         {
-            if (stats.rounds[idx].cleared)
-            {
-                Overlay.instance.ShowBaseImage(idx, characterFile);
-            }
-
-            // TODO: popup "clear the image in game to view it here"
-            else
-            {
-
-            }
+            frame.color = Color.white;
         }
     }
 }
