@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Jintori;
+using Jintori.SelectScreen;
 
 // --- Class Declaration ------------------------------------------------------------------------
 public class Test : MonoBehaviour 
@@ -14,21 +15,24 @@ public class Test : MonoBehaviour
     // --- Inspector --------------------------------------------------------------------------------
 
     // --- Properties -------------------------------------------------------------------------------
-    
+    [SerializeField]
+    CharacterGrid test;
 
     // --- MonoBehaviour ----------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------	
 
 	// --- Methods ----------------------------------------------------------------------------------
 	// -----------------------------------------------------------------------------------	
-    void Start()
+    void Update()
     {
-        Jintori.Data.SaveFile.instance.Load();
-        Jintori.Data.CharacterStats data = Jintori.Data.SaveFile.instance.GetCharacterStats("DB4477E3-96F4-43AC-BB66-B7BC59EA80C2");
-        
-        print(data.rounds[0].cleared);
-        data.rounds[0].cleared = true;
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            test.NextPage();
+        }
+        else if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            test.PrevPage();
 
-        Jintori.Data.SaveFile.instance.Save();
+        }
     }
 }
