@@ -19,13 +19,13 @@ namespace Jintori.SelectScreen
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
         [SerializeField]
-        Image background;
+        Image background = null;
 
         [SerializeField]
-        Image hover;
+        Image hover = null;
 
         [SerializeField]
-        Image selected;
+        Image selected = null;
 
         // --- Properties -------------------------------------------------------------------------------
         bool isSelected = false;
@@ -45,7 +45,9 @@ namespace Jintori.SelectScreen
         {
             isSelected = false;
             selected.enabled = false;
-            background.enabled = false;
+
+            if (background != null)
+                background.enabled = false;
         }
         // -----------------------------------------------------------------------------------	
         private void OnSelect(Selectable obj)
@@ -60,23 +62,32 @@ namespace Jintori.SelectScreen
             hover.enabled = false;
             isSelected = true;
             selected.enabled = true;
-            background.enabled = true;
-            background.color = selected.color;
+
+            if (background != null)
+            {
+                background.enabled = true;
+                background.color = selected.color;
+            }
         }
 
         // -----------------------------------------------------------------------------------	
         private void OnHoverHour(Selectable obj)
         {
             hover.enabled = false;
-            background.enabled = isSelected;
+            if (background != null)
+                background.enabled = isSelected;
         }
 
         // -----------------------------------------------------------------------------------	
         private void OnHoverIn(Selectable obj)
         {
             hover.enabled = true;
-            background.enabled = true;
-            background.color = hover.color;
+
+            if (background != null)
+            {
+                background.enabled = true;
+                background.color = hover.color;
+            }
         }
 
 #if OLD

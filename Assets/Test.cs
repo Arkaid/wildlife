@@ -25,14 +25,11 @@ public class Test : MonoBehaviour
 	// -----------------------------------------------------------------------------------	
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            test.NextPage();
-        }
-        else if (Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            test.PrevPage();
-
+            for (int i = 0; i < 30; i++)
+                test.AddCharacter();
+            test.Paginate();
         }
     }
 }
