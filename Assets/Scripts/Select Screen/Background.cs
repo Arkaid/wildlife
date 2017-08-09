@@ -5,50 +5,42 @@ using UnityEngine.UI;
 
 namespace Jintori.SelectScreen
 {
-    using Game;
-
     // --- Class Declaration ------------------------------------------------------------------------
-    public class SkillSelect : MonoBehaviour
+    public class Background : MonoBehaviour
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
         // --- Static Properties ------------------------------------------------------------------------
+        static readonly Color defaultColor = new Color32(0, 0, 0, 150);
+
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
-        [SerializeField]
-        Image player;
-
-        [SerializeField]
-        Text skillName;
-
         // --- Properties -------------------------------------------------------------------------------
-        Button button;
-
+        Image image;
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
-        // -----------------------------------------------------------------------------------	
-        private void Start()
-        {
-            button = GetComponent<Button>();
-            button.onClick.AddListener(OnClick);
-            SetSkill();
-        }
-
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        void OnClick()
+        public void Show(Color color)
         {
-            int next = (int)(Skill.type + 1) % (int)Skill.Type.COUNT;
-            Skill.type = (Skill.Type)next;
-            SetSkill();
+            if (image == null)
+                image = GetComponent<Image>();
+
+            gameObject.SetActive(true);
+            image.color = color;
         }
 
         // -----------------------------------------------------------------------------------	
-        void SetSkill()
+        public void Show()
         {
-            player.color = Skill.playerColor[Skill.type];
-            skillName.text = Skill.type.ToString().ToUpper();
+            Show(defaultColor);
+        }
+
+        // -----------------------------------------------------------------------------------	
+        public void Hide()
+        {
+            gameObject.SetActive(false);
         }
     }
 }

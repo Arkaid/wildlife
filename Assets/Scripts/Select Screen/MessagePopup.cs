@@ -6,41 +6,42 @@ using UnityEngine.UI;
 namespace Jintori.SelectScreen
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    public class RoundIcon : Selectable
+    public class MessagePopup : MonoBehaviour
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
-        static readonly Color HoverColor = new Color32(224, 192, 131, 255);
-
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
+        [SerializeField]
+        Text titleText;
+
+        [SerializeField]
+        Text contentText;
+
         // --- Properties -------------------------------------------------------------------------------
-        Image frame;
+        public bool isVisible { get; private set; }
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        protected override void Start()
-        {
-            base.Start();
-
-            frame = GetComponent<Image>();
-            hoverIn += OnHoverIn;
-            hoverOut += OnHoverOut;
-        }
-
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        private void OnHoverIn(Selectable obj)
+        public void Show(string content, string text= "")
         {
-            frame.color = HoverColor;
+            gameObject.SetActive(true);
+            contentText.text = content;
+            titleText.text = text;
+            isVisible = true;
+            Overlay.instance.background.Show();
         }
 
         // -----------------------------------------------------------------------------------	
-        private void OnHoverOut(Selectable obj)
+        public void Close()
         {
-            frame.color = Color.white;
+            isVisible = false;
+            gameObject.SetActive(false);
+            Overlay.instance.background.Hide();
         }
     }
 }

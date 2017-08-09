@@ -1,12 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Jintori.SelectScreen
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    public class CharacterGrid : MonoBehaviour
+    public class CharacterGrid : UnityEngine.UI.Selectable
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
@@ -67,36 +68,26 @@ namespace Jintori.SelectScreen
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        private void Start()
+        protected override void Start()
         {
             nextPageButton.onClick.AddListener(NextPage);
             prevPageButton.onClick.AddListener(PrevPage);
 
-            sampleIcon.transform.SetParent(null, true);
+            //sampleIcon.transform.SetParent(transform.parent, true);
             sampleIcon.gameObject.SetActive(false);
+
+            StartCoroutine(ResizeCheck());
+
+            base.Start();
         }
 
         // -----------------------------------------------------------------------------------	
-        private void Update()
+        public override void OnSelect(BaseEventData eventData)
         {
-            // check if we need to move to the next / prev page when using controllers
-            int idx = lastHover.transform.GetSiblingIndex();
-            int x = idx % iconsPerPageX;
-
-            int dx = Mathf.RoundToInt(Input.GetAxisRaw("Horizontal"));
-            if (x == 0 && dx == -1)
-                PrevPage();
-            else if (x == iconsPerPageX - 1 && dx == 1)
-                NextPage();
-        }
-
-        // -----------------------------------------------------------------------------------	
-        /// <summary>
-        /// Called after a layout. We do the resizing of the inner grid here
-        /// </summary>
-        void OnRectTransformDimensionsChange()
-        {
-            StartCoroutine(Resize());
+            // if the grid gets selected, select the icon that was last hovered
+            // you need a 1 frame delay, since you can't releselect while selecting
+            base.OnSelect(eventData);
+            StartCoroutine(DelayedSelect());
         }
 
         // --- Methods ----------------------------------------------------------------------------------
@@ -110,21 +101,39 @@ namespace Jintori.SelectScreen
         }
 
         // -----------------------------------------------------------------------------------	
+        IEnumerator DelayedSelect()
+        {
+            yield return null;
+            EventSystem.current.SetSelectedGameObject(lastHover.gameObject);
+        }
+
+        // -----------------------------------------------------------------------------------	
         private void OnCharacterHoveredIn(Selectable sender)
         {
             lastHover = sender as CharacterIcon;
-
-            // let round4 where to navigate upon returning
-            Navigation navi = round4.navigation;
-            navi.selectOnRight = lastHover;
-            navi.selectOnDown = lastHover;
-            round4.navigation = navi;
         }
 
         // -----------------------------------------------------------------------------------	
         private void OnCharacterSelected(Selectable sender)
         {
             selected = sender as CharacterIcon;
+        }
+
+        // -----------------------------------------------------------------------------------	
+        IEnumerator ResizeCheck()
+        {
+            int lastW = -1;
+            int lastH = -1;
+
+            while(true)
+            {
+                yield return null;
+                if (Screen.width == lastW && Screen.height == lastH)
+                    continue;
+                lastW = Screen.width;
+                lastH = Screen.height;
+                StartCoroutine(Resize());
+            }
         }
 
         // -----------------------------------------------------------------------------------	
@@ -146,7 +155,7 @@ namespace Jintori.SelectScreen
 
             // force the rect to resize. This will give us the
             // actual amount of available space for the grid
-            RectTransform rt = GetComponent<RectTransform>();
+            RectTransform rt = widthController.GetComponent<RectTransform>();
             LayoutRebuilder.ForceRebuildLayoutImmediate(rt);
 
             // amazingly, this is needed here too!
@@ -244,8 +253,8 @@ namespace Jintori.SelectScreen
                     Navigation navi = icon.navigation;
                     navi.mode = Navigation.Mode.Explicit;
 
-                    navi.selectOnLeft = (lt >= 0 && lt < iconCount) ? page.GetChild(lt).GetComponent<Selectable>() : null;
-                    navi.selectOnRight = (rt >= 0 && rt < iconCount) ? page.GetChild(rt).GetComponent<Selectable>() : null;
+                    navi.selectOnLeft = (lt >= 0 && lt < iconCount) ? page.GetChild(lt).GetComponent<Selectable>() : prevPageButton as UnityEngine.UI.Selectable;
+                    navi.selectOnRight = (rt >= 0 && rt < iconCount) ? page.GetChild(rt).GetComponent<Selectable>() : nextPageButton as UnityEngine.UI.Selectable;
                     navi.selectOnUp = (up >= 0 && up < iconCount) ? page.GetChild(up).GetComponent<Selectable>() : round4;
                     navi.selectOnDown = (dw >= 0 && dw < iconCount) ? page.GetChild(dw).GetComponent<Selectable>() : startButton;
 
@@ -258,6 +267,11 @@ namespace Jintori.SelectScreen
                     icon.navigation = navi;
                 }
             }
+
+            // we need less pages now
+            if (currentPage >= pageCount)
+                currentPage = pageCount - 1;
+
             SetRandomButtonNavigation(pagesRoot.GetChild(currentPage));
         }
 
@@ -286,8 +300,8 @@ namespace Jintori.SelectScreen
             isScrolling = true;
 
             // just move the current and next pages
-            RectTransform page_a = pagesRoot.GetChild(currentPage).GetComponent<RectTransform>();
-            RectTransform page_b = pagesRoot.GetChild(next).GetComponent<RectTransform>();
+            RectTransform oldPage = pagesRoot.GetChild(currentPage).GetComponent<RectTransform>();
+            RectTransform newPage = pagesRoot.GetChild(next).GetComponent<RectTransform>();
 
             // by this much (page width). offset here gives us direction
             float dx = widthController.minWidth * offset;
@@ -300,12 +314,20 @@ namespace Jintori.SelectScreen
                 t = IllogicGate.Tweener.EaseOut(t);
 
                 // move one page in and the other out
-                page_a.anchoredPosition = new Vector2(-dx * t, 0);
-                page_b.anchoredPosition = new Vector2(dx * (1 - t), 0);
+                oldPage.anchoredPosition = new Vector2(-dx * t, 0);
+                newPage.anchoredPosition = new Vector2(dx * (1 - t), 0);
                 yield return null;
             }
 
-            SetRandomButtonNavigation(page_b);
+            // update the navigation for the random button
+            SetRandomButtonNavigation(newPage);
+
+            // "lastHover" is now in the old page.
+            // reselect the same position (or the last one int the page, if unavailable)
+            int idx = lastHover.transform.GetSiblingIndex();
+            if (idx >= newPage.childCount)
+                idx = newPage.childCount - 1;
+            lastHover = newPage.GetChild(idx).GetComponent<CharacterIcon>();
 
             currentPage = next;
             isScrolling = false;

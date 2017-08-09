@@ -20,6 +20,7 @@ namespace Jintori.Game
         {
             Shield,
             Speed,
+            Freeze,
             COUNT
         }
 
@@ -27,9 +28,9 @@ namespace Jintori.Game
         /// <summary> Color to paint the player, according to skill </summary>
         public static readonly Dictionary<Type, Color> playerColor = new Dictionary<Type, Color>()
         {
-            { Type.Speed, new Color32(255, 204, 49, 255) },
-            { Type.Shield, new Color32(49, 161, 255, 255) },
-
+            { Type.Shield, new Color32(22, 216, 40, 255) },
+            { Type.Speed, new Color32(255, 217, 4, 255) },
+            { Type.Freeze, new Color32(79, 211, 255, 255) },
         };
 
         /// <summary> Skill type </summary>
