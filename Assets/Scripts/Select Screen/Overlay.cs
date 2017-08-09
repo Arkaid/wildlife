@@ -20,6 +20,46 @@ namespace Jintori.SelectScreen
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
         [SerializeField]
+        Background _background;
+        public Background background { get { return _background; } }
+
+        [SerializeField]
+        MessagePopup _messagePopup;
+        public MessagePopup messagePopup { get { return _messagePopup; } }
+
+        [SerializeField]
+        SkillSelectPopup _skillSelectPopup;
+        public SkillSelectPopup skillSelectPopup { get { return _skillSelectPopup; } }
+
+        // --- Properties -------------------------------------------------------------------------------
+        // --- MonoBehaviour ----------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------	
+        private void Start()
+        {
+            background.Hide();
+            messagePopup.Close();
+            skillSelectPopup.Close();
+        }
+
+        // --- Methods ----------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------	
+
+    }
+#if OLD
+    // --- Class Declaration ------------------------------------------------------------------------
+    /// <summary>
+    /// Simple overlay for the menu screens with popups and 
+    /// other functions
+    /// </summary>
+    public class Overlay : IllogicGate.SingletonBehaviour<Overlay>
+    {
+        // --- Events -----------------------------------------------------------------------------------
+        // --- Constants --------------------------------------------------------------------------------
+        // --- Static Properties ------------------------------------------------------------------------
+        // --- Static Methods ---------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------
+        // --- Inspector --------------------------------------------------------------------------------
+        [SerializeField]
         Image background = null;
 
         [SerializeField]
@@ -105,4 +145,5 @@ namespace Jintori.SelectScreen
             Hide();
         }
     }
+#endif
 }

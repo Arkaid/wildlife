@@ -31,5 +31,13 @@ public class Test : MonoBehaviour
                 test.AddCharacter();
             test.Paginate();
         }
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            Overlay.instance.messagePopup.Show("HELLO WORLD", "POPUP TITLE");
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            Overlay.instance.skillSelectPopup.Show(Jintori.Game.Skill.Type.Freeze);
+        }
     }
 }

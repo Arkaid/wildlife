@@ -34,8 +34,10 @@ namespace Jintori.SelectScreen
         // -----------------------------------------------------------------------------------	
         protected override void Start()
         {
+            base.Start();
+
             hoverIn += OnHoverIn;
-            hoverOut += OnHoverHour;
+            hoverOut += OnHoverOut;
             select += OnSelect;
         }
 
@@ -71,7 +73,7 @@ namespace Jintori.SelectScreen
         }
 
         // -----------------------------------------------------------------------------------	
-        private void OnHoverHour(Selectable obj)
+        private void OnHoverOut(Selectable obj)
         {
             hover.enabled = false;
             if (background != null)

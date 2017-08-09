@@ -6,41 +6,50 @@ using UnityEngine.UI;
 namespace Jintori.SelectScreen
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    public class RoundIcon : Selectable
+    public class SkillSelectButton : Selectable
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
-        static readonly Color HoverColor = new Color32(224, 192, 131, 255);
-
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
-        // --- Properties -------------------------------------------------------------------------------
-        Image frame;
+        [SerializeField]
+        Image hover;
 
+        [SerializeField]
+        Image background;
+
+        [SerializeField]
+        Game.Skill.Type _skill;
+        public Game.Skill.Type skill { get { return _skill; } }
+
+        // --- Properties -------------------------------------------------------------------------------
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         protected override void Start()
         {
             base.Start();
 
-            frame = GetComponent<Image>();
             hoverIn += OnHoverIn;
             hoverOut += OnHoverOut;
         }
 
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        private void OnHoverIn(Selectable obj)
+        private void OnHoverOut(Selectable obj)
         {
-            frame.color = HoverColor;
+            hover.enabled = false;
+            background.enabled = false;
         }
 
         // -----------------------------------------------------------------------------------	
-        private void OnHoverOut(Selectable obj)
+        private void OnHoverIn(Selectable obj)
         {
-            frame.color = Color.white;
+            hover.enabled = true;
+            background.enabled = true;
+            background.color = hover.color;
         }
+
     }
 }
