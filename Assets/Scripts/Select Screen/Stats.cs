@@ -48,14 +48,20 @@ namespace Jintori.SelectScreen
         Records hard = null;
 
         // --- Properties -------------------------------------------------------------------------------
-        new Animation animation;
+        new Animation animation
+        {
+            get
+            {
+                if (_animation == null)
+                    _animation = GetComponent<Animation>();
+                return _animation;
+            }
+        }
+        Animation _animation;
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        private void Start()
-        {
-            animation = GetComponent<Animation>();
-        }
+
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         public void Hide()

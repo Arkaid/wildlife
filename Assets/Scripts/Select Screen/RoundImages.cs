@@ -1,50 +1,63 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Jintori.SelectScreen
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    public class RoundIcon : Selectable
+    public class RoundImages : MonoBehaviour
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
-        static readonly Color HoverColor = new Color32(224, 192, 131, 255);
-
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
         [SerializeField]
-        Image _previewIcon = null;
-        public Image previewIcon { get { return _previewIcon; } }
+        RoundIcon[] icons = null;
+
+        [SerializeField]
+        Sprite lockedSprite = null;
 
         // --- Properties -------------------------------------------------------------------------------
-        Image frame;
+        CharacterFile.File characterFile;
+        Data.CharacterStats stats;
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        protected override void Start()
+        private void Start()
         {
-            base.Start();
-
-            frame = GetComponent<Image>();
-            hoverIn += OnHoverIn;
-            hoverOut += OnHoverOut;
+            foreach(RoundIcon icon in icons)
+                icon.select += OnRoundSelected;
         }
 
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        private void OnHoverIn(Selectable obj)
+        private void OnRoundSelected(Selectable sender)
         {
-            frame.color = HoverColor;
+            int idx = System.Array.IndexOf(icons, sender);
+            if (stats.rounds[idx].cleared)
+                Overlay.instance.roundImageViewer.Show(characterFile, idx);
+            else
+            {
+                string diff = idx == 3 ? "hard" : "normal";
+                string msg = string.Format("Clear round {0} in {1} difficulty to unlock this image", idx + 1, diff);
+                Overlay.instance.messagePopup.Show(msg.ToUpper(), "IMAGE LOCKED");
+            }
         }
 
         // -----------------------------------------------------------------------------------	
-        private void OnHoverOut(Selectable obj)
+        public void SetCharacter(CharacterFile.File characterFile)
         {
-            frame.color = Color.white;
+            stats = Data.SaveFile.instance.GetCharacterStats(characterFile.guid);
+            this.characterFile = characterFile;
+            for (int i = 0; i < Config.Rounds; i++)
+            {
+                if (stats.rounds[i].cleared)
+                    icons[i].previewIcon.sprite = characterFile.baseSheet.roundIcons[i];
+                else
+                    icons[i].previewIcon.sprite = lockedSprite;
+            }
         }
     }
 }

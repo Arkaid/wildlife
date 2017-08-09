@@ -25,13 +25,7 @@ public class Test : MonoBehaviour
 	// -----------------------------------------------------------------------------------	
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            for (int i = 0; i < 30; i++)
-                test.AddCharacter();
-            test.Paginate();
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        if (Input.GetKeyDown(KeyCode.Alpha2))
         {
             Overlay.instance.messagePopup.Show("HELLO WORLD", "POPUP TITLE");
         }

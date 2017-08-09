@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -9,7 +10,7 @@ namespace Jintori
     /// <summary>
     /// A simplification I'm using to coordinate controller and mouse input
     /// </summary>
-    public class Selectable : UnityEngine.UI.Selectable
+    public class Selectable : UnityEngine.UI.Selectable, ISubmitHandler
     {
         // --- Events -----------------------------------------------------------------------------------
         /// <summary> Called when you hover the mouse in, or move into the Selectable with the controller </summary>
@@ -32,20 +33,27 @@ namespace Jintori
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        private void Update()
+       
+        // --- Methods ----------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------	
+        public void OnSubmit(BaseEventData eventData)
         {
-            if (Input.GetButtonDown("Fire1") && isHovering)
-            {
-                if (select != null)
-                    select(this);
-            }
+            if (select != null)
+                select(this);
         }
 
-        // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         public override void OnPointerEnter(PointerEventData eventData)
         {
             Select();
+        }
+
+        // -----------------------------------------------------------------------------------	
+        public override void OnPointerUp(PointerEventData eventData)
+        {
+            base.OnPointerUp(eventData);
+            if (select != null)
+                select(this);
         }
 
         // -----------------------------------------------------------------------------------	
@@ -65,5 +73,7 @@ namespace Jintori
             if (hoverOut != null)
                 hoverOut(this);
         }
+
+
     }
 }

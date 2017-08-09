@@ -30,7 +30,10 @@ namespace Jintori.SelectScreen
         {
             skillButtons = GetComponentsInChildren<SkillSelectButton>();
             for (int i = 0; i < skillButtons.Length; i++)
+            {
+                skillButtons[i].Initialize();
                 skillButtons[i].select += OnSkillSelected;
+            }
         }
         
         // -----------------------------------------------------------------------------------	
