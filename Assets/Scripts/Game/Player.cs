@@ -131,6 +131,16 @@ namespace Jintori.Game
             }
         }
 
+        // -----------------------------------------------------------------------------------	
+        private void OnDestroy()
+        {
+            if (Skill.instance != null)
+            {
+                Skill.instance.skillTriggered -= OnSkillTriggered;
+                Skill.instance.skillReleased -= OnSkillReleased;
+            }
+        }
+
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         private void OnSkillReleased()
