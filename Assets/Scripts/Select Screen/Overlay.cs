@@ -20,16 +20,20 @@ namespace Jintori.SelectScreen
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
         [SerializeField]
-        Background _background;
+        Background _background = null;
         public Background background { get { return _background; } }
 
         [SerializeField]
-        MessagePopup _messagePopup;
+        MessagePopup _messagePopup = null;
         public MessagePopup messagePopup { get { return _messagePopup; } }
 
         [SerializeField]
-        SkillSelectPopup _skillSelectPopup;
+        SkillSelectPopup _skillSelectPopup = null;
         public SkillSelectPopup skillSelectPopup { get { return _skillSelectPopup; } }
+
+        [SerializeField]
+        RoundImageViewer _roundImageViewer = null;
+        public RoundImageViewer roundImageViewer { get { return _roundImageViewer; } }
 
         // --- Properties -------------------------------------------------------------------------------
         // --- MonoBehaviour ----------------------------------------------------------------------------

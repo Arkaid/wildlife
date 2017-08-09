@@ -24,17 +24,6 @@ namespace Jintori.SelectScreen
         Animation nameAnimation = null;
 
         // --- Properties -------------------------------------------------------------------------------
-        RectTransform rectTransform
-        {
-            get
-            {
-                if (_rectTransform == null)
-                    _rectTransform = GetComponent<RectTransform>();
-                return _rectTransform;
-            }
-        }
-        RectTransform _rectTransform;
-
         /// <summary> Character we're currently showing </summary>
         CharacterFile.File characterFile;
 
@@ -54,7 +43,10 @@ namespace Jintori.SelectScreen
         }
         
         // -----------------------------------------------------------------------------------	
-        public void SetSelected()
+        /// <summary>
+        /// Switches to the second avatar image
+        /// </summary>
+        public void SwitchImage()
         {
             characterImage.sprite = characterFile.baseSheet.avatarB;
         }

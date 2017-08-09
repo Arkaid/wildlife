@@ -92,12 +92,18 @@ namespace Jintori.SelectScreen
 
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        public void AddCharacter()
+        /// <summary>
+        /// Add an icon to the character grid
+        /// </summary>
+        public CharacterIcon AddCharacter(CharacterFile.File file)
         {
             CharacterIcon newIcon = Instantiate(sampleIcon, pagesRoot, true);
+            newIcon.characterFile = file;
             newIcon.gameObject.SetActive(true);
             newIcon.select += OnCharacterSelected;
             newIcon.hoverIn += OnCharacterHoveredIn;
+
+            return newIcon;
         }
 
         // -----------------------------------------------------------------------------------	
@@ -288,6 +294,9 @@ namespace Jintori.SelectScreen
         }
 
         // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Scrolls the character icon pages to the left (-1) or right (+1)
+        /// </summary>
         IEnumerator ScrollPage(int offset)
         {
             const float ScrollTime = 0.45f;
@@ -351,45 +360,6 @@ namespace Jintori.SelectScreen
 
             random.navigation = navi;
         }
-#if OLD
-        // --- Events -----------------------------------------------------------------------------------
-        /// <summary> Raised when the icon is switched </summary>
-        public event System.Action<CharacterFile.File> selected;
-
-        // --- Constants --------------------------------------------------------------------------------
-        // --- Static Properties ------------------------------------------------------------------------
-        // --- Static Methods ---------------------------------------------------------------------------
-        // -----------------------------------------------------------------------------------
-        // --- Inspector --------------------------------------------------------------------------------
-        [SerializeField]
-        Icon sampleIcon = null;
-
-        // --- Properties -------------------------------------------------------------------------------
-        // --- MonoBehaviour ----------------------------------------------------------------------------
-        // -----------------------------------------------------------------------------------	
-        void Start()
-        {
-            sampleIcon.gameObject.SetActive(false);
-            Clear();
-        }
-
-        // --- Methods ----------------------------------------------------------------------------------
-        // -----------------------------------------------------------------------------------	
-        /// <summary>
-        /// Clears the grid from all icons
-        /// </summary>
-        public void Clear()
-        {
-            while (transform.childCount > 1)
-            {
-                Transform child = transform.GetChild(0);
-                if (child == sampleIcon.transform)
-                    child = transform.GetChild(1);
-
-                child.SetParent(null);
-                DestroyObject(child.gameObject);
-            }
-        }
 
         // -----------------------------------------------------------------------------------	
         /// <summary>
@@ -398,31 +368,12 @@ namespace Jintori.SelectScreen
         /// </summary>
         public void SelectFirst()
         {
-            Transform first = transform.GetChild(0);
-            if (first == sampleIcon.transform)
-                first = transform.GetChild(1);
+            Transform firstPage = pagesRoot.GetChild(0);
+            Transform first = firstPage.GetChild(0);
 
-            Toggle toggle = first.GetComponent<Toggle>();
-            toggle.Select();
-            toggle.isOn = true;
+            Selectable selectable = first.GetComponent<Selectable>();
+            selectable.Select();
+            selectable.OnSubmit(null);
         }
-
-
-        // -----------------------------------------------------------------------------------	
-        /// <summary>
-        /// Adds an icon to the grid
-        /// </summary>
-        public void Add(CharacterFile.File characterFile)
-        {
-            Icon newIcon = Instantiate(sampleIcon);
-            newIcon.gameObject.SetActive(true);
-            newIcon.Setup(characterFile);
-
-            newIcon.selected += selected;
-
-            newIcon.transform.SetParent(transform);
-            newIcon.transform.localScale = Vector3.one;
-        }
-#endif
     }
 }

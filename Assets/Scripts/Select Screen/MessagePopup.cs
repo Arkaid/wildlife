@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 namespace Jintori.SelectScreen
 {
@@ -15,13 +16,18 @@ namespace Jintori.SelectScreen
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
         [SerializeField]
-        Text titleText;
+        Text titleText = null;
 
         [SerializeField]
-        Text contentText;
+        Text contentText = null;
+
+        [SerializeField]
+        Button okButton = null;
 
         // --- Properties -------------------------------------------------------------------------------
         public bool isVisible { get; private set; }
+
+        GameObject lastSelected;
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
@@ -34,6 +40,8 @@ namespace Jintori.SelectScreen
             titleText.text = text;
             isVisible = true;
             Overlay.instance.background.Show();
+            lastSelected = EventSystem.current.currentSelectedGameObject;
+            okButton.Select();
         }
 
         // -----------------------------------------------------------------------------------	
@@ -42,6 +50,7 @@ namespace Jintori.SelectScreen
             isVisible = false;
             gameObject.SetActive(false);
             Overlay.instance.background.Hide();
+            EventSystem.current.SetSelectedGameObject(lastSelected);
         }
     }
 }
