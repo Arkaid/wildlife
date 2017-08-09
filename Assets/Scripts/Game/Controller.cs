@@ -317,9 +317,15 @@ namespace Jintori.Game
             // transition out
             yield return StartCoroutine(Transition.instance.Show());
 
+            // hide the scores
+            UI.instance.scoreResults.Hide();
+
             // play next round or go back to top menu?
             round++;
-            if (round < Config.Rounds)
+            int lastRound = Config.Rounds;
+            if (Config.instance.difficulty == Config.Difficulty.Hard)
+                lastRound--; // the last round can only be played in Hard mode
+            if (round < lastRound)
             {
                 // add a life since you respawn on the next round
                 livesLeft++;
