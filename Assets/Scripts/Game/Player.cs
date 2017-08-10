@@ -71,7 +71,7 @@ namespace Jintori.Game
             switch (state)
             {
                 case State.SafePath:
-                    if (Input.GetButton("Fire1"))
+                    if (Input.GetButton("Cut"))
                     {
                         animator.SetBool("Cut", true);
                         state = State.StartCut;
@@ -79,7 +79,7 @@ namespace Jintori.Game
                     break;
 
                 case State.StartCut:
-                    if (!Input.GetButton("Fire1"))
+                    if (!Input.GetButton("Cut"))
                     {
                         animator.SetBool("Cut", false);
                         state = State.SafePath;
@@ -87,12 +87,12 @@ namespace Jintori.Game
                     break;
 
                 case State.Cutting:
-                    if (!Input.GetButton("Fire1"))
+                    if (!Input.GetButton("Cut"))
                         state = State.Rewinding;
                     break;
 
                 case State.Rewinding:
-                    if (Input.GetButton("Fire1"))
+                    if (Input.GetButton("Cut"))
                         state = State.Cutting;
                     else
                         Rewind(left);
