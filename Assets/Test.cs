@@ -22,21 +22,22 @@ public class Test : MonoBehaviour
 
     // --- Methods ----------------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------	
-    private void Start()
+    private IEnumerator Start()
     {
-
+        IllogicGate.SoundManager2D.instance.PlayBGM("Test 1");
+        yield return new WaitForSeconds(5);
+        IllogicGate.SoundManager2D.instance.CrossFadeBGM("Test 2", 5);
+        yield break;
     }
 
     private void OnGUI()
     {
-        GUILayout.Label(Input.GetAxisRaw("Horizontal").ToString());
-        GUILayout.Label(Input.GetAxisRaw("Vertical").ToString());
-        GUILayout.Label(Input.GetButton("Cut").ToString());
-        GUILayout.Label(Input.GetButton("Skill").ToString());
+
     }
     void Update()
     {
-        
+        if (Input.GetMouseButtonDown(0))
+            IllogicGate.SoundManager2D.instance.PlaySFX("ui_accept");
     }
 
 }
