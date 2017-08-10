@@ -126,6 +126,38 @@ namespace Jintori
             set { options.json.SetField("difficulty", value.ToString()); }
         }
 
+        /// <summary> Sound FX volume </summary>
+        public int sfxVolume
+        {
+            get { return (int)options.json["sfx_volume"].i; }
+            set { options.json.SetField("sfx_volume", value); }
+        }
+
+        /// <summary> Sound FX volume </summary>
+        public int bgmVolume
+        {
+            get { return (int)options.json["bgm_volume"].i; }
+            set { options.json.SetField("bgm_volume", value); }
+        }
+
+        // whether to play in fullscreen or not
+        public bool fullScreen
+        {
+            get { return options.json["fullscreen"].b; }
+            set { options.json.SetField("fullscreen", value); }
+        }
+
+
+        // window resolution when playing in windowed mode
+        public Vector2 resolution
+        {
+            get { return new Vector2(options.json["resolution_w"].f, options.json["resolution_h"].f); }
+            set { options.json.SetField("resolution_w", value.x); options.json.SetField("resolution_h", value.y); }
+        }
+
+        /// <summary> This creates a debug log if turned on </summary>
+        public bool debugOn { get { return options.json["debug"].b; } }
+
         /// <summary> Time for one round, adjusted for difficulty </summary>
         public int roundTime { get { return (int)json["round_time"].i; } }
 
@@ -152,8 +184,12 @@ namespace Jintori
 
             options = new Data.OptionsFile();
             options.Load();
+        }
 
-            difficulty = Difficulty.Normal;
+        // -----------------------------------------------------------------------------------	
+        public void SaveOptions()
+        {
+            options.Save();
         }
 
         // -----------------------------------------------------------------------------------	
@@ -206,6 +242,5 @@ namespace Jintori
         {
             return json["skills"][skill.ToString()]["time_charge_per_percentage"].f * percentage;
         }
-
     }
 }

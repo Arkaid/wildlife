@@ -40,8 +40,8 @@ namespace Jintori.Data
             json.AddField("difficulty", Config.Difficulty.Normal.ToString());
             json.AddField("sfx_volume", 100);
             json.AddField("bgm_volume", 100);
-            json.AddField("resolution_w", Screen.currentResolution.width);
-            json.AddField("resolution_h", Screen.currentResolution.height);
+            json.AddField("resolution_w", 1366);
+            json.AddField("resolution_h", 768);
             json.AddField("fullscreen", true);
 
             json.AddField("debug", false);

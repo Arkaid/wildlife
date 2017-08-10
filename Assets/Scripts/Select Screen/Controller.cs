@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
 namespace Jintori.SelectScreen
 {
@@ -43,6 +44,7 @@ namespace Jintori.SelectScreen
         {
             // handle buttons
             startButton.onClick.AddListener(OnStart);
+            optionsButton.onClick.AddListener(OnOptions);
 
             Transition.instance.maskValue = 1;
 
@@ -74,6 +76,27 @@ namespace Jintori.SelectScreen
             selected = icon.characterFile;
             avatar.SetCharacter(selected);
             roundImages.SetCharacter(selected);
+        }
+
+        // -----------------------------------------------------------------------------------	
+        void OnOptions()
+        {
+            StartCoroutine(LoadOptions());
+        }
+
+        // -----------------------------------------------------------------------------------	
+        IEnumerator LoadOptions()
+        {
+            yield return StartCoroutine(Transition.instance.Show());
+            GameObject prevSelected = EventSystem.current.currentSelectedGameObject;
+            Options.instance.Show();
+            yield return StartCoroutine(Transition.instance.Hide());
+            while (!Options.instance.isDone)
+                yield return null;
+            yield return StartCoroutine(Transition.instance.Show());
+            Options.instance.Hide();
+            EventSystem.current.SetSelectedGameObject(prevSelected);
+            yield return StartCoroutine(Transition.instance.Hide());
         }
 
         // -----------------------------------------------------------------------------------	

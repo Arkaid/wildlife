@@ -53,7 +53,9 @@ namespace Jintori.CharacterFile
         {
             source = new Texture2D(ImageWidth, ImageHeight, TextureFormat.RGBA32, false);
             source.filterMode = FilterMode.Point;
+#if UNITY_EDITOR
             source.alphaIsTransparency = true;
+#endif
             source.wrapMode = TextureWrapMode.Clamp;
             source.LoadRawTextureData(rawData);
             source.Apply();
@@ -103,14 +105,18 @@ namespace Jintori.CharacterFile
              
             baseImage = new Texture2D(img_w, img_h, TextureFormat.RGB24, false);
             baseImage.filterMode = FilterMode.Point;
+#if UNITY_EDITOR
             baseImage.alphaIsTransparency = true;
+#endif
             baseImage.wrapMode = TextureWrapMode.Clamp;
             baseImage.LoadRawTextureData(rawBase);
             baseImage.Apply();
 
             shadowImage = new Texture2D(img_w, img_h, TextureFormat.Alpha8, false);
             baseImage.filterMode = FilterMode.Point;
+#if UNITY_EDITOR
             baseImage.alphaIsTransparency = true;
+#endif
             baseImage.wrapMode = TextureWrapMode.Clamp;
             shadowImage.LoadRawTextureData(rawShadow);
             shadowImage.Apply();
