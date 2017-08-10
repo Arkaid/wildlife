@@ -38,7 +38,7 @@ namespace Jintori
         // -----------------------------------------------------------------------------------	
         public void OnSubmit(BaseEventData eventData)
         {
-            if (select != null)
+            if (isHovering && select != null)
                 select(this);
         }
 
@@ -46,6 +46,14 @@ namespace Jintori
         public override void OnPointerEnter(PointerEventData eventData)
         {
             Select();
+        }
+
+        // -----------------------------------------------------------------------------------	
+        public override void OnPointerExit(PointerEventData eventData)
+        {
+            isHovering = false;
+            if (hoverOut != null)
+                hoverOut(this);
         }
 
         // -----------------------------------------------------------------------------------	

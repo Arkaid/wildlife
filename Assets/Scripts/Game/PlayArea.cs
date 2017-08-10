@@ -180,7 +180,7 @@ namespace Jintori.Game
 
                 // cancel the slow "discover" and just clear the whole image
                 // if the player hits the fire button
-                if (Input.GetButtonDown("Fire1"))
+                if (Input.GetButtonDown("Cut"))
                     cancelWait = true;
 
                 if (!cancelWait)

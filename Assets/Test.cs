@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 using Jintori;
 using Jintori.SelectScreen;
 
@@ -15,23 +16,27 @@ public class Test : MonoBehaviour
     // --- Inspector --------------------------------------------------------------------------------
 
     // --- Properties -------------------------------------------------------------------------------
-    [SerializeField]
-    CharacterGrid test;
 
     // --- MonoBehaviour ----------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------	
 
-	// --- Methods ----------------------------------------------------------------------------------
-	// -----------------------------------------------------------------------------------	
+    // --- Methods ----------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------	
+    private void Start()
+    {
+
+    }
+
+    private void OnGUI()
+    {
+        GUILayout.Label(Input.GetAxisRaw("Horizontal").ToString());
+        GUILayout.Label(Input.GetAxisRaw("Vertical").ToString());
+        GUILayout.Label(Input.GetButton("Cut").ToString());
+        GUILayout.Label(Input.GetButton("Skill").ToString());
+    }
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            Overlay.instance.messagePopup.Show("HELLO WORLD", "POPUP TITLE");
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            Overlay.instance.skillSelectPopup.Show(Jintori.Game.Skill.Type.Freeze);
-        }
+        
     }
+
 }

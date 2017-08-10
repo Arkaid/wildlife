@@ -159,7 +159,7 @@ namespace Jintori.Game
                 // wait until the next random square
                 // or cancel wait if user presses button
                 float wait = FlickDelay;
-                while (wait >= 0 && !Input.GetButtonDown("Fire1"))
+                while (wait >= 0 && !Input.GetButtonDown("Cut"))
                 {
                     wait -= Time.deltaTime;
                     yield return null;
@@ -250,7 +250,7 @@ namespace Jintori.Game
 
             // wait until the player hits fire again
             yield return null;
-            while (!Input.GetButtonDown("Fire1"))
+            while (!Input.GetButtonDown("Cut"))
                 yield return null;
 
             // transition out
@@ -296,7 +296,7 @@ namespace Jintori.Game
 
             // wait until the player hits fire again
             yield return null;
-            while (!Input.GetButtonDown("Fire1"))
+            while (!Input.GetButtonDown("Cut"))
                 yield return null;
 
             // show score results
@@ -311,7 +311,7 @@ namespace Jintori.Game
 
             // wait until the player hits fire again
             yield return null;
-            while (!Input.GetButtonDown("Fire1"))
+            while (!Input.GetButtonDown("Cut"))
                 yield return null;
 
             // transition out

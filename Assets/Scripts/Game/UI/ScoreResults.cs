@@ -49,7 +49,7 @@ namespace Jintori.Game
         IEnumerator CheckForCancel(float time, float left, long score, bool isBestTime, bool isHighScore)
         {
             yield return null;
-            while (!Input.GetButtonDown("Fire1"))
+            while (!Input.GetButtonDown("Cut"))
                 yield return null;
 
             StopAllCoroutines();

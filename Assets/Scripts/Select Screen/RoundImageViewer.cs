@@ -54,7 +54,7 @@ namespace Jintori.SelectScreen
 
             // wait
             yield return null;
-            while (!Input.GetButtonDown("Fire1"))
+            while (!Input.GetButtonDown("Cut"))
                 yield return null;
 
             // show stats
@@ -62,7 +62,7 @@ namespace Jintori.SelectScreen
 
             // wait
             yield return null;
-            while (!Input.GetButtonDown("Fire1"))
+            while (!Input.GetButtonDown("Cut"))
                 yield return null;
 
             // transition out, hide the stats and images

@@ -130,7 +130,7 @@ namespace Jintori.SelectScreen
             yield return StartCoroutine(Transition.instance.Hide());
 
             // wait until the user presses fire
-            while (!Input.GetButtonDown("Fire1"))
+            while (!Input.GetButtonDown("Cut"))
                 yield return null;
 
             // show stats
@@ -138,7 +138,7 @@ namespace Jintori.SelectScreen
             yield return null;
 
             // wait until the user presses fire
-            while (!Input.GetButtonDown("Fire1"))
+            while (!Input.GetButtonDown("Cut"))
                 yield return null;
 
             // fade and go back to menu

@@ -62,7 +62,7 @@ namespace Jintori.Game
                 Config.instance.speedSkillMultiplier : 1;
 
             // can we activate the skill?
-            if (!isActive && remainingTime > 0 && Input.GetButton("Fire2"))
+            if (!isActive && remainingTime > 0 && Input.GetButton("Skill"))
             {
                 isActive = true;
                 if (skillTriggered != null)
@@ -70,7 +70,7 @@ namespace Jintori.Game
             }
 
             // do we have to deactivate the skill
-            else if (isActive && (remainingTime <= 0 || !Input.GetButton("Fire2")))
+            else if (isActive && (remainingTime <= 0 || !Input.GetButton("Skill")))
             {
                 isActive = false;
                 if (skillReleased != null)

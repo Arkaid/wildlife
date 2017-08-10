@@ -110,14 +110,21 @@ namespace Jintori
         // -----------------------------------------------------------------------------------
 
         // --- Properties -------------------------------------------------------------------------------
-        /// <summary> JSON object with the settings data </summary>
+        /// <summary> JSON object with fixed settings data. The user cannot change these </summary>
         JSONObject settings;
+
+        /// <summary> These are the game options. The user can change these </summary>
+        Data.OptionsFile options;
 
         /// <summary> shortcut to the JSON branch for the current difficulty </summary>
         JSONObject json { get { return settings[difficulty.ToString()]; } }
 
         /// <summary> Game difficulty </summary>
-        public Difficulty difficulty;
+        public Difficulty difficulty
+        {
+            get { return (Difficulty)System.Enum.Parse(typeof(Difficulty), options.json["difficulty"].str); }
+            set { options.json.SetField("difficulty", value.ToString()); }
+        }
 
         /// <summary> Time for one round, adjusted for difficulty </summary>
         public int roundTime { get { return (int)json["round_time"].i; } }
@@ -142,6 +149,9 @@ namespace Jintori
         protected override void OnInstanceCreated()
         {
             settings = new JSONObject(Resources.Load<TextAsset>("settings").text);
+
+            options = new Data.OptionsFile();
+            options.Load();
 
             difficulty = Difficulty.Normal;
         }
