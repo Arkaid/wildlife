@@ -30,7 +30,7 @@ namespace Jintori.Data
         // -----------------------------------------------------------------------------------	
         public void Save()
         {
-            System.IO.File.WriteAllText(filePath, json.ToString());
+            System.IO.File.WriteAllText(filePath, json.ToString(true));
         }
 
         // -----------------------------------------------------------------------------------	

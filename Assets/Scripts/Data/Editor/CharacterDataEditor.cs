@@ -31,6 +31,9 @@ namespace Jintori.CharacterFile
         /// <summary> Unique id to identify the character file. Used for saving / loading progress </summary>
         string guid;
 
+        /// <summary> comma separated tags </summary>
+        string tags;
+
         /// <summary> loaded file, if any </summary>
         File loadedFile;
 
@@ -44,46 +47,46 @@ namespace Jintori.CharacterFile
         RoundImages[] rounds = new RoundImages[Config.Rounds];
 
         /// <summary> source PNG files for for each round (base, shadow) </summary>
-        string[,] roundFiles = new string[Config.Rounds, 2];
+        List<string[]> roundFiles = new List<string[]>();
 
         /// <summary> For scrolling </summary>
         Vector2 scroll;
 
         /// <summary> For each fold out </summary>
-        bool[] foldout = new bool[4];
+        bool[] foldout = new bool[5];
 
         // --- EditorWindow -----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         void OnGUI()
         {
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Clear"))
+            if (GUILayout.Button("Clear", GUILayout.Width(100)))
                 Clear();
-            if (GUILayout.Button("Load Character sheet"))
-                LoadCharacterSheet();
-            if (GUILayout.Button("Load Round 1 Images"))
-                LoadRoundSet(0);
-            if (GUILayout.Button("Load Round 2 Images"))
-                LoadRoundSet(1);
-            if (GUILayout.Button("Load Round 3 Images"))
-                LoadRoundSet(2);
-            if (GUILayout.Button("Save"))
-                Save();
-            if (GUILayout.Button("Load"))
+            if (GUILayout.Button("Load", GUILayout.Width(100)))
                 Load();
+            if (GUILayout.Button("Save", GUILayout.Width(100)))
+                Save();
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("New ID", GUILayout.Width(200)))
+            if (GUILayout.Button("New ID", GUILayout.Width(120)))
                 guid = System.Guid.NewGuid().ToString().ToUpper();
             guid = EditorGUILayout.TextField(guid);
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Tags (IB style)", GUILayout.Width(120));
+            tags = EditorGUILayout.TextField(tags);
             GUILayout.EndHorizontal();
 
             scroll = GUILayout.BeginScrollView(scroll);
 
             foldout[0] = EditorGUILayout.Foldout(foldout[0], "Character Sheet");
+            if (GUILayout.Button("Import image", GUILayout.Width(100)))
+                LoadCharacterSheet();
             if (foldout[0] && baseSheet != null)
             {
+
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("Name", GUILayout.Width(75));
                 DrawSprite(baseSheet.name);
@@ -104,25 +107,20 @@ namespace Jintori.CharacterFile
                 DrawSprite(baseSheet.avatarB);
                 GUILayout.EndHorizontal();
 
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("Round 1 Icon", GUILayout.Width(75));
-                DrawSprite(baseSheet.roundIcons[0]);
-                GUILayout.EndHorizontal();
-
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("Round 2 Icon", GUILayout.Width(75));
-                DrawSprite(baseSheet.roundIcons[1]);
-                GUILayout.EndHorizontal();
-
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("Round 3 Icon", GUILayout.Width(75));
-                DrawSprite(baseSheet.roundIcons[2]);
-                GUILayout.EndHorizontal();
+                for (int i = 0; i < Config.Rounds; i++)
+                {
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Label("Round " + (i + 1) + " Icon", GUILayout.Width(75));
+                    DrawSprite(baseSheet.roundIcons[i]);
+                    GUILayout.EndHorizontal();
+                }
             }
 
             for (int i = 0; i < Config.Rounds; i++)
             {
                 foldout[i + 1] = EditorGUILayout.Foldout(foldout[i + 1], string.Format("Round {0}", i + 1));
+                if (GUILayout.Button("Import images", GUILayout.Width(100)))
+                    LoadRoundSet(i);
                 if (foldout[i + 1] && rounds[i] != null)
                 {
                     GUILayout.BeginHorizontal();
@@ -144,10 +142,11 @@ namespace Jintori.CharacterFile
         {
             loadedFile = null;
             guid = System.Guid.NewGuid().ToString().ToUpper();
+            tags = "";
             baseSheet = null;
             rounds = new RoundImages[Config.Rounds];
             characterSheetFile = null;
-            roundFiles = new string[Config.Rounds, 2];
+            roundFiles = new List<string[]>();
         }
 
         // -----------------------------------------------------------------------------------	
@@ -162,7 +161,7 @@ namespace Jintori.CharacterFile
             if (string.IsNullOrEmpty(target))
                 return;
 
-            File.CreateFile(target, guid, characterSheetFile, roundFiles, loadedFile);
+            File.CreateFile(target, guid, tags, characterSheetFile, roundFiles, loadedFile);
         }
         
         // -----------------------------------------------------------------------------------	
@@ -181,8 +180,9 @@ namespace Jintori.CharacterFile
             baseSheet = loadedFile.baseSheet;
 
             guid = loadedFile.guid;
+            tags = loadedFile.tags;
 
-            for (int i = 0; i < Config.Rounds; i++)
+            for (int i = 0; i < loadedFile.availableRounds; i++)
                 rounds[i] = loadedFile.LoadRound(i);
         }
 
@@ -239,17 +239,21 @@ namespace Jintori.CharacterFile
         /// </summary>
         void LoadRoundSet(int round)
         {
-            roundFiles[round, 0] = EditorUtility.OpenFilePanel("Load Base Image", "", "png");
-            if (string.IsNullOrEmpty(roundFiles[round, 0]))
+            string[] files = new string[2];
+            files[0] = EditorUtility.OpenFilePanel("Load Base Image", "", "png");
+            if (string.IsNullOrEmpty(files[0]))
                 return;
 
-            roundFiles[round, 1] = EditorUtility.OpenFilePanel("Load Shadow Image", "", "png");
-            if (string.IsNullOrEmpty(roundFiles[round, 1]))
+            files[1] = EditorUtility.OpenFilePanel("Load Shadow Image", "", "png");
+            if (string.IsNullOrEmpty(files[1]))
                 return;
 
+            roundFiles.Insert(round, files);
+
+            // for previewing
             int w, h;
-            byte[] pngBase = File.GetRawTextureData(roundFiles[round, 0]);
-            byte [] pngShadow = File.GetRawTextureData(roundFiles[round, 1], out w, out h, true);
+            byte[] pngBase = File.GetRawTextureData(files[0]);
+            byte [] pngShadow = File.GetRawTextureData(files[1], out w, out h, true);
             rounds[round] = new RoundImages(pngBase, pngShadow, w == Game.PlayArea.LandscapeHeight);
             foldout[round + 1] = true;
         }

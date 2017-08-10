@@ -20,10 +20,10 @@ namespace Jintori.CharacterFile
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
         /// <summary> Width of the sprite sheet </summary>
-        const int ImageWidth = 1200;
+        const int ImageWidth = 1500;
 
         /// <summary> Height of the sprite sheet </summary>
-        const int ImageHeight = 950;
+        const int ImageHeight = 867;
 
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
@@ -63,15 +63,16 @@ namespace Jintori.CharacterFile
             // these values are taken directly from the sprite
             // sheet. If the sprite sheet layout changes, fix
             // these values too
-            name = Sprite.Create(source, new Rect(540, 83, 600, 67), new Vector2(300, 33.5f), 100);
-            avatarA = Sprite.Create(source, new Rect(0, 150, 600, 800), new Vector2(300, 400), 100);
-            avatarB = Sprite.Create(source, new Rect(600, 150, 600, 800), new Vector2(300, 400), 100);
-            icon = Sprite.Create(source, new Rect(0, 0, 150, 150), new Vector2(75, 75), 100);
+            name = Sprite.Create(source, new Rect(0, 0, 600, 67), new Vector2(300, 33.5f), 100);
+            avatarA = Sprite.Create(source, new Rect(0, 67, 600, 800), new Vector2(300, 400), 100);
+            avatarB = Sprite.Create(source, new Rect(600, 67, 600, 800), new Vector2(300, 400), 100);
+            icon = Sprite.Create(source, new Rect(1200, 117, 150, 150), new Vector2(75, 75), 100);
 
             roundIcons = new Sprite[Config.Rounds];
-            roundIcons[0] = Sprite.Create(source, new Rect(150, 20, 130, 130), new Vector2(65, 65), 100);
-            roundIcons[1] = Sprite.Create(source, new Rect(280, 20, 130, 130), new Vector2(65, 65), 100);
-            roundIcons[2] = Sprite.Create(source, new Rect(410, 20, 130, 130), new Vector2(65, 65), 100);
+            roundIcons[0] = Sprite.Create(source, new Rect(1200, 567, 150, 300), new Vector2(75, 150), 100);
+            roundIcons[1] = Sprite.Create(source, new Rect(1350, 567, 150, 300), new Vector2(75, 150), 100);
+            roundIcons[2] = Sprite.Create(source, new Rect(1200, 267, 150, 300), new Vector2(75, 150), 100);
+            roundIcons[3] = Sprite.Create(source, new Rect(1350, 267, 150, 300), new Vector2(75, 150), 100);
         }
     }
 
@@ -178,6 +179,8 @@ namespace Jintori.CharacterFile
         {
             public byte version;
             public string guid;
+            public int availableRounds;
+            public string tags;
             public Entry characterSheet;
             public bool[] isPortrait;
             public Entry[] roundBase;
@@ -187,6 +190,8 @@ namespace Jintori.CharacterFile
             {
                 this.version = version;
                 this.guid = guid;
+                availableRounds = Config.Rounds;
+                tags = "";
                 characterSheet = new Entry();
                 isPortrait = new bool[Config.Rounds];
                 roundBase = new Entry[Config.Rounds];
@@ -197,12 +202,15 @@ namespace Jintori.CharacterFile
             {
                 version = br.ReadByte();
                 guid = br.ReadString();
+                availableRounds = br.ReadInt32();
+                tags = br.ReadString();
+
                 characterSheet = new Entry(br);
                 isPortrait = new bool[Config.Rounds];
                 roundBase = new Entry[Config.Rounds];
                 roundShadow = new Entry[Config.Rounds];
 
-                for (int i = 0; i < roundBase.Length; i++)
+                for (int i = 0; i < availableRounds; i++)
                 {
                     isPortrait[i] = br.ReadBoolean();
                     roundBase[i] = new Entry(br);
@@ -214,8 +222,11 @@ namespace Jintori.CharacterFile
             {
                 bw.Write(version);
                 bw.Write(guid);
+                bw.Write(availableRounds);
+                bw.Write(tags);
+
                 characterSheet.Save(bw);
-                for (int i = 0; i < roundBase.Length; i++)
+                for (int i = 0; i < availableRounds; i++)
                 {
                     bw.Write(isPortrait[i]);
                     roundBase[i].Save(bw);
@@ -237,10 +248,11 @@ namespace Jintori.CharacterFile
         /// </summary>
         /// <param name="filename">File to save to</param>
         /// <param name="guid"> Unique id to identify the character </param>
+        /// <param name="tags"> comma separated tags, like IB </param>
         /// <param name="charSheetFile"> PNG file with the character sheet </param>
         /// <param name="roundFiles"> PNG files for each round (base, shadow) </param>
         /// <param name="updateFile"> File to update. If null, a new one is created </param>
-        public static void CreateFile(string filename, string guid, string charSheetFile, string [,] roundFiles, File updateFile = null)
+        public static void CreateFile(string filename, string guid, string tags, string charSheetFile, List<string[]> roundFiles, File updateFile = null)
         {
             string tempFile = Application.temporaryCachePath + "/temp_charfile.chr";
 
@@ -251,11 +263,14 @@ namespace Jintori.CharacterFile
             {
                 if (string.IsNullOrEmpty(charSheetFile))
                     errors += "You must set the character sheet file\n";
-                for (int i = 0; i < Config.Rounds; i++)
+                if (roundFiles.Count == 0)
+                    errors += "Set at least one round file!\n";
+
+                for (int i = 0; i < roundFiles.Count; i++)
                 {
-                    if (string.IsNullOrEmpty(roundFiles[i, 0]))
+                    if (string.IsNullOrEmpty(roundFiles[i][0]))
                         errors += string.Format("You must set the base image file for round {0}\n", i + 1);
-                    if (string.IsNullOrEmpty(roundFiles[i, 1]))
+                    if (string.IsNullOrEmpty(roundFiles[i][1]))
                         errors += string.Format("You must set the shadow image file for round {0}\n", i + 1);
                 }
             }
@@ -270,6 +285,8 @@ namespace Jintori.CharacterFile
             
             // save an empty header to make space for it
             Header header = new Header(Version1, guid);
+            header.availableRounds = updateFile == null ? roundFiles.Count : updateFile.availableRounds;
+            header.tags = tags;
             header.Save(bw);
 
             byte[] data;
@@ -287,21 +304,23 @@ namespace Jintori.CharacterFile
             // encrypt and save round images
             int img_w, img_h;
             Orientation orientation;
-            for (int i = 0; i < Config.Rounds; i++)
+            for (int i = 0; i < header.availableRounds; i++)
             {
                 // load original images if available
                 RoundImages original = null;
                 if (updateFile != null)
                     original = updateFile.LoadRound(i);
 
-                if (string.IsNullOrEmpty(roundFiles[i, 0]))
+                // just copy the image from the previously loaded character file
+                if (i >= roundFiles.Count || string.IsNullOrEmpty(roundFiles[i][0]))
                 {
                     data = original.baseImage.GetRawTextureData();
                     img_w = original.baseImage.width;
                     img_h = original.baseImage.height;
                 }
+                // load from file
                 else
-                    data = GetRawTextureData(roundFiles[i, 0], out img_w, out img_h);
+                    data = GetRawTextureData(roundFiles[i][0], out img_w, out img_h);
 
                 orientation = CheckOrientation(img_w, img_h);
                 if (orientation == Orientation.Invalid)
@@ -313,14 +332,16 @@ namespace Jintori.CharacterFile
                 bw.Write(data);
 
 
-                if (string.IsNullOrEmpty(roundFiles[i, 1]))
+                // just copy the image from the previously loaded character file
+                if (i >= roundFiles.Count || string.IsNullOrEmpty(roundFiles[i][1]))
                 {
                     data = original.shadowImage.GetRawTextureData();
                     img_w = original.shadowImage.width;
                     img_h = original.shadowImage.height;
                 }
+                // load from file
                 else
-                    data = GetRawTextureData(roundFiles[i, 1], out img_w, out img_h, true);
+                    data = GetRawTextureData(roundFiles[i][1], out img_w, out img_h, true);
 
                 orientation = CheckOrientation(img_w, img_h);
                 if (orientation == Orientation.Invalid)
@@ -412,6 +433,12 @@ namespace Jintori.CharacterFile
         /// <summary> Unique identifier </summary>
         public string guid { get { return header.guid; } }
         
+        /// <summary> Number of round images available in this file </summary>
+        public int availableRounds { get { return header.availableRounds; } }
+
+        /// <summary> List of comma separated tags </summary>
+        public string tags { get { return header.tags; } }
+
         /// <summary> original file with character data </summary>
         public string source { get; private set; }
 
@@ -450,8 +477,6 @@ namespace Jintori.CharacterFile
             BinaryReader br = new BinaryReader(System.IO.File.Open(source, FileMode.Open));
             BlowFishCS.BlowFish blowfish = new BlowFishCS.BlowFish(IllogicGate.Data.EncryptedFile.RestoreKey(ShuffledKey));
 
-            Header header = new Header(br);
-
             // read and decrypt the character sheet
             br.BaseStream.Seek(header.characterSheet.offset, SeekOrigin.Begin);
             byte[] rawData = br.ReadBytes(header.characterSheet.length);
@@ -466,13 +491,13 @@ namespace Jintori.CharacterFile
         /// <summary>
         /// Loads the images for a given round
         /// </summary>
-        /// <param name="round">round to load (0 to 2)</param>
         public RoundImages LoadRound(int round)
         {
+            if (round >= header.availableRounds)
+                throw new Exception(string.Concat("Tried to load round: ", round + 1, " but only ", header.availableRounds, " rounds are available"));
+
             BinaryReader br = new BinaryReader(System.IO.File.Open(source, FileMode.Open));
             BlowFishCS.BlowFish blowfish = new BlowFishCS.BlowFish(IllogicGate.Data.EncryptedFile.RestoreKey(ShuffledKey));
-
-            Header header = new Header(br);
 
             // read and decrypt the round image and shadow
             br.BaseStream.Seek(header.roundBase[round].offset, SeekOrigin.Begin);
