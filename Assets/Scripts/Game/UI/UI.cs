@@ -19,7 +19,7 @@ namespace Jintori.Game
 
         [SerializeField]
         Image livesIcon = null;
-
+        
         [SerializeField]
         TimeDisplay _timeDisplay = null;
         public TimeDisplay timeDisplay { get { return _timeDisplay; } }
@@ -74,7 +74,7 @@ namespace Jintori.Game
             ShowHeader(true);
 
             lives = livesLeft;
-            livesIcon.color = Skill.playerColor[Skill.type];
+            livesIcon.color = Config.instance.skillColor;
 
             timeDisplay.Reset(roundTime);
             percentageBar.Reset(clearPercentage);
@@ -121,7 +121,9 @@ namespace Jintori.Game
             skillBar.gameObject.SetActive(show);
             livesText.gameObject.SetActive(show);
             bossTracker.gameObject.SetActive(show);
+
             livesIcon.gameObject.SetActive(show);
+            livesIcon.transform.parent.gameObject.SetActive(show); // icon background
         }
     }
 }

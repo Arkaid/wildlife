@@ -34,6 +34,9 @@ namespace Jintori.SelectScreen
         [SerializeField]
         Button optionsButton = null;
 
+        [SerializeField]
+        CharacterIcon randomButton = null;
+
         // --- Properties -------------------------------------------------------------------------------
         /// <summary> Character we selected </summary>
         CharacterFile.File selected;
@@ -45,6 +48,7 @@ namespace Jintori.SelectScreen
             // handle buttons
             startButton.onClick.AddListener(OnStart);
             optionsButton.onClick.AddListener(OnOptions);
+            randomButton.select += OnRandomCharacterSelected;
 
             Transition.instance.maskValue = 1;
 
@@ -79,6 +83,14 @@ namespace Jintori.SelectScreen
         }
 
         // -----------------------------------------------------------------------------------	
+        private void OnRandomCharacterSelected(Selectable obj)
+        {
+            selected = null;
+            avatar.SetCharacter(null);
+            roundImages.Reset();
+        }
+
+        // -----------------------------------------------------------------------------------	
         void OnOptions()
         {
             StartCoroutine(LoadOptions());
@@ -102,9 +114,12 @@ namespace Jintori.SelectScreen
         // -----------------------------------------------------------------------------------	
         private void OnStart()
         {
+            if (selected == null)
+                selected = characterGrid.SelectRandomCharacter();
             avatar.SwitchImage();
             StartCoroutine(LoadGame());
         }
+        
 
         // -----------------------------------------------------------------------------------	
         IEnumerator LoadGame()
@@ -112,16 +127,19 @@ namespace Jintori.SelectScreen
             Game.Controller.sourceFile = selected;
 
             // select skill;
-            Overlay.instance.skillSelectPopup.Show(Game.Skill.type);
+            Overlay.instance.skillSelectPopup.Show(Config.instance.skill);
             while (Overlay.instance.skillSelectPopup.isVisible)
                 yield return null;
             if (Overlay.instance.skillSelectPopup.canceled)
             {
+                avatar.SwitchImage();
                 startButton.Select();
                 yield break;
             }
-            Game.Skill.type = Overlay.instance.skillSelectPopup.selectedSkill;
+            Config.instance.skill = Overlay.instance.skillSelectPopup.selectedSkill;
+            Config.instance.SaveOptions();
             Overlay.instance.background.Show(Color.clear);
+
 
             // start game
             yield return new WaitForSeconds(1);

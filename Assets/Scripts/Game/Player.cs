@@ -145,20 +145,20 @@ namespace Jintori.Game
         // -----------------------------------------------------------------------------------	
         private void OnSkillReleased()
         {
-            animator.SetBool(Skill.type.ToString(), false);
+            animator.SetBool(Config.instance.skill.ToString(), false);
 
             // stop protecting
-            if (Skill.type == Skill.Type.Shield)
+            if (Config.instance.skill == Skill.Type.Shield)
                 playArea.ProtectCutPath(false);
         }
 
         // -----------------------------------------------------------------------------------	
         private void OnSkillTriggered()
         {
-            animator.SetBool(Skill.type.ToString(), true);
+            animator.SetBool(Config.instance.skill.ToString(), true);
 
             // start shielding the path
-            if (Skill.type == Skill.Type.Shield)
+            if (Config.instance.skill == Skill.Type.Shield)
                 playArea.ProtectCutPath(true);
         }
         
@@ -189,7 +189,7 @@ namespace Jintori.Game
             Skill.instance.skillReleased += OnSkillReleased;
 
             // change the color of the player according to active skill
-            GetComponent<SpriteRenderer>().color = Skill.playerColor[Skill.type];
+            GetComponent<SpriteRenderer>().color = Config.instance.skillColor;
         }
 
         // -----------------------------------------------------------------------------------	

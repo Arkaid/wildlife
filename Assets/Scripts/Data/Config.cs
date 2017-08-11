@@ -4,11 +4,21 @@ using UnityEngine;
 
 namespace Jintori
 {
+    using Game;
+
     // --- Class Declaration ------------------------------------------------------------------------
     public partial class Config : IllogicGate.Singleton<Config>
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
+        /// <summary> Color to paint the player, according to skill </summary>
+        public static readonly Dictionary<Skill.Type, Color> SkillColor = new Dictionary<Skill.Type, Color>()
+        {
+            { Skill.Type.Shield, new Color32(22, 216, 40, 255) },
+            { Skill.Type.Speed, new Color32(255, 217, 4, 255) },
+            { Skill.Type.Freeze, new Color32(79, 211, 255, 255) },
+        };
+
         /// <summary> Number of rounds to play </summary>
         public const int Rounds = 4;
         
@@ -119,6 +129,7 @@ namespace Jintori
         /// <summary> shortcut to the JSON branch for the current difficulty </summary>
         JSONObject json { get { return settings[difficulty.ToString()]; } }
 
+        
         /// <summary> Game difficulty </summary>
         public Difficulty difficulty
         {
@@ -146,6 +157,16 @@ namespace Jintori
             get { return options.json["fullscreen"].b; }
             set { options.json.SetField("fullscreen", value); }
         }
+
+        /// <summary> Lastly selected skill </summary>
+        public Game.Skill.Type skill
+        {
+            get { return (Game.Skill.Type)System.Enum.Parse(typeof(Game.Skill.Type), options.json["skill"].str); }
+            set { options.json.SetField("skill", value.ToString()); }
+        }
+
+        /// <summary> Color for the active skill </summary>
+        public Color skillColor { get { return SkillColor[skill]; } }
 
 
         // window resolution when playing in windowed mode

@@ -33,11 +33,19 @@ namespace Jintori.SelectScreen
         {
             hoverIn += OnHoverIn;
             hoverOut += OnHoverOut;
+            select += OnSelect;
+        }
+
+        // -----------------------------------------------------------------------------------	
+        private void OnSelect(Selectable obj)
+        {
+            IllogicGate.SoundManager2D.instance.PlaySFX("ui_accept");
         }
 
         // -----------------------------------------------------------------------------------	
         private void OnHoverOut(Selectable obj)
         {
+            
             hover.enabled = false;
             background.enabled = false;
         }
@@ -45,6 +53,7 @@ namespace Jintori.SelectScreen
         // -----------------------------------------------------------------------------------	
         private void OnHoverIn(Selectable obj)
         {
+            IllogicGate.SoundManager2D.instance.PlaySFX("ui_select_notch");
             hover.enabled = true;
             background.enabled = true;
             background.color = hover.color;

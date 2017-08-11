@@ -91,6 +91,18 @@ namespace Jintori.SelectScreen
         }
 
         // --- Methods ----------------------------------------------------------------------------------
+        public CharacterFile.File SelectRandomCharacter()
+        {
+            CharacterIcon[] availableCharacters = GetComponentsInChildren<CharacterIcon>(true);
+
+            while (true)
+            {
+                int rnd = Random.Range(0, availableCharacters.Length);
+                if (availableCharacters[rnd].characterFile != null) // avoid reselecting random
+                    return availableCharacters[rnd].characterFile;
+            }
+        }
+
         // -----------------------------------------------------------------------------------	
         /// <summary>
         /// Add an icon to the character grid

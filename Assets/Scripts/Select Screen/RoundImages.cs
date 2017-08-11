@@ -35,15 +35,30 @@ namespace Jintori.SelectScreen
         // -----------------------------------------------------------------------------------	
         private void OnRoundSelected(Selectable sender)
         {
+            if (characterFile == null)
+                return;
+
             int idx = System.Array.IndexOf(icons, sender);
             if (stats.rounds[idx].cleared)
+            {
+                IllogicGate.SoundManager2D.instance.PlaySFX("ui_accept");
                 Overlay.instance.roundImageViewer.Show(characterFile, idx);
+            }
             else
             {
+                IllogicGate.SoundManager2D.instance.PlaySFX("ui_cancel");
                 string diff = idx == 3 ? "hard" : "normal";
                 string msg = string.Format("Clear round {0} in {1} difficulty to unlock this image", idx + 1, diff);
                 Overlay.instance.messagePopup.Show(msg.ToUpper(), "IMAGE LOCKED");
             }
+        }
+
+        // -----------------------------------------------------------------------------------	
+        public void Reset()
+        {
+            characterFile = null;
+            for (int i = 0; i < Config.Rounds; i++)
+                icons[i].previewIcon.sprite = lockedSprite;
         }
 
         // -----------------------------------------------------------------------------------	

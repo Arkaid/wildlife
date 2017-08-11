@@ -8,6 +8,13 @@ namespace Jintori.SelectScreen
     // --- Class Declaration ------------------------------------------------------------------------
     public class Avatar : MonoBehaviour
     {
+        [System.Serializable]
+        struct RandomCharacter
+        {
+            public Sprite avatar;
+            public Sprite name;
+        }
+
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
         // --- Static Properties ------------------------------------------------------------------------
@@ -23,6 +30,9 @@ namespace Jintori.SelectScreen
         [SerializeField]
         Animation nameAnimation = null;
 
+        [SerializeField]
+        RandomCharacter randomCharacter;
+
         // --- Properties -------------------------------------------------------------------------------
         /// <summary> Character we're currently showing </summary>
         CharacterFile.File characterFile;
@@ -35,8 +45,8 @@ namespace Jintori.SelectScreen
         public void SetCharacter(CharacterFile.File file)
         {
             characterFile = file;
-            characterImage.sprite = file.baseSheet.avatarA;
-            nameImage.sprite = file.baseSheet.name;
+            characterImage.sprite = file == null ? randomCharacter.avatar : file.baseSheet.avatarA;
+            nameImage.sprite = file == null ? randomCharacter.name : file.baseSheet.name;
 
             nameAnimation.Stop();
             nameAnimation.Play();
@@ -48,7 +58,13 @@ namespace Jintori.SelectScreen
         /// </summary>
         public void SwitchImage()
         {
-            characterImage.sprite = characterFile.baseSheet.avatarB;
+            if (characterFile == null)
+                return;
+
+            if (characterImage.sprite == characterFile.baseSheet.avatarB)
+                characterImage.sprite = characterFile.baseSheet.avatarA;
+            else
+                characterImage.sprite = characterFile.baseSheet.avatarB;
         }
     }
 }
