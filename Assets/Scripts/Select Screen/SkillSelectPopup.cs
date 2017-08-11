@@ -20,6 +20,7 @@ namespace Jintori.SelectScreen
 
         public bool isVisible { get; private set; }
 
+        /// <summary> True if the user canceled the skill selection </summary>
         public bool canceled { get; private set; }
 
         public Game.Skill.Type selectedSkill { get; private set; }

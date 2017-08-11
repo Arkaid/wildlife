@@ -83,6 +83,8 @@ namespace Jintori.SelectScreen
                 background.enabled = true;
                 background.color = selected.color;
             }
+
+            IllogicGate.SoundManager2D.instance.PlaySFX("ui_accept");
         }
 
         // -----------------------------------------------------------------------------------	
@@ -97,12 +99,13 @@ namespace Jintori.SelectScreen
         private void OnHoverIn(Selectable obj)
         {
             hover.enabled = true;
-
             if (background != null)
             {
                 background.enabled = true;
                 background.color = hover.color;
             }
+
+            IllogicGate.SoundManager2D.instance.PlaySFX("ui_select_notch");
         }
     }
 }

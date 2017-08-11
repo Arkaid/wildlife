@@ -38,6 +38,7 @@ namespace Jintori.SelectScreen
         // -----------------------------------------------------------------------------------	
         private void OnHoverIn(Selectable obj)
         {
+            IllogicGate.SoundManager2D.instance.PlaySFX("ui_select_notch");
             frame.color = HoverColor;
         }
 

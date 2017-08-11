@@ -33,53 +33,73 @@ namespace Jintori
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-       
+
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        public void OnSubmit(BaseEventData eventData)
+        void DoHoverIn()
+        {
+            isHovering = true;
+            if (hoverIn != null)
+                hoverIn(this);
+        }
+        
+        // -----------------------------------------------------------------------------------	
+        void DoHoverOut()
+        {
+            isHovering = false;
+            if (hoverOut != null)
+                hoverOut(this);
+        }
+
+        // -----------------------------------------------------------------------------------	
+        void DoSelect()
         {
             if (isHovering && select != null)
                 select(this);
         }
 
         // -----------------------------------------------------------------------------------	
+        public void OnSubmit(BaseEventData eventData)
+        {
+            DoSelect();
+        }
+
+        // -----------------------------------------------------------------------------------	
         public override void OnPointerEnter(PointerEventData eventData)
         {
-            Select();
+            base.OnPointerEnter(eventData);
+            if (EventSystem.current.currentSelectedGameObject == gameObject)
+                DoHoverIn();
+            else
+                Select();
         }
 
         // -----------------------------------------------------------------------------------	
         public override void OnPointerExit(PointerEventData eventData)
         {
-            isHovering = false;
-            if (hoverOut != null)
-                hoverOut(this);
+            base.OnPointerExit(eventData);
+            DoHoverOut();
         }
 
         // -----------------------------------------------------------------------------------	
         public override void OnPointerUp(PointerEventData eventData)
         {
             base.OnPointerUp(eventData);
-            if (select != null)
-                select(this);
+            DoSelect();
         }
 
         // -----------------------------------------------------------------------------------	
         public override void OnSelect(BaseEventData eventData)
         {
             base.OnSelect(eventData);
-            isHovering = true;
-            if (hoverIn != null)
-                hoverIn(this);
+            DoHoverIn();
         }
 
         // -----------------------------------------------------------------------------------	
         public override void OnDeselect(BaseEventData eventData)
         {
             base.OnDeselect(eventData);
-            isHovering = false;
-            if (hoverOut != null)
-                hoverOut(this);
+            DoHoverOut();
         }
 
 

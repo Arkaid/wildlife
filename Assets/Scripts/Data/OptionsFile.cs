@@ -38,6 +38,7 @@ namespace Jintori.Data
         {
             json = new JSONObject();
             json.AddField("difficulty", Config.Difficulty.Normal.ToString());
+            json.AddField("skill", Game.Skill.Type.Shield.ToString());
             json.AddField("sfx_volume", 100);
             json.AddField("bgm_volume", 100);
             json.AddField("resolution_w", 1366);
