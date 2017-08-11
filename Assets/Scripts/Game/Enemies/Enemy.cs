@@ -125,6 +125,18 @@ namespace Jintori.Game
             Setup();
             while (isAlive)
             {
+                // don't move while frozen
+                if (Skill.instance.isFreezeActive)
+                {
+                    animator.speed = 0;
+                    while (Skill.instance.isFreezeActive)
+                    {
+                        CheckPlayerHit();
+                        yield return null;
+                    }
+                    animator.speed = 1;
+                }
+
                 UpdatePosition();
                 CheckPlayerHit();
                 yield return wffu;

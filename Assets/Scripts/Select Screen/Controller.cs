@@ -88,14 +88,14 @@ namespace Jintori.SelectScreen
         IEnumerator LoadOptions()
         {
             yield return StartCoroutine(Transition.instance.Show());
-            GameObject prevSelected = EventSystem.current.currentSelectedGameObject;
+
             Options.instance.Show();
             yield return StartCoroutine(Transition.instance.Hide());
             while (!Options.instance.isDone)
                 yield return null;
             yield return StartCoroutine(Transition.instance.Show());
             Options.instance.Hide();
-            EventSystem.current.SetSelectedGameObject(prevSelected);
+            optionsButton.Select();
             yield return StartCoroutine(Transition.instance.Hide());
         }
 
@@ -115,6 +115,11 @@ namespace Jintori.SelectScreen
             Overlay.instance.skillSelectPopup.Show(Game.Skill.type);
             while (Overlay.instance.skillSelectPopup.isVisible)
                 yield return null;
+            if (Overlay.instance.skillSelectPopup.canceled)
+            {
+                startButton.Select();
+                yield break;
+            }
             Game.Skill.type = Overlay.instance.skillSelectPopup.selectedSkill;
             Overlay.instance.background.Show(Color.clear);
 
@@ -123,91 +128,5 @@ namespace Jintori.SelectScreen
             yield return StartCoroutine(Transition.instance.Show());
             SceneManager.LoadScene("Game");
         }
-#if OLD
-        // --- Events -----------------------------------------------------------------------------------
-        // --- Constants --------------------------------------------------------------------------------
-        // --- Static Properties ------------------------------------------------------------------------
-        // --- Static Methods ---------------------------------------------------------------------------
-        // -----------------------------------------------------------------------------------
-        // --- Inspector --------------------------------------------------------------------------------
-
-        [SerializeField]
-        IconGrid iconGrid = null;
-
-        [SerializeField]
-        Avatar avatar = null;
-
-        [SerializeField]
-        Rounds rounds = null;
-
-        [SerializeField]
-        Button startButton = null;
-
-        [SerializeField]
-        Button optionsButton = null;
-
-        // --- Properties -------------------------------------------------------------------------------
-        /// <summary> Character we selected </summary>
-        CharacterFile.File selected;
-
-        // --- MonoBehaviour ----------------------------------------------------------------------------
-        // -----------------------------------------------------------------------------------	
-        // --- Methods ----------------------------------------------------------------------------------
-        // -----------------------------------------------------------------------------------	
-        IEnumerator Start()
-        {
-            Transition.instance.maskValue = 1;
-
-            // hide the overlay if it was showing
-            Overlay.instance.Hide();
-
-            // handle buttons
-            startButton.onClick.AddListener(OnStart);
-
-            iconGrid.selected += OnCharacterSelected;
-            yield return StartCoroutine(LoadCharacterSheets());
-            yield return StartCoroutine(Transition.instance.Hide());
-        }
-        
-        // -----------------------------------------------------------------------------------	
-        private void OnStart()
-        {
-            avatar.SetSelected();
-            StartCoroutine(LoadGame());
-        }
-
-        // -----------------------------------------------------------------------------------	
-        private void OnCharacterSelected(CharacterFile.File file)
-        {
-            selected = file;
-            avatar.SetCharacter(file);
-            rounds.SetCharacter(file);
-        }
-
-        // -----------------------------------------------------------------------------------	
-        IEnumerator LoadCharacterSheets()
-        {
-            string [] files = System.IO.Directory.GetFiles(CharacterFile.File.dataPath, "*.chr");
-
-            foreach (string file in files)
-            {
-                CharacterFile.File charFile = new CharacterFile.File(file);
-                iconGrid.Add(charFile);
-                yield return null;
-            }
-
-            iconGrid.SelectFirst();
-        }
-
-        // -----------------------------------------------------------------------------------	
-        IEnumerator LoadGame()
-        {
-            Game.Controller.sourceFile = selected;
-            Overlay.instance.ShowTransparentBlocker();
-            yield return new WaitForSeconds(1);
-            yield return StartCoroutine(Transition.instance.Show());
-            SceneManager.LoadScene("Game");
-        }
-#endif
     }
 }

@@ -34,7 +34,7 @@ namespace Jintori.Game
         };
 
         /// <summary> Skill type </summary>
-        public static Type type;
+        public static Type type = Type.Freeze;
 
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
@@ -53,6 +53,9 @@ namespace Jintori.Game
 
         /// <summary> True if skill is shield and active </summary>
         public bool isShieldActive { get { return isActive && type == Type.Shield;  } }
+
+        /// <summary> True if skill is freeze and active </summary>
+        public bool isFreezeActive { get { return isActive && type == Type.Freeze; } }
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	

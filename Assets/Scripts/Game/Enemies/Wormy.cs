@@ -178,6 +178,10 @@ namespace Jintori.Game
 
                 yield return wait;
 
+                // don't spawn while frozen
+                while (Skill.instance.isFreezeActive)
+                    yield return null;
+
                 if (isAlive)
                 {
                     Buggy newBug = Instantiate(sourceBug);
