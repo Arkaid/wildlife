@@ -23,6 +23,7 @@ namespace Jintori.Game
         public event EnemyKilledEvent minionKilled = null;
 
         // --- Constants --------------------------------------------------------------------------------
+        static readonly Color FrozenColor = new Color32(19, 224, 225, 255);
 
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
@@ -32,7 +33,16 @@ namespace Jintori.Game
         bool _isBoss = false;
         public bool isBoss { get { return _isBoss; } }
 
+
         // --- Properties -------------------------------------------------------------------------------
+        SpriteRenderer [] spriteRenderers;
+
+        /// <summary> Material to restore when "thawed" </summary>
+        Material defaultMaterial;
+
+        /// <summary> Material to apply when frozen </summary>
+        Material frozenMaterial;
+
         /// <summary> True if the enemy is active on the play area </summary>
         protected bool isAlive;
 
@@ -93,6 +103,10 @@ namespace Jintori.Game
             if (settings != null)
                 settings = settings[Controller.instance.round];
 
+            spriteRenderers = GetComponentsInChildren<SpriteRenderer>(true);
+            defaultMaterial = spriteRenderers[0].material;
+            frozenMaterial = new Material(Shader.Find("Sprites/Frozen"));
+            frozenMaterial.color = FrozenColor;
 
             gameObject.SetActive(true);
             minions = new List<Enemy>();
@@ -128,13 +142,19 @@ namespace Jintori.Game
                 // don't move while frozen
                 if (Skill.instance.isFreezeActive)
                 {
-                    animator.speed = 0;
+                    foreach (SpriteRenderer sr in spriteRenderers)
+                        sr.material = frozenMaterial;
+                    if (animator != null)
+                        animator.speed = 0;
                     while (Skill.instance.isFreezeActive)
                     {
                         CheckPlayerHit();
                         yield return null;
                     }
-                    animator.speed = 1;
+                    foreach (SpriteRenderer sr in spriteRenderers)
+                        sr.material = defaultMaterial;
+                    if (animator != null)
+                        animator.speed = 1;
                 }
 
                 UpdatePosition();

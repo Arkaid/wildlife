@@ -75,6 +75,8 @@ fixed4 SampleSpriteTexture (float2 uv)
 {
     fixed4 color = tex2D (_MainTex, uv);
 
+	color.rgb = (color.r + color.g * 2 + color.a) / 4;
+
 #if ETC1_EXTERNAL_ALPHA
     fixed4 alpha = tex2D (_AlphaTex, uv);
     color.a = lerp (color.a, alpha.r, _EnableExternalAlpha);
