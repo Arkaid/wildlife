@@ -42,7 +42,7 @@ namespace Jintori.SelectScreen
         {
             background.Hide();
             messagePopup.Close();
-            skillSelectPopup.Close();
+            skillSelectPopup.Close(false);
         }
 
         // --- Methods ----------------------------------------------------------------------------------

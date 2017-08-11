@@ -20,6 +20,8 @@ namespace Jintori.SelectScreen
 
         public bool isVisible { get; private set; }
 
+        public bool canceled { get; private set; }
+
         public Game.Skill.Type selectedSkill { get; private set; }
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
@@ -44,7 +46,9 @@ namespace Jintori.SelectScreen
 
             selectedSkill = setDefault;
 
+            canceled = false;
             isVisible = true;
+
             gameObject.SetActive(true);
             Overlay.instance.background.Show();
             EventSystem.current.SetSelectedGameObject(skillButtons[(int)setDefault].gameObject);
@@ -55,12 +59,13 @@ namespace Jintori.SelectScreen
         {
             SkillSelectButton skillButton = sender as SkillSelectButton;
             selectedSkill = skillButton.skill;
-            Close();
+            Close(false);
         }
-
+        
         // -----------------------------------------------------------------------------------	
-        public void Close()
+        public void Close(bool canceled)
         {
+            this.canceled = canceled;
             isVisible = false;
             gameObject.SetActive(false);
             Overlay.instance.background.Hide();

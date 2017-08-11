@@ -121,6 +121,10 @@ namespace Jintori.Game
 
                     yield return wait;
 
+                    // don't spawn while frozen
+                    while (Skill.instance.isFreezeActive)
+                        yield return null;
+
                     if (isAlive)
                     {
                         isShooting = true;
@@ -146,6 +150,10 @@ namespace Jintori.Game
 
             while (elapsed <= RotateTime)
             {
+                // don't move while frozen
+                while (Skill.instance.isFreezeActive)
+                    yield return null;
+
                 elapsed += Time.deltaTime;
                 float t = Mathf.Clamp01(elapsed / RotateTime);
                 turretTransform.up = Quaternion.Euler(0, 0, RotateAngle * t) * start;

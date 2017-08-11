@@ -13,6 +13,10 @@
 			"Shield": {
 				"max_time": 3,
 				"time_charge_per_percentage": 0.12
+			},
+			"Freeze": {
+				"max_time": 10,
+				"time_charge_per_percentage": 0.5
 			}
 		},
 
