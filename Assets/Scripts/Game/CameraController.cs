@@ -97,7 +97,9 @@ namespace Jintori.Game
         public void StopTracking(bool zoomToImage)
         {
             tracking = false;
-            StartCoroutine(ZoomToImageCoroutine());
+
+            if (zoomToImage)
+                StartCoroutine(ZoomToImageCoroutine());
         }
 
         // -----------------------------------------------------------------------------------	
