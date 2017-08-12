@@ -54,6 +54,9 @@ namespace Jintori.Game
         /// <summary> Current score. Internally float but display floor int </summary>
         public float score { get; private set; }
 
+        /// <summary> Camera controller to track player and zoom to image </summary>
+        CameraController cameraController;
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         void Start()
@@ -67,6 +70,8 @@ namespace Jintori.Game
             round = 0;
             livesLeft = Config.instance.startLives;
             Skill.instance.Initialize();
+
+            cameraController = Camera.main.GetComponent<CameraController>();
 
             sourcePlayArea.gameObject.SetActive(false);
             StartCoroutine(InitializeRound());
@@ -99,9 +104,8 @@ namespace Jintori.Game
             playArea.player.spawned += OnPlayerSpawned;
             playArea.player.died += OnPlayerDied;
 
-            // set the camera to auto adjust
-            CameraAdjuster camAdjuster = Camera.main.GetComponent<CameraAdjuster>();
-            camAdjuster.autoAdjust = true;
+            // Let the camera know it can start tracking the player
+            cameraController.StartTracking(playArea);
 
             // reset the UI
             UI.instance.Reset(
@@ -248,6 +252,9 @@ namespace Jintori.Game
             // hide the player at its current position
             playArea.player.Hide(playArea.player.x, playArea.player.y);
 
+            // stop tracking player
+            cameraController.StopTracking(false);
+
             // wait until the player hits fire again
             yield return null;
             while (!Input.GetButtonDown("Cut"))
@@ -287,8 +294,7 @@ namespace Jintori.Game
 
             // Fit the camera to see all the image
             // (player must be on the center of the play area)
-            CameraAdjuster camAdjuster = Camera.main.GetComponent<CameraAdjuster>();
-            camAdjuster.ZoomToImage();
+            cameraController.StopTracking(true);
 
             // unhide all the shadow
             yield return StartCoroutine(playArea.DiscoverShadow());
