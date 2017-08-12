@@ -240,6 +240,33 @@ namespace Jintori.CharacterFile
 
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
+        /// <summary>
+        /// Parses the local hard drive for installed character files
+        /// and returns the file name, size and hash to compare with 
+        /// the data in the server
+        /// </summary>
+        static public JSONObject GetInstalledCharacterFileData()
+        {
+            JSONObject json = new JSONObject();
+            System.Security.Cryptography.MD5CryptoServiceProvider md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
+
+            string[] files = Directory.GetFiles(dataPath, "*.chr");
+            foreach (string file in files)
+            {
+                byte[] bytes = System.IO.File.ReadAllBytes(file);
+                long size = bytes.LongLength;
+                string hash = IllogicGate.Util.Md5Checksum(bytes);
+
+                JSONObject item = new JSONObject();
+                item.AddField("name", Path.GetFileName(file));
+                item.AddField("size", size);
+                item.AddField("hash", hash);
+
+                json.Add(item);
+            }
+            return json;
+        }
+        // -----------------------------------------------------------------------------------
 #if UNITY_EDITOR
         /// <summary>
         /// Creates a file with the character sheet and each round image

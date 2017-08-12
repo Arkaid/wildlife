@@ -14,6 +14,8 @@ public class Test : MonoBehaviour
     // --- Static Methods ---------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------
     // --- Inspector --------------------------------------------------------------------------------
+    [SerializeField]
+    UpdateChecker updateChecker;
 
     // --- Properties -------------------------------------------------------------------------------
 
@@ -24,9 +26,7 @@ public class Test : MonoBehaviour
     // -----------------------------------------------------------------------------------	
     private IEnumerator Start()
     {
-        IllogicGate.SoundManager2D.instance.PlayBGM("Test 1");
-        yield return new WaitForSeconds(5);
-        IllogicGate.SoundManager2D.instance.CrossFadeBGM("Test 2", 5);
+        updateChecker.CheckForUpdates();
         yield break;
     }
 
@@ -36,8 +36,6 @@ public class Test : MonoBehaviour
     }
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
-            IllogicGate.SoundManager2D.instance.PlaySFX("ui_accept");
     }
 
 }
