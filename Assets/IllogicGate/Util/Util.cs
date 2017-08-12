@@ -10,6 +10,21 @@ namespace IllogicGate
     {
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
+        static public string Md5Checksum(byte [] bytes)
+        {
+            // calculate hash
+            System.Security.Cryptography.MD5CryptoServiceProvider md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
+            byte[] hashBytes = md5.ComputeHash(bytes);
+
+            // Convert the encrypted bytes back to a string (base 16)
+            string hashString = "";
+            for (int i = 0; i < hashBytes.Length; i++)
+                hashString += System.Convert.ToString(hashBytes[i], 16).PadLeft(2, '0');
+
+            return hashString.PadLeft(32, '0');
+        }
+
+        // -----------------------------------------------------------------------------------
         // src: http://www.alanzucconi.com/2015/09/16/how-to-sample-from-a-gaussian-distribution/
         /// <summary>
         /// Generates a random number with a gaussian distribution, mean = 0 and stddev = 1
