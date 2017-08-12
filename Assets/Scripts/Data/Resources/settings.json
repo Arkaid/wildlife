@@ -1,7 +1,7 @@
 {
 	"Normal": {
 		"round_time": 180,
-		"clear_ratio": 0.85,
+		"clear_ratio": 0.03,
 		"start_lives": 3,
 		"skill_speed_multiplier": 1.75,
 

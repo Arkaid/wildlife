@@ -89,9 +89,6 @@ namespace Jintori.Game
         /// <summary> List of all available bosses </summary>
         List<Enemy> availableBosses;
 
-        /// <summary> Zoom used for the pixel perfect adjuster </summary>
-        float cameraZoom;
-
         /// <summary> Color of the cut path </summary>
         Color cutPathColor;
 
@@ -99,15 +96,12 @@ namespace Jintori.Game
         // -----------------------------------------------------------------------------------	
         void Start()
         {
-            cameraZoom = Camera.main.GetComponent<CameraAdjuster>().zoom;
             cutPathColor = cutPath.color;
         }
 
         // -----------------------------------------------------------------------------------	
         void Update()
         {
-            CenterOnPlayer();
-
             // cycles the color on the shadow
             float t = Mathf.PingPong(Time.time, CycleTime) / CycleTime;
             material.SetColor("_ShadowColor1", Color.Lerp(CycleColor1, CycleColor2, t));
@@ -301,29 +295,6 @@ namespace Jintori.Game
             edgeCollider.points = new Vector2[] {
                 corners[0], corners[1], corners[2], corners[3], corners[0]
             };
-        }
-
-        // -----------------------------------------------------------------------------------	
-        /// <summary>
-        /// Centers the playarea on screen so the player is on the center
-        /// as long as the image fits on the screen without gaps
-        /// </summary>
-        void CenterOnPlayer()
-        {
-            float scr_w = Screen.width / cameraZoom;
-            float scr_h = Screen.height / cameraZoom;
-
-            float w2 = 0, h2 = 0;
-            if (scr_w <= imageWidth)
-                w2 = (imageWidth - scr_w) * 0.5f;
-            if (scr_h <= imageHeight)
-                h2 = (imageHeight - scr_h) * 0.5f;
-
-            Vector2 offset = player.transform.position;
-            Vector2 position = (Vector2)transform.position - offset;
-            position.x = Mathf.Clamp(position.x, -w2, w2);
-            position.y = Mathf.Clamp(position.y, -h2, h2);
-            transform.position = position;
         }
     }
 }
