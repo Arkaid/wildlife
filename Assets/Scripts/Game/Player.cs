@@ -180,6 +180,9 @@ namespace Jintori.Game
             if (spawned != null)
                 spawned();
 
+            // enable player skills
+            Skill.instance.enabled = true;
+
             this.x = x;
             this.y = y;
             gameObject.SetActive(true);
@@ -202,6 +205,9 @@ namespace Jintori.Game
             // can't be hit at this time, since we're protected by the shield
             if (!isTimeout && Skill.instance.isShieldActive)
                 return;
+
+            // disable player skills
+            Skill.instance.enabled = false;
 
             Skill.instance.skillTriggered -= OnSkillTriggered;
             Skill.instance.skillReleased -= OnSkillReleased;

@@ -53,6 +53,14 @@ namespace Jintori.Game
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
+        private void OnDisable()
+        {
+            if (isActive && skillReleased != null)
+                skillReleased();
+            isActive = false;
+        }
+
+        // -----------------------------------------------------------------------------------	
         void Update()
         {
             speedMultiplier = type == Type.Speed && isActive ?
