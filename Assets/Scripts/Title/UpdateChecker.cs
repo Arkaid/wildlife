@@ -1,32 +1,51 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
-namespace Jintori
+namespace Jintori.Title
 {
     // --- Class Declaration ------------------------------------------------------------------------
+    /// <summary>
+    /// Checks the server for updates and downloads new characters
+    /// </summary>
     public class UpdateChecker : MonoBehaviour
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
+        public enum State
+        {
+            CheckingForUpdates,
+            ApplicationUpdateRequired,
+            DownloadingCharacters,
+            Error,
+            Done,
+        }
 
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
+
         // --- Properties -------------------------------------------------------------------------------
-        bool updateRequired;
+        /// <summary> Current state of the checker </summary>
+        public State state { get; private set; }
+
+        /// <summary> download progress </summary>
+        public float progress { get; private set; }
 
         JSONObject charactersToDownload;
-
-        string error;
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Checks for updates and download new character data
+        /// </summary>
         public void CheckForUpdates()
         {
+            state = State.CheckingForUpdates;
             StartCoroutine(CheckCoroutine());
         }
 
@@ -34,18 +53,28 @@ namespace Jintori
         IEnumerator CheckCoroutine()
         {
             yield return StartCoroutine(CheckUpdateRequired());
+            if (state == State.Error || state == State.ApplicationUpdateRequired)
+                yield break;
 
+            // get a list of characters in the server that we haven't downloaded yet
             yield return StartCoroutine(GetCharacterList());
-
-            print(error);
-            print(charactersToDownload);
+            if (state == State.Error)
+                yield break;
 
             // do we need to download files?
             if (!charactersToDownload.IsNull)
+            {
+                progress = 0;
+                state = State.DownloadingCharacters;
                 yield return StartCoroutine(DownloadCharacterFiles());
+            }
+            state = State.Done;
         }
 
         // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Checks if there is a new version of the application that we need to download
+        /// </summary>
         IEnumerator CheckUpdateRequired()
         {
             WWWForm form = new WWWForm();
@@ -57,16 +86,22 @@ namespace Jintori
 
             if (!string.IsNullOrEmpty(www.error))
             {
-                error = www.error;
+                state = State.Error;
+                Debug.Log(www.error);
                 yield break;
             }
 
             // returns only 1 or 0
-            updateRequired = www.text == "1";
-            print(updateRequired);
+            if (www.text == "1")
+                state = State.ApplicationUpdateRequired;
         }
 
         // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Gets a full character list from server, then compares with the already
+        /// installed files and makes a list of the characters we need to download
+        /// </summary>
+        /// <returns></returns>
         IEnumerator GetCharacterList()
         {
             // request character list
@@ -77,7 +112,8 @@ namespace Jintori
 
             if (!string.IsNullOrEmpty(www.error))
             {
-                error = www.error;
+                state = State.Error;
+                Debug.Log(www.error);
                 yield break;
             }
 
@@ -107,6 +143,10 @@ namespace Jintori
         }
 
         // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Downloads one file at the time
+        /// </summary>
+        /// <returns></returns>
         IEnumerator DownloadCharacterFiles()
         {
             // calculate total size
@@ -122,20 +162,24 @@ namespace Jintori
                 WWW www = new WWW(Config.CharactersURL + filename);
                 while(!www.isDone)
                 {
-                    float progress = (downloadedSize + www.bytesDownloaded) / (float)totalSize;
-                    print(progress);
+                    progress = (downloadedSize + www.bytesDownloaded) / (float)totalSize;
                     yield return null;
                 }
+                downloadedSize += www.bytesDownloaded;
 
                 // oops!
                 if (!string.IsNullOrEmpty(www.error))
                 {
-                    error = www.error;
+                    state = State.Error;
+                    Debug.Log(www.error);
                     yield break;
                 }
 
                 // write file to disk
-                System.IO.File.WriteAllBytes(CharacterFile.File.dataPath + "/" + filename, www.bytes);
+                string filepath = CharacterFile.File.dataPath + "/" + filename;
+                if (System.IO.File.Exists(filepath))
+                    System.IO.File.Delete(filepath);
+                System.IO.File.WriteAllBytes(filepath, www.bytes);
             }
         }
     }

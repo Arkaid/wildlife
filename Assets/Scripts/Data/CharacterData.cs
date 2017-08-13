@@ -247,7 +247,7 @@ namespace Jintori.CharacterFile
         /// </summary>
         static public JSONObject GetInstalledCharacterFileData()
         {
-            JSONObject json = new JSONObject();
+            JSONObject json = new JSONObject(JSONObject.Type.ARRAY);
             System.Security.Cryptography.MD5CryptoServiceProvider md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
 
             string[] files = Directory.GetFiles(dataPath, "*.chr");
