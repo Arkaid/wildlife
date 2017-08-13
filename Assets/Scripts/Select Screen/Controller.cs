@@ -7,6 +7,8 @@ using UnityEngine.EventSystems;
 
 namespace Jintori.SelectScreen
 {
+    using Common.UI;
+
     // --- Class Declaration ------------------------------------------------------------------------
     /// <summary>
     /// Controls the select screen

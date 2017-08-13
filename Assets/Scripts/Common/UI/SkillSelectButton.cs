@@ -3,44 +3,61 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Jintori.SelectScreen
+namespace Jintori.Common.UI
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    public class Background : MonoBehaviour
+    public class SkillSelectButton : Selectable
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
         // --- Static Properties ------------------------------------------------------------------------
-        static readonly Color defaultColor = new Color32(0, 0, 0, 150);
-
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
-        // --- Properties -------------------------------------------------------------------------------
-        Image image;
+        [SerializeField]
+        Image hover = null;
 
+        [SerializeField]
+        Image background = null;
+
+        [SerializeField]
+        Game.Skill.Type _skill;
+        public Game.Skill.Type skill { get { return _skill; } }
+
+        // --- Properties -------------------------------------------------------------------------------
         // --- MonoBehaviour ----------------------------------------------------------------------------
+
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        public void Show(Color color)
+        public void Initialize()
         {
-            if (image == null)
-                image = GetComponent<Image>();
-
-            gameObject.SetActive(true);
-            image.color = color;
+            hoverIn += OnHoverIn;
+            hoverOut += OnHoverOut;
+            select += OnSelect;
         }
 
         // -----------------------------------------------------------------------------------	
-        public void Show()
+        private void OnSelect(Selectable obj)
         {
-            Show(defaultColor);
+            IllogicGate.SoundManager2D.instance.PlaySFX("ui_accept");
         }
 
         // -----------------------------------------------------------------------------------	
-        public void Hide()
+        private void OnHoverOut(Selectable obj)
         {
-            gameObject.SetActive(false);
+            
+            hover.enabled = false;
+            background.enabled = false;
         }
+
+        // -----------------------------------------------------------------------------------	
+        private void OnHoverIn(Selectable obj)
+        {
+            IllogicGate.SoundManager2D.instance.PlaySFX("ui_select_notch");
+            hover.enabled = true;
+            background.enabled = true;
+            background.color = hover.color;
+        }
+
     }
 }
