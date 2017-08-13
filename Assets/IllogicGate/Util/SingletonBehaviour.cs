@@ -15,8 +15,12 @@ namespace IllogicGate
         {
             get
             {
+                // try to get it from scene
                 if (_instance == null)
                     _instance = Util.GetComponentInScene<T>(true);
+                // try to load it from resources
+                if (_instance == null)
+                    _instance = Instantiate(Resources.Load<T>(typeof(T).Name));
                 return _instance;
             }
         }
