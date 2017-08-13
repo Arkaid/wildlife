@@ -4,10 +4,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-namespace Jintori.SelectScreen
+namespace Jintori.Common.UI
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    public class MessagePopup : MonoBehaviour
+    /// <summary>
+    /// Simple overlay for with popups and other useful overlays
+    /// </summary>
+    public class Overlay : IllogicGate.SingletonBehaviour<Overlay>
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
@@ -16,41 +19,25 @@ namespace Jintori.SelectScreen
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
         [SerializeField]
-        Text titleText = null;
+        Background _background = null;
+        public Background background { get { return _background; } }
 
         [SerializeField]
-        Text contentText = null;
+        MessagePopup _messagePopup = null;
+        public MessagePopup messagePopup { get { return _messagePopup; } }
 
         [SerializeField]
-        Button okButton = null;
+        SkillSelectPopup _skillSelectPopup = null;
+        public SkillSelectPopup skillSelectPopup { get { return _skillSelectPopup; } }
+
+        [SerializeField]
+        RoundImageViewer _roundImageViewer = null;
+        public RoundImageViewer roundImageViewer { get { return _roundImageViewer; } }
 
         // --- Properties -------------------------------------------------------------------------------
-        public bool isVisible { get; private set; }
-
-        GameObject lastSelected;
-
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        public void Show(string content, string text= "")
-        {
-            gameObject.SetActive(true);
-            contentText.text = content;
-            titleText.text = text;
-            isVisible = true;
-            Overlay.instance.background.Show();
-            lastSelected = EventSystem.current.currentSelectedGameObject;
-            okButton.Select();
-        }
-
-        // -----------------------------------------------------------------------------------	
-        public void Close()
-        {
-            isVisible = false;
-            gameObject.SetActive(false);
-            Overlay.instance.background.Hide();
-            EventSystem.current.SetSelectedGameObject(lastSelected);
-        }
     }
 }

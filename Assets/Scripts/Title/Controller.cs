@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 
 namespace Jintori.Title
 {
+    using Common.UI;
+
     // --- Class Declaration ------------------------------------------------------------------------
     public class Controller : MonoBehaviour
     {
@@ -39,7 +41,7 @@ namespace Jintori.Title
 
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
-        const string NewVersionAvailable = "NEW VERSION IS AVAILABLE!!!";
+        const string NewVersionAvailable = "NEW VERSION\nAVAILABLE!";
 
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
@@ -75,7 +77,9 @@ namespace Jintori.Title
             // application update required. Show popup, then continue
             if (checker.state == UpdateChecker.State.ApplicationUpdateRequired)
             {
-                print(NewVersionAvailable);
+                Overlay.instance.messagePopup.Show(NewVersionAvailable, "NEWS");
+                while (Overlay.instance.messagePopup.isVisible)
+                    yield return null;
                 StartCoroutine(PressStart());
                 yield break;
             }

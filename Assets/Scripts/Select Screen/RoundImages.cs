@@ -4,6 +4,8 @@ using UnityEngine;
 
 namespace Jintori.SelectScreen
 {
+    using Common.UI;
+
     // --- Class Declaration ------------------------------------------------------------------------
     public class RoundImages : MonoBehaviour
     {

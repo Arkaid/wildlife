@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-namespace Jintori.SelectScreen
+namespace Jintori.Common.UI
 {
     // --- Class Declaration ------------------------------------------------------------------------
     public class SkillSelectPopup : MonoBehaviour

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Jintori.SelectScreen
+namespace Jintori.Common.UI
 {
     using Data;
 
