@@ -1,22 +1,165 @@
 {
+	"Easy": {
+		"round_time": 300,
+		"clear_ratio": 0.75,
+		"start_lives": 4,
+		"skill_speed_multiplier": 2.00,
+
+		"skills": {
+			"Speed": {
+				"max_time": 2.5,
+				"time_charge_per_percentage": 0.1
+			},
+			"Shield": {
+				"max_time": 2.5,
+				"time_charge_per_percentage": 0.1
+			},
+			"Freeze": {
+				"max_time": 2.5,
+				"time_charge_per_percentage": 0.1
+			}
+		},
+
+		"score_table": [
+			[2.5, 100],
+			[5.0, 200],
+			[7.5, 500],
+			[10, 1000],
+			[20, 2000],
+			[50, 10000],
+			[75, 20000],
+			[85, 30000],
+			[95, 40000],
+			[100, 50000]
+		],
+
+		"bonus_time_score": 100,
+
+		"enemies": {
+			"Slimy": [{
+					"speed": 150,
+					"blob_max_count": 2,
+					"blob_spawn_time": 10
+				},
+				{
+					"speed": 175,
+					"blob_max_count": 3,
+					"blob_spawn_time": 8
+				},
+				{
+					"speed": 200,
+					"blob_max_count": 4,
+					"blob_spawn_time": 6
+				}
+			],
+			"Blobby": [{
+					"speed": 100,
+					"bounces": 2,
+					"score": 500
+				},
+				{
+					"speed": 110,
+					"bounces": 3,
+					"score": 500
+				},
+				{
+					"speed": 120,
+					"bounces": 4,
+					"score": 500
+				}
+			],
+			"Wormy": [{
+					"max_speed": 250,
+					"max_steering": 10,
+					"history_length": 26,
+					"bug_spawn_time": 10,
+					"bug_max_count": 1
+				},
+				{
+					"max_speed": 275,
+					"max_steering": 10,
+					"history_length": 23,
+					"bug_spawn_time": 9,
+					"bug_max_count": 2
+				},
+				{
+					"max_speed": 300,
+					"max_steering": 10,
+					"history_length": 23,
+					"bug_spawn_time": 8,
+					"bug_max_count": 3
+				}
+			],
+			"Buggy": [{
+					"speed": 100,
+					"score": 500
+				},
+				{
+					"speed": 110,
+					"score": 500
+				},
+				{
+					"speed": 120,
+					"score": 500
+				}
+			],
+			"Tanky": [{
+					"speed": 50,
+					"rotation_speed_angle": 0.02,
+					"shoot_time": 2.5,
+					"cannonballs_per_shot": 2,
+					"max_cannonballs": 4,
+					"cannonball_speed": 100
+				},
+				{
+					"speed": 55,
+					"rotation_speed_angle": 0.02,
+					"shoot_time": 2,
+					"cannonballs_per_shot": 2,
+					"max_cannonballs": 5,
+					"cannonball_speed": 110
+				},
+				{
+					"speed": 60,
+					"rotation_speed_angle": 0.02,
+					"shoot_time": 1.5,
+					"cannonballs_per_shot": 3,
+					"max_cannonballs": 6,
+					"cannonball_speed": 120
+				}
+			],
+			"Bally": [{
+					"score": 500
+				},
+				{
+					"score": 500
+				},
+				{
+					"score": 500
+				}
+			]
+
+		}
+	},
+
 	"Normal": {
 		"round_time": 180,
-		"clear_ratio": 0.03,
+		"clear_ratio": 0.85,
 		"start_lives": 3,
 		"skill_speed_multiplier": 1.75,
 
 		"skills": {
 			"Speed": {
-				"max_time": 5,
-				"time_charge_per_percentage": 0.1
+				"max_time": 2,
+				"time_charge_per_percentage": 0.05
 			},
 			"Shield": {
-				"max_time": 3,
-				"time_charge_per_percentage": 0.12
+				"max_time": 2,
+				"time_charge_per_percentage": 0.05
 			},
 			"Freeze": {
-				"max_time": 10,
-				"time_charge_per_percentage": 0.5
+				"max_time": 2,
+				"time_charge_per_percentage": 0.05
 			}
 		},
 
@@ -33,109 +176,283 @@
 			[100, 70000]
 		],
 
-		"bonus_time_score" : 20,
-		
+		"bonus_time_score": 150,
+
 		"enemies": {
 			"Slimy": [{
-					"speed": 200,
-					"blob_max_count": 2,
-					"blob_spawn_time": 6
-				},
-				{
-					"speed": 200,
+					"speed": 175,
 					"blob_max_count": 3,
 					"blob_spawn_time": 6
 				},
 				{
-					"speed": 250,
+					"speed": 200,
 					"blob_max_count": 4,
-					"blob_spawn_time": 6
+					"blob_spawn_time": 5
+				},
+				{
+					"speed": 225,
+					"blob_max_count": 5,
+					"blob_spawn_time": 4
 				}
 			],
 			"Blobby": [{
-					"speed": 100,
-					"bounces": 2,
-					"score" : 150
-				},
-				{
-					"speed": 100,
+					"speed": 110,
 					"bounces": 3,
-					"score" : 150
+					"score": 1000
 				},
 				{
 					"speed": 120,
 					"bounces": 4,
-					"score" : 150
+					"score": 1000
+				},
+				{
+					"speed": 130,
+					"bounces": 4,
+					"score": 1000
 				}
 			],
 			"Wormy": [{
 					"max_speed": 300,
 					"max_steering": 10,
 					"history_length": 22,
-					"bug_spawn_time": 6,
-					"bug_max_count": 1
-				},
-				{
-					"max_speed": 300,
-					"max_steering": 10,
-					"history_length": 22,
-					"bug_spawn_time": 6,
+					"bug_spawn_time": 8,
 					"bug_max_count": 2
 				},
 				{
-					"max_speed": 350,
-					"max_steering": 20,
-					"history_length": 18,
+					"max_speed": 325,
+					"max_steering": 10,
+					"history_length": 22,
 					"bug_spawn_time": 6,
 					"bug_max_count": 3
+				},
+				{
+					"max_speed": 350,
+					"max_steering": 10,
+					"history_length": 18,
+					"bug_spawn_time": 6,
+					"bug_max_count": 4
 				}
 			],
 			"Buggy": [{
-					"speed": 100,
-					"score" : 150
+					"speed": 110,
+					"score": 1000
 				},
 				{
-					"speed": 100,
-					"score" : 150
+					"speed": 120,
+					"score": 1000
 				},
 				{
-					"speed": 100,
-					"score" : 150
+					"speed": 130,
+					"score": 1000
 				}
 			],
 			"Tanky": [{
-					"speed": 50,
-					"rotation_speed_angle": 0.02,
-					"shoot_time": 6,
+					"speed": 60,
+					"rotation_speed_angle": 0.04,
+					"shoot_time": 5,
 					"cannonballs_per_shot": 3,
-					"max_cannonballs" : 6,
-					"cannonball_speed" : 150
+					"max_cannonballs": 6,
+					"cannonball_speed": 110
 				},
 				{
-					"speed": 50,
-					"rotation_speed_angle": 0.02,
-					"shoot_time": 6,
+					"speed": 65,
+					"rotation_speed_angle": 0.04,
+					"shoot_time": 5,
 					"cannonballs_per_shot": 3,
-					"max_cannonballs" : 6,
-					"cannonball_speed" : 75
+					"max_cannonballs": 7,
+					"cannonball_speed": 120
 				},
 				{
-					"speed": 50,
-					"rotation_speed_angle": 0.02,
-					"shoot_time": 6,
-					"cannonballs_per_shot": 3,
-					"max_cannonballs" : 6,
-					"cannonball_speed" : 75
+					"speed": 70,
+					"rotation_speed_angle": 0.04,
+					"shoot_time": 4,
+					"cannonballs_per_shot": 4,
+					"max_cannonballs": 8,
+					"cannonball_speed": 130
 				}
 			],
 			"Bally": [{
-					"score" : 150
+					"score": 1000
 				},
 				{
-					"score" : 150
+					"score": 1000
 				},
 				{
-					"score" : 150
+					"score": 1000
+				}
+			]
+
+		}
+	},
+	"Hard": {
+		"round_time": 120,
+		"clear_ratio": 0.90,
+		"start_lives": 3,
+		"skill_speed_multiplier": 1.50,
+
+		"skills": {
+			"Speed": {
+				"max_time": 1.5,
+				"time_charge_per_percentage": 0.02
+			},
+			"Shield": {
+				"max_time": 1.5,
+				"time_charge_per_percentage": 0.02
+			},
+			"Freeze": {
+				"max_time": 1.5,
+				"time_charge_per_percentage": 0.02
+			}
+		},
+
+		"score_table": [
+			[2.5, 400],
+			[5.0, 800],
+			[7.5, 1500],
+			[10, 3000],
+			[20, 5000],
+			[50, 50000],
+			[75, 75000],
+			[85, 85000],
+			[95, 95000],
+			[100, 100000]
+		],
+
+		"bonus_time_score": 250,
+
+		"enemies": {
+			"Slimy": [{
+					"speed": 200,
+					"blob_max_count": 4,
+					"blob_spawn_time": 3
+				},
+				{
+					"speed": 250,
+					"blob_max_count": 5,
+					"blob_spawn_time": 2.5
+				},
+				{
+					"speed": 275,
+					"blob_max_count": 6,
+					"blob_spawn_time": 2
+				},
+				{
+					"speed": 300,
+					"blob_max_count": 8,
+					"blob_spawn_time": 2
+				}
+			],
+			"Blobby": [{
+					"speed": 120,
+					"bounces": 4,
+					"score": 2000
+				},
+				{
+					"speed": 130,
+					"bounces": 4,
+					"score": 2000
+				},
+				{
+					"speed": 140,
+					"bounces": 5,
+					"score": 2000
+				},
+				{
+					"speed": 150,
+					"bounces": 5,
+					"score": 2500
+				}
+			],
+			"Wormy": [{
+					"max_speed": 350,
+					"max_steering": 20,
+					"history_length": 18,
+					"bug_spawn_time": 4,
+					"bug_max_count": 3
+				},
+				{
+					"max_speed": 400,
+					"max_steering": 20,
+					"history_length": 18,
+					"bug_spawn_time": 3.5,
+					"bug_max_count": 4
+				},
+				{
+					"max_speed": 450,
+					"max_steering": 20,
+					"history_length": 14,
+					"bug_spawn_time": 3,
+					"bug_max_count": 5
+				},
+				{
+					"max_speed": 500,
+					"max_steering": 25,
+					"history_length": 14,
+					"bug_spawn_time": 2.5,
+					"bug_max_count": 5
+				}
+			],
+			"Buggy": [{
+					"speed": 120,
+					"score": 2000
+				},
+				{
+					"speed": 130,
+					"score": 2000
+				},
+				{
+					"speed": 140,
+					"score": 2000
+				},
+				{
+					"speed": 150,
+					"score": 2500
+				}
+			],
+			"Tanky": [{
+					"speed": 70,
+					"rotation_speed_angle": 0.07,
+					"shoot_time": 3,
+					"cannonballs_per_shot": 4,
+					"max_cannonballs": 8,
+					"cannonball_speed": 120
+				},
+				{
+					"speed": 80,
+					"rotation_speed_angle": 0.07,
+					"shoot_time": 2.5,
+					"cannonballs_per_shot": 4,
+					"max_cannonballs": 9,
+					"cannonball_speed": 130
+				},
+				{
+					"speed": 90,
+					"rotation_speed_angle": 0.07,
+					"shoot_time": 2,
+					"cannonballs_per_shot": 5,
+					"max_cannonballs": 10,
+					"cannonball_speed": 140
+				},
+				{
+					"speed": 100,
+					"rotation_speed_angle": 0.07,
+					"shoot_time": 1,
+					"cannonballs_per_shot": 6,
+					"max_cannonballs": 12,
+					"cannonball_speed": 150
+				}
+			],
+			"Bally": [{
+					"score": 2000
+				},
+				{
+					"score": 2000
+				},
+				{
+					"score": 2000
+				},
+				{
+					"score": 2500
 				}
 			]
 
