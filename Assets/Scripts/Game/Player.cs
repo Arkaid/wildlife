@@ -352,6 +352,8 @@ namespace Jintori.Game
                 playArea.mask.Clear(playArea.boss.x, playArea.boss.y);
                 playArea.mask.Apply();
 
+                IllogicGate.SoundManager2D.instance.PlaySFX("clear_mask");
+
                 animator.SetBool("Cut", false);
                 state = State.SafePath;
 
