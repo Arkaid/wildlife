@@ -58,7 +58,7 @@ namespace IllogicGate
         protected override void Awake()
         {
             base.Awake();
-            DontDestroyOnLoad(gameObject);
+            //DontDestroyOnLoad(gameObject);
 
             // creates an audio listener, so remove anything 
             // that cameras may have!

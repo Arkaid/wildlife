@@ -45,7 +45,6 @@ namespace Jintori.Common.UI
         // -----------------------------------------------------------------------------------	
         private void OnHoverOut(Selectable obj)
         {
-            
             hover.enabled = false;
             background.enabled = false;
         }
