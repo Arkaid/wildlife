@@ -101,13 +101,13 @@ namespace Jintori.SelectScreen
         // -----------------------------------------------------------------------------------	
         IEnumerator LoadOptions()
         {
-            yield return StartCoroutine(Transition.instance.Show());
+            yield return StartCoroutine(Transition.instance.Show(false));
 
             Options.instance.Show();
             yield return StartCoroutine(Transition.instance.Hide());
             while (!Options.instance.isDone)
                 yield return null;
-            yield return StartCoroutine(Transition.instance.Show());
+            yield return StartCoroutine(Transition.instance.Show(false));
             Options.instance.Hide();
             optionsButton.Select();
             yield return StartCoroutine(Transition.instance.Hide());
