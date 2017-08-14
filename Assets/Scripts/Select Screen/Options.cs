@@ -52,6 +52,12 @@ namespace Jintori.SelectScreen
         [SerializeField]
         Button cancel;
 
+        [SerializeField]
+        Button credits;
+
+        [SerializeField]
+        GameObject creditsScreen;
+
         // --- Properties -------------------------------------------------------------------------------
         public bool isDone { get; private set; }
 
@@ -63,6 +69,7 @@ namespace Jintori.SelectScreen
             bgm.slider.onValueChanged.AddListener((float value) => { bgm.value = Mathf.RoundToInt(value); });
             accept.onClick.AddListener(OnAccept);
             cancel.onClick.AddListener(OnDone);
+            credits.onClick.AddListener(() => { StartCoroutine(ShowCredits()); });
         }
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
@@ -93,6 +100,19 @@ namespace Jintori.SelectScreen
             // save and close
             Config.instance.SaveOptions();
             OnDone();
+        }
+
+        // -----------------------------------------------------------------------------------
+        IEnumerator ShowCredits()
+        {
+            yield return StartCoroutine(Transition.instance.Show(false));
+            creditsScreen.SetActive(true);
+            yield return StartCoroutine(Transition.instance.Hide());
+            while (!(Input.GetButtonDown("Cut") || Input.GetButtonDown("Skill")))
+                yield return null;
+            yield return StartCoroutine(Transition.instance.Show(false));
+            creditsScreen.SetActive(false);
+            yield return StartCoroutine(Transition.instance.Hide());
         }
 
         // -----------------------------------------------------------------------------------
