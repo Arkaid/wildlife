@@ -70,6 +70,12 @@ namespace Jintori.Game
         // -----------------------------------------------------------------------------------	
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
+        void AnimationEvent_PlaySound(string clip)
+        {
+            IllogicGate.SoundManager2D.instance.PlaySFX(clip);
+        }
+
+        // -----------------------------------------------------------------------------------	
         /// <summary>
         /// Updates the values of x and y from the local position
         /// You should call this if you move the object by its transform
