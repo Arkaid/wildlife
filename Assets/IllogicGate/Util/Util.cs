@@ -10,6 +10,9 @@ namespace IllogicGate
     {
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
+        /// <summary>
+        /// Calculates the MD5 Checksum of a bytes array. Useful for comparing files
+        /// </summary>
         static public string Md5Checksum(byte [] bytes)
         {
             // calculate hash
