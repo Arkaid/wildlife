@@ -283,6 +283,18 @@ namespace Jintori.CharacterFile
         {
             string tempFile = Application.temporaryCachePath + "/temp_charfile.chr";
 
+            // count the number of available rounds
+            int availableRounds = updateFile != null ? updateFile.availableRounds : 0;
+            for (int i = availableRounds; i < Config.Rounds; i++)
+            {
+                // can only add extra rounds in this version
+                // not remove or leave empty gaps. So, only increase count
+                // if a new one is added, otherwise keep previous count
+                if (!string.IsNullOrEmpty(roundFiles[i][0]))
+                    availableRounds++;
+            }
+
+
             // ----- Validation check -----
             // the update file is null, so all other png files must exist and be set
             string errors = "";
@@ -290,10 +302,11 @@ namespace Jintori.CharacterFile
             {
                 if (string.IsNullOrEmpty(charSheetFile))
                     errors += "You must set the character sheet file\n";
-                if (roundFiles.Count == 0)
+                if (availableRounds == 0)
                     errors += "Set at least one round file!\n";
 
-                for (int i = 0; i < roundFiles.Count; i++)
+                // make sure we don't leave empty holes
+                for (int i = 0; i < availableRounds; i++)
                 {
                     if (string.IsNullOrEmpty(roundFiles[i][0]))
                         errors += string.Format("You must set the base image file for round {0}\n", i + 1);
@@ -309,10 +322,11 @@ namespace Jintori.CharacterFile
             // ----- File creation -----
             BinaryWriter bw = new BinaryWriter(System.IO.File.Open(tempFile, FileMode.Create));
             BlowFishCS.BlowFish blowfish = new BlowFishCS.BlowFish(IllogicGate.Data.EncryptedFile.RestoreKey(ShuffledKey));
-            
+
+
             // save an empty header to make space for it
             Header header = new Header(Version1, guid);
-            header.availableRounds = updateFile == null ? roundFiles.Count : updateFile.availableRounds;
+            header.availableRounds = availableRounds;
             header.tags = tags;
             header.Save(bw);
 
@@ -335,11 +349,11 @@ namespace Jintori.CharacterFile
             {
                 // load original images if available
                 RoundImages original = null;
-                if (updateFile != null)
+                if (updateFile != null && i < updateFile.availableRounds)
                     original = updateFile.LoadRound(i);
 
                 // just copy the image from the previously loaded character file
-                if (i >= roundFiles.Count || string.IsNullOrEmpty(roundFiles[i][0]))
+                if (roundFiles[i] == null)
                 {
                     data = original.baseImage.GetRawTextureData();
                     img_w = original.baseImage.width;
@@ -360,7 +374,7 @@ namespace Jintori.CharacterFile
 
 
                 // just copy the image from the previously loaded character file
-                if (i >= roundFiles.Count || string.IsNullOrEmpty(roundFiles[i][1]))
+                if (roundFiles[i] == null)
                 {
                     data = original.shadowImage.GetRawTextureData();
                     img_w = original.shadowImage.width;

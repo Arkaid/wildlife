@@ -248,7 +248,7 @@ namespace Jintori.CharacterFile
             if (string.IsNullOrEmpty(files[1]))
                 return;
 
-            roundFiles.Insert(round, files);
+            roundFiles[round] = files;
 
             // for previewing
             int w, h;
