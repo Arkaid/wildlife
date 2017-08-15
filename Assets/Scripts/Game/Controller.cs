@@ -102,7 +102,7 @@ namespace Jintori.Game
             // create a fresh play area
             playArea = Instantiate(sourcePlayArea, sourcePlayArea.transform.parent, true);
             playArea.gameObject.SetActive(true);
-            playArea.Setup(roundData.baseImage, roundData.shadowImage, typeof(Tanky));
+            playArea.Setup(roundData.baseImage, roundData.shadowImage, typeof(Wormy));
             //currentPlay.Setup(DEBUG_baseImage, DEBUG_shadowImage, typeof(Slimy));
 
             // reset percentage tracker to zero
