@@ -47,16 +47,16 @@ namespace Jintori.SelectScreen
         Toggle fullscreen = null;
 
         [SerializeField]
-        Button accept;
+        Button accept = null;
 
         [SerializeField]
-        Button cancel;
+        Button cancel = null;
 
         [SerializeField]
-        Button credits;
+        Button credits = null;
 
         [SerializeField]
-        GameObject creditsScreen;
+        GameObject creditsScreen = null;
 
         // --- Properties -------------------------------------------------------------------------------
         public bool isDone { get; private set; }
@@ -65,8 +65,20 @@ namespace Jintori.SelectScreen
         // -----------------------------------------------------------------------------------	
         private void Start()
         {
-            sfx.slider.onValueChanged.AddListener((float value) => { sfx.value = Mathf.RoundToInt(value); });
-            bgm.slider.onValueChanged.AddListener((float value) => { bgm.value = Mathf.RoundToInt(value); });
+            sfx.slider.onValueChanged.AddListener((float value) => 
+            {
+                sfx.value = Mathf.RoundToInt(value);
+                IllogicGate.SoundManager2D sndMgr = IllogicGate.SoundManager2D.instance;
+                sndMgr.sfxVolume = sfx.value / 100f;
+                sndMgr.PlaySFX("ui_select_notch");
+            });
+
+            bgm.slider.onValueChanged.AddListener((float value) => 
+            {
+                bgm.value = Mathf.RoundToInt(value);
+                IllogicGate.SoundManager2D.instance.bgmVolume = bgm.value / 100f;
+            });
+
             accept.onClick.AddListener(OnAccept);
             cancel.onClick.AddListener(OnDone);
             credits.onClick.AddListener(() => { StartCoroutine(ShowCredits()); });

@@ -100,6 +100,7 @@ namespace IllogicGate
         // -----------------------------------------------------------------------------------	
         public override void OnInspectorGUI()
         {
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("dontDestroyOnLoad"));
             clips.DoLayoutList();
             serializedObject.ApplyModifiedProperties();
         }
