@@ -28,7 +28,10 @@ namespace IllogicGate
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
         [SerializeField]
-        ClipData [] clips;
+        ClipData [] clips = null;
+
+        [SerializeField]
+        bool dontDestroyOnLoad = false;
 
         // --- Properties -------------------------------------------------------------------------------
         /// <summary> Listener </summary>
@@ -58,7 +61,9 @@ namespace IllogicGate
         protected override void Awake()
         {
             base.Awake();
-            //DontDestroyOnLoad(gameObject);
+
+            if (dontDestroyOnLoad)
+                DontDestroyOnLoad(gameObject);
 
             // creates an audio listener, so remove anything 
             // that cameras may have!
@@ -84,7 +89,8 @@ namespace IllogicGate
         {
             // sets the new volume and re-volumes clips already playing
             _bgmVolume = Mathf.Clamp01(value);
-            bgm.volume = _bgmVolume * clipsByName[bgm.clip.name].volume;
+            if (bgm != null && bgm.clip != null)
+                bgm.volume = _bgmVolume * clipsByName[bgm.clip.name].volume;
         }
         
         // -----------------------------------------------------------------------------------	
@@ -104,7 +110,37 @@ namespace IllogicGate
             bgm.priority = data.priority;
             bgm.Play();
         }
-        
+
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Fades out the current BGM to silence
+        /// </summary>
+        /// <param name="time"></param>
+        public void FadeoutBGM(float time = 2f)
+        {
+            StartCoroutine(FadeOutBGMCoroutine(time));
+        }
+
+        // -----------------------------------------------------------------------------------	
+        IEnumerator FadeOutBGMCoroutine(float time)
+        {
+            // fade out from volume 1 to 0
+            float elapsed = 0;
+            float vol_1 = clipsByName[bgm.clip.name].volume * bgmVolume;
+            while (elapsed < time)
+            {
+                elapsed += Time.deltaTime;
+                float t = Mathf.Clamp01(elapsed / time);
+
+                bgm.volume = Mathf.Lerp(vol_1, 0, t);
+                yield return null;
+            }
+
+            // stop playing and reset volume
+            bgm.Stop();
+            bgm.volume = bgmVolume;
+        }
+
         // -----------------------------------------------------------------------------------	
         /// <summary>
         /// Crossfades the BGM clip to a new one, in the specified time

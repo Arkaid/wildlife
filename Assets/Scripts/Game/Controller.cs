@@ -61,6 +61,11 @@ namespace Jintori.Game
         // -----------------------------------------------------------------------------------	
         void Start()
         {
+            // set volume for the in-game sound manager
+            IllogicGate.SoundManager2D sndMgr = IllogicGate.SoundManager2D.instance;
+            sndMgr.bgmVolume = Config.instance.bgmVolume / 100f;
+            sndMgr.sfxVolume = Config.instance.sfxVolume / 100f;
+
 #if UNITY_EDITOR
             if (sourceFile == null)
                 sourceFile = new CharacterFile.File(DEBUG_file);

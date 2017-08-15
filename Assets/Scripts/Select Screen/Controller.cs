@@ -142,9 +142,13 @@ namespace Jintori.SelectScreen
             Config.instance.SaveOptions();
             Overlay.instance.background.Show(Color.clear);
 
+            // fade out BGM and destroy sound manager (in game has its own manager)
+            IllogicGate.SoundManager2D sndMgr = IllogicGate.SoundManager2D.instance;
+            sndMgr.FadeoutBGM(1f);
+            yield return new WaitForSeconds(1f);
+            DestroyObject(sndMgr.gameObject);
 
             // start game
-            yield return new WaitForSeconds(1);
             yield return StartCoroutine(Transition.instance.Show());
             SceneManager.LoadScene("Game");
         }

@@ -48,7 +48,7 @@ namespace Jintori.Title
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
         [SerializeField]
-        Text messageText;
+        Text messageText = null;
 
         [SerializeField]
         ProgressBar progress;
@@ -60,6 +60,11 @@ namespace Jintori.Title
         // -----------------------------------------------------------------------------------	
         IEnumerator Start()
         {
+            IllogicGate.SoundManager2D sndMgr = IllogicGate.SoundManager2D.instance;
+            sndMgr.bgmVolume = Config.instance.bgmVolume / 100f;
+            sndMgr.sfxVolume = Config.instance.sfxVolume / 100f;
+            sndMgr.PlayBGM("outgame");
+
             animator = GetComponent<Animator>();
             
             while (!animator.GetCurrentAnimatorStateInfo(0).IsName("Updating Content"))
