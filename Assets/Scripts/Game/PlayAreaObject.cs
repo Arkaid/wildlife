@@ -74,7 +74,7 @@ namespace Jintori.Game
         {
             IllogicGate.SoundManager2D.instance.PlaySFX(clip);
         }
-
+        
         // -----------------------------------------------------------------------------------	
         /// <summary>
         /// Updates the values of x and y from the local position

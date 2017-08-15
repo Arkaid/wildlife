@@ -88,6 +88,11 @@ namespace Jintori.Game
         // -----------------------------------------------------------------------------------	
         protected override void UpdatePosition()
         {
+#if UNITY_EDITOR
+            Vector2 worldTarget = playArea.MaskPositionToWorld(target);
+            Debug.DrawLine(transform.position, worldTarget, Color.red);
+#endif
+
             // Check if we're about to hit path,
             // in which case, steer harder and set a diffent target
             const float LookAhead = Radius * 4;
@@ -99,6 +104,7 @@ namespace Jintori.Game
                 // hard steering began, switch target
                 if (!hardSteering)
                     target = FindValidTarget(position, Radius);
+
                 hardSteering = true;
 
                 // calculate the steering force as a function of distance
