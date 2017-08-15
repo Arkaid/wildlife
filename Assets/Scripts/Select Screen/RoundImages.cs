@@ -41,7 +41,12 @@ namespace Jintori.SelectScreen
         private void OnRoundSelected(Selectable sender)
         {
             if (characterFile == null)
+            {
+                IllogicGate.SoundManager2D.instance.PlaySFX("ui_cancel");
+                string msg = string.Format("Select a non-random character");
+                Overlay.instance.messagePopup.Show(msg.ToUpper(), "UNAVAILABLE");
                 return;
+            }
 
             int idx = System.Array.IndexOf(icons, sender);
             if (stats.rounds[idx].cleared)
@@ -69,7 +74,7 @@ namespace Jintori.SelectScreen
         {
             characterFile = null;
             for (int i = 0; i < Config.Rounds; i++)
-                icons[i].previewIcon.sprite = lockedSprite;
+                icons[i].previewIcon.sprite = unavailableSprite;
         }
 
         // -----------------------------------------------------------------------------------	
