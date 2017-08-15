@@ -77,6 +77,17 @@ namespace Jintori.Game
             StartCoroutine(InitializeRound());
         }
 
+#if UNITY_EDITOR
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.F9))
+            {
+                playArea.mask.maskCleared -= OnMaskCleared;
+                StartCoroutine(WinRound());
+            }
+        }
+#endif
+
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         IEnumerator InitializeRound()
@@ -328,9 +339,11 @@ namespace Jintori.Game
 
             // play next round or go back to top menu?
             round++;
-            int lastRound = Config.Rounds;
-            if (Config.instance.difficulty == Config.Difficulty.Hard)
-                lastRound--; // the last round can only be played in Hard mode
+            int lastRound = sourceFile.availableRounds;
+            if (Config.instance.difficulty != Config.Difficulty.Hard && 
+                sourceFile.availableRounds == Config.Rounds)
+                lastRound = Config.Rounds - 1; // the last round can only be played in Hard mode
+
             if (round < lastRound)
             {
                 // add a life since you respawn on the next round

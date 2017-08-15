@@ -146,7 +146,7 @@ namespace Jintori.CharacterFile
             baseSheet = null;
             rounds = new RoundImages[Config.Rounds];
             characterSheetFile = null;
-            roundFiles = new List<string[]>();
+            roundFiles = new List<string[]>(new string[Config.Rounds][]);
         }
 
         // -----------------------------------------------------------------------------------	
