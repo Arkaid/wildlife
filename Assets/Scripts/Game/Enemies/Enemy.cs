@@ -266,12 +266,11 @@ namespace Jintori.Game
         protected Vector2 FindValidTarget(Vector2 from, float bossRadius)
         {
             Vector2 target = Vector2.zero;
-            int nHits = 1;
             int retries = 200;
 
             // search until a valid zone is found or it fails
             // TODO: when it fails, there is no recovery
-            while (nHits > 0 && retries > 0)
+            while (retries > 0)
             {
                 // find a random position in the play area
                 target = new Vector2()
@@ -286,12 +285,12 @@ namespace Jintori.Game
                 if (playArea.mask[(int)target.x, (int)target.y] != PlayArea.Shadowed)
                     continue;
 
-                // cast a circle to see if it collides with something
-                Vector2 direction = target - from;
-                nHits = Physics2D.CircleCast(
-                    transform.position, bossRadius, direction,
-                    PlayArea.EdgeContactFilter, hits, direction.magnitude);
-                //Debug.DrawRay(transform.position, direction, Color.red, 5);
+                Vector2 worldTarget = playArea.MaskPositionToWorld(target);
+                Vector2 direction = worldTarget - (Vector2)transform.position;
+                if (Physics2D.Raycast(transform.position, direction, direction.magnitude, PlayArea.EdgesLayerMask))
+                    continue;
+
+                break;
             }
 
 #if UNITY_EDITOR

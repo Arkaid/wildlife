@@ -215,6 +215,25 @@ namespace Jintori.Game
         {
             UI.instance.percentageBar.percentage = mask.clearedRatio * 100f;
         }
+        
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Simple utility to turn a mask coordinate into a world coordinate
+        /// </summary>
+        public Vector2 MaskPositionToWorld(int x, int y)
+        {
+            return MaskPositionToWorld(new Vector2(x, y));
+        }
+        
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Simple utility to turn a mask coordinate into a world coordinate
+        /// </summary>
+        public Vector2 MaskPositionToWorld(Vector2 pos)
+        {
+            pos = pos - new Vector2(imageWidth, imageHeight) * 0.5f;
+            return transform.TransformPoint(pos);
+        }
 
         // -----------------------------------------------------------------------------------	
         /// <summary>
