@@ -38,7 +38,7 @@ namespace Jintori.Game
         // -----------------------------------------------------------------------------------	
         public IEnumerator Show(int round)
         {
-            Debug.Assert(round >= 0 && round <= 2);
+            Debug.Assert(round >= 0 && round < rounds.Length);
 
             gameObject.SetActive(true);
             for (int i = 0; i < rounds.Length; i++)
