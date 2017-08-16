@@ -118,6 +118,8 @@ namespace IllogicGate
         /// <param name="time"></param>
         public void FadeoutBGM(float time = 2f)
         {
+            if (bgm == null || bgm.clip == null)
+                return;
             StartCoroutine(FadeOutBGMCoroutine(time));
         }
 
@@ -147,6 +149,8 @@ namespace IllogicGate
         /// </summary>
         public void CrossFadeBGM(string clip, float time = 2f)
         {
+            if (bgm == null || bgm.clip == null)
+                return;
             StartCoroutine(CrossFadeBGM(clipsByName[clip], time));
         }
         
