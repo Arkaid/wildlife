@@ -271,6 +271,7 @@ namespace Jintori.Game
             playArea.mask.Apply();
         }
 
+
         // -----------------------------------------------------------------------------------	
         /// <summary>
         /// Move into the cut area, cutting it
@@ -380,6 +381,8 @@ namespace Jintori.Game
         }
 
         // -----------------------------------------------------------------------------------	
+        Collider2D[] overlaps = new Collider2D[16];
+        // -----------------------------------------------------------------------------------	
         /// <summary>
         /// Check if the position we want to cut into is valid
         /// </summary>
@@ -392,6 +395,12 @@ namespace Jintori.Game
         {
             dx *= 2; // look 2 spaces ahead (if there are two spaces ahead
             dy *= 2;
+
+            // is there an enemy blocking the way?
+            int hits = Physics2D.OverlapPointNonAlloc(playArea.MaskPositionToWorld(sx + dx, sy + dy), overlaps, PlayArea.EnemiesLayerMask);
+            if (hits > 0)
+                return false;
+
             if (dx != 0)
             {
                 for (int i = y - 1; i <= y + 1; i++)

@@ -24,6 +24,8 @@ namespace Jintori.Game
             useLayerMask = true,
             layerMask = EdgesLayerMask
         };
+        public const int EnemiesLayerMask = 1 << 9;
+
 
         /// <summary> Width of the main game image in landscape mode, in pixels </summary>
         public const int LandscapeWidth = 960;
