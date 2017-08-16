@@ -93,7 +93,6 @@ namespace Jintori.Game
         }
 
         // -----------------------------------------------------------------------------------	
-        ContactPoint2D[] contacts = new ContactPoint2D[8];
         RaycastHit2D[] hits = new RaycastHit2D[8];
         // -----------------------------------------------------------------------------------	
         /// <summary>
