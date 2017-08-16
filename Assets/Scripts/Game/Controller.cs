@@ -57,28 +57,45 @@ namespace Jintori.Game
         /// <summary> Camera controller to track player and zoom to image </summary>
         CameraController cameraController;
 
+        /// <summary> Draw one boss at the time from here for each round </summary>
+        List<Enemy> roundBoss;
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         void Start()
         {
+#if UNITY_EDITOR
+            if (sourceFile == null)
+                sourceFile = new CharacterFile.File(DEBUG_file);
+#endif
+
+            cameraController = Camera.main.GetComponent<CameraController>();
+            sourcePlayArea.gameObject.SetActive(false);
+
             // set volume for the in-game sound manager
             IllogicGate.SoundManager2D sndMgr = IllogicGate.SoundManager2D.instance;
             sndMgr.bgmVolume = Config.instance.bgmVolume / 100f;
             sndMgr.sfxVolume = Config.instance.sfxVolume / 100f;
 
-#if UNITY_EDITOR
-            if (sourceFile == null)
-                sourceFile = new CharacterFile.File(DEBUG_file);
-#endif
-            Timer.instance.timedOut += OnTimerTimedOut;
+            // randomize bosses (we have 3, but need 4)
+            roundBoss = new List<Enemy>(sourcePlayArea.GetBosses());
+            for(int i = 0; i < 100; i++)
+            {
+                int a = Random.Range(0, roundBoss.Count);
+                int b = Random.Range(0, roundBoss.Count);
+                Enemy tmp = roundBoss[a];
+                roundBoss[a] = roundBoss[b];
+                roundBoss[b] = tmp;
+            }
+            roundBoss.Add(roundBoss[Random.Range(0, roundBoss.Count)]);
 
+            // basic initialization
             round = 0;
             livesLeft = Config.instance.startLives;
             Skill.instance.Initialize();
+            Timer.instance.timedOut += OnTimerTimedOut;
 
-            cameraController = Camera.main.GetComponent<CameraController>();
-
-            sourcePlayArea.gameObject.SetActive(false);
+            // start the first round
             StartCoroutine(InitializeRound());
         }
 
@@ -105,9 +122,11 @@ namespace Jintori.Game
             CharacterFile.RoundImages roundData = sourceFile.LoadRound(round);
 
             // create a fresh play area
+            System.Type bossType = roundBoss[round].GetType();
+            //bossType = typeof(Wormy);
             playArea = Instantiate(sourcePlayArea, sourcePlayArea.transform.parent, true);
             playArea.gameObject.SetActive(true);
-            playArea.Setup(roundData.baseImage, roundData.shadowImage, typeof(Wormy));
+            playArea.Setup(roundData.baseImage, roundData.shadowImage, bossType);
             //currentPlay.Setup(DEBUG_baseImage, DEBUG_shadowImage, typeof(Slimy));
 
             // reset percentage tracker to zero

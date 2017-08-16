@@ -86,9 +86,6 @@ namespace Jintori.Game
         /// <summary> Current boss. Only becomes valid after setting up the play area </summary>
         public Enemy boss { get; private set; }
 
-        /// <summary> List of all available bosses </summary>
-        List<Enemy> availableBosses;
-
         /// <summary> Color of the cut path </summary>
         Color cutPathColor;
 
@@ -123,16 +120,12 @@ namespace Jintori.Game
 
             // Deactivate all enemies
             Enemy[] enemies = GetComponentsInChildren<Enemy>();
-            availableBosses = new List<Enemy>();
             foreach (Enemy enemy in enemies)
-            {
                 enemy.gameObject.SetActive(false);
-                if (enemy.isBoss)
-                    availableBosses.Add(enemy);
-            }
 
             // select boss
-            boss = availableBosses.Find(b => b.GetType() == bossType);
+            Enemy[] bosses = GetBosses();
+            boss = System.Array.Find(bosses, b => b.GetType() == bossType);
 
             // create a new mask
             mask = new Mask(shadowImage);
@@ -155,6 +148,14 @@ namespace Jintori.Game
             pos.y = -imageHeight * 0.5f;
             safePath.transform.localPosition = pos;
             cutPath.transform.localPosition = pos;
+        }
+        
+        // -----------------------------------------------------------------------------------	
+        /// <summary> Retreive a list of bosses for the play ara </summary>
+        public Enemy [] GetBosses()
+        {
+            Enemy[] enemies = GetComponentsInChildren<Enemy>(true);
+            return System.Array.FindAll(enemies, e => e.isBoss);
         }
 
         // -----------------------------------------------------------------------------------	
