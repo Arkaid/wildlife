@@ -94,6 +94,7 @@ namespace Jintori.Game
 
         // -----------------------------------------------------------------------------------	
         ContactPoint2D[] contacts = new ContactPoint2D[8];
+        RaycastHit2D[] hits = new RaycastHit2D[8];
         // -----------------------------------------------------------------------------------	
         /// <summary>
         /// Moves the object and bounces it at exactly so it comes out at a 45
@@ -101,60 +102,28 @@ namespace Jintori.Game
         /// </summary>
         protected void MoveAndBounce()
         {
-            // number of interpolation steps for the movement
-            const int Steps = 10;
-
-            // delta time, delta x and y
-            float dt = Time.deltaTime / Steps;
-            Vector2 delta = velocity * dt;
-
-            // starting x and y, pre-edge contact x and y
-            Vector2 start = position;
-            Vector2 preContact = Vector2.zero;
-            for (int i = 0; i < Steps; i++)
+            float distance = (velocity * Time.fixedDeltaTime).magnitude;
+            distance *= 2;
+            // cast ahead to see if we're going to collide with something
+            int nHits = Physics2D.BoxCastNonAlloc(transform.position, collider.bounds.size, 0, velocity, hits, distance, PlayArea.EdgesLayerMask);
+            if (nHits > 0)
             {
-                // update position
-                preContact = position;
-                position = start + delta * i;
-                x = Mathf.RoundToInt(position.x);
-                y = Mathf.RoundToInt(position.y);
+                // obtain normal from contact points
+                Vector2 normal = Vector3.zero;
+                for (int j = 0; j < nHits; j++)
+                    normal += hits[j].normal;
+                normal.Normalize();
 
-                // tell the physics engine to update colliders (thanks Unity 2017.1!)
-                Physics2D.Simulate(0.005f);
-
-                // did it get in contact with the edges?
-                int nHits = collider.GetContacts(PlayArea.EdgeContactFilter, contacts);
-                if (nHits > 0)
-                {
-                    // go back to a non-collision position
-                    position = preContact;
-                    x = Mathf.RoundToInt(position.x);
-                    y = Mathf.RoundToInt(position.y);
-
-                    // obtain normal from contact points
-                    Vector2 normal = Vector3.zero;
-                    for (int j = 0; j < nHits; j++)
-                        normal += contacts[j].normal;
-                    normal.Normalize();
-
-                    // use the first normal
-                    //Vector2 normal = contacts[0].normal;
-
-                    // reflect velocity 
-                    //normal = Quaternion.Euler(0, 0, Random.Range(-2, 2) * 5) * normal;
-                    velocity = Vector2.Reflect(velocity, normal);
-
-                    // adjust velocity direction and magnitude
-                    if (lock45)
-                        ClampVelocity45();
-                    else
-                        velocity = velocity.normalized * speed;
-
-                    // set new start point and do the rest of the steps
-                    start = position;
-                    delta = velocity * dt;
-                }
+                velocity = Vector2.Reflect(velocity, normal).normalized * speed;
+                
+                // adjust velocity direction
+                if (lock45)
+                    ClampVelocity45();
             }
+
+            position += velocity * Time.fixedDeltaTime;
+            x = Mathf.RoundToInt(position.x);
+            y = Mathf.RoundToInt(position.y);
         }
     }
 }
