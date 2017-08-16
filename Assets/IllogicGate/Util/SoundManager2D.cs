@@ -34,9 +34,6 @@ namespace IllogicGate
         bool dontDestroyOnLoad = false;
 
         // --- Properties -------------------------------------------------------------------------------
-        /// <summary> Listener </summary>
-        AudioListener listener;
-
         /// <summary> background music </summary>
         AudioSource bgm;
 
@@ -67,7 +64,7 @@ namespace IllogicGate
 
             // creates an audio listener, so remove anything 
             // that cameras may have!
-            listener = gameObject.AddComponent<AudioListener>();
+            gameObject.AddComponent<AudioListener>();
 
             // make clips easier to find
             clipsByName = new Dictionary<string, ClipData>();

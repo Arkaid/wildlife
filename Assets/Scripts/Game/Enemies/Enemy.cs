@@ -258,8 +258,6 @@ namespace Jintori.Game
         }
 
         // -----------------------------------------------------------------------------------	
-        RaycastHit2D[] hits = new RaycastHit2D[8];
-        // -----------------------------------------------------------------------------------	
         /// <summary>
         /// Finds a random point on the shadow it can move to without being interrupted
         /// </summary>
