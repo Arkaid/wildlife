@@ -47,6 +47,8 @@ namespace Jintori.SelectScreen
         // -----------------------------------------------------------------------------------	
         private IEnumerator Start()
         {
+            Debug.Log("Starting character selection screen");
+
             // handle buttons
             startButton.onClick.AddListener(OnStart);
             optionsButton.onClick.AddListener(OnOptions);
@@ -62,10 +64,12 @@ namespace Jintori.SelectScreen
         // -----------------------------------------------------------------------------------	
         IEnumerator LoadCharacterSheets()
         {
+            Debug.Log("Loading character files");
             string[] files = System.IO.Directory.GetFiles(CharacterFile.File.dataPath, "*.chr");
 
             foreach (string file in files)
             {
+                Debug.Log("Loading: " + file);
                 CharacterFile.File charFile = new CharacterFile.File(file);
                 CharacterIcon icon = characterGrid.AddCharacter(charFile);
                 icon.select += OnCharacterSelected;

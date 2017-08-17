@@ -60,6 +60,11 @@ namespace Jintori.Title
         // -----------------------------------------------------------------------------------	
         IEnumerator Start()
         {
+            if (Config.instance.debugOn)
+                IllogicGate.LogToFile.Activate();
+
+            Debug.Log("Application started. Client version: " + Application.version);
+
             IllogicGate.SoundManager2D sndMgr = IllogicGate.SoundManager2D.instance;
             sndMgr.bgmVolume = Config.instance.bgmVolume / 100f;
             sndMgr.sfxVolume = Config.instance.sfxVolume / 100f;
@@ -69,7 +74,6 @@ namespace Jintori.Title
             
             while (!animator.GetCurrentAnimatorStateInfo(0).IsName("Updating Content"))
                 yield return null;
-
 
             progress.Hide();
             messageText.text = "CHECKING FOR UPDATES";
