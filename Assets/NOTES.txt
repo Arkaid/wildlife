@@ -1,0 +1,4 @@
+- There is no "exit / quit" button on menu screen
+ > Add button, also end with "escape" key while in menu / options
+- Handle the situation where there aren't any characters available
+ > Create "Characters" directory if it doesn't exist

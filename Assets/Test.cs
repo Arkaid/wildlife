@@ -24,6 +24,10 @@ public class Test : MonoBehaviour
     // -----------------------------------------------------------------------------------	
     private IEnumerator Start()
     {
+        IllogicGate.LogToFile.Activate();
+
+        int[] explode = new int[10];
+        explode[20] = 10;
         yield break;
     }
 

@@ -52,11 +52,13 @@ namespace Jintori.Title
         // -----------------------------------------------------------------------------------	
         IEnumerator CheckCoroutine()
         {
+            Debug.Log("Checking for new version");
             yield return StartCoroutine(CheckUpdateRequired());
             if (state == State.Error || state == State.ApplicationUpdateRequired)
                 yield break;
 
             // get a list of characters in the server that we haven't downloaded yet
+            Debug.Log("Checking for new characters");
             yield return StartCoroutine(GetCharacterList());
             if (state == State.Error)
                 yield break;
@@ -64,6 +66,7 @@ namespace Jintori.Title
             // do we need to download files?
             if (!charactersToDownload.IsNull)
             {
+                Debug.Log("Downloading characters");
                 progress = 0;
                 state = State.DownloadingCharacters;
                 yield return StartCoroutine(DownloadCharacterFiles());
