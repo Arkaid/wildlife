@@ -9,6 +9,11 @@
 [Bb]uild/
 
 # =====================================
+# Do not save wildlife downloaded characters
+# =====================================
+[Cc]haracters/
+
+# =====================================
 # Visual Studio / MonoDevelop generated
 # =====================================
 /*.csproj
