@@ -17,6 +17,15 @@ namespace Jintori.SelectScreen
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
+        enum State
+        {
+            Initializing,
+            SelectingCharacter,
+            OptionsScreen,
+            StartingGame,
+            ExitConfirm,
+        }
+
 
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
@@ -38,32 +47,53 @@ namespace Jintori.SelectScreen
         Button optionsButton = null;
 
         [SerializeField]
+        Button exitButton = null;
+
+        [SerializeField]
         CharacterIcon randomButton = null;
 
         // --- Properties -------------------------------------------------------------------------------
         /// <summary> Character we selected </summary>
         CharacterFile.File selected;
 
+        /// <summary> State of the UI </summary>
+        State state;
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        private IEnumerator Start()
+        private void Start()
         {
-            Debug.Log("Starting character selection screen");
+            StartCoroutine(Initalize());
+        }
+
+        // --- Methods ----------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Initializes the UI
+        /// </summary>
+        IEnumerator Initalize()
+        {
+            state = State.Initializing;
+            Debug.Log("Initializing character selection screen");
 
             // handle buttons
-            startButton.onClick.AddListener(OnStart);
-            optionsButton.onClick.AddListener(OnOptions);
-            randomButton.selected += OnRandomCharacterSelected;
+            startButton.onClick.AddListener(() => { StartCoroutine(StartGame()); });
+            optionsButton.onClick.AddListener(() => { StartCoroutine(ShowOptions()); });
+            exitButton.onClick.AddListener(() => { StartCoroutine(ExitConfirm()); });
+            randomButton.selected += OnCharacterSelected;
 
             Transition.instance.maskValue = 1;
 
             yield return StartCoroutine(LoadCharacterSheets());
             yield return StartCoroutine(Transition.instance.Hide());
-            StartCoroutine(CheckForExit());
+            StartCoroutine(SelectingCharacter());
         }
 
-        // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Loads all character sheets and sets up icons
+        /// </summary>
+        /// <returns></returns>
         IEnumerator LoadCharacterSheets()
         {
             Debug.Log("Loading character files");
@@ -81,68 +111,99 @@ namespace Jintori.SelectScreen
             characterGrid.SelectFirst();
         }
 
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// This is the main loop, basically. Just waiting around for a character to be selected
+        /// </summary>
+        IEnumerator SelectingCharacter()
+        {
+            state = State.SelectingCharacter;
+            while (state == State.SelectingCharacter)
+            {
+                if (Input.GetButtonDown("Cancel"))
+                    yield return StartCoroutine(ExitConfirm());
+
+                if (Overlay.instance.isVisible || Options.instance.isVisible)
+                    yield return null;
+
+                yield return null;
+            }
+        }
+
         // -----------------------------------------------------------------------------------
+        /// <summary>
+        /// Callback from the character icon, when a character gets selected.
+        /// </summary>
         private void OnCharacterSelected(CharacterIcon icon)
         {
-            selected = icon.characterFile;
-            avatar.SetCharacter(selected);
-            roundImages.SetCharacter(selected);
+            if (icon == randomButton)
+            {
+                selected = null;
+                avatar.SetCharacter(null);
+                roundImages.Reset();
+            }
+            else
+            {
+                selected = icon.characterFile;
+                avatar.SetCharacter(selected);
+                roundImages.SetCharacter(selected);
+            }
         }
 
-        // -----------------------------------------------------------------------------------	
-        private void OnRandomCharacterSelected(CharacterIcon sender)
-        {
-            selected = null;
-            avatar.SetCharacter(null);
-            roundImages.Reset();
-        }
 
         // -----------------------------------------------------------------------------------	
-        void OnOptions()
+        IEnumerator ShowOptions()
         {
-            StartCoroutine(LoadOptions());
-        }
+            Debug.Log("Showing options screen");
+            state = State.OptionsScreen;
 
-        // -----------------------------------------------------------------------------------	
-        IEnumerator LoadOptions()
-        {
+            // show transition, show options screen.
             yield return StartCoroutine(Transition.instance.Show(false));
-
             Options.instance.Show();
             yield return StartCoroutine(Transition.instance.Hide());
-            while (!Options.instance.isVisible)
+
+            // wait until the option screen closes
+            while (Options.instance.isVisible)
                 yield return null;
+
+            // show transition, hide options screen
             yield return StartCoroutine(Transition.instance.Show(false));
             Options.instance.Hide();
             optionsButton.Select();
             yield return StartCoroutine(Transition.instance.Hide());
+
+            // go back to selecting stuffs
+            StartCoroutine(SelectingCharacter());
         }
 
         // -----------------------------------------------------------------------------------	
-        private void OnStart()
+        IEnumerator StartGame()
         {
+            Debug.Log("Starting game");
+            state = State.StartingGame;
+
+            // select random character if needed
             if (selected == null)
                 selected = characterGrid.SelectRandomCharacter();
-            avatar.SwitchImage();
-            StartCoroutine(LoadGame());
-        }
-        
 
-        // -----------------------------------------------------------------------------------	
-        IEnumerator LoadGame()
-        {
+            avatar.SwitchImage();
             Game.Controller.sourceFile = selected;
 
-            // select skill;
+            // select skill
             Overlay.instance.skillSelectPopup.Show(Config.instance.skill);
             while (Overlay.instance.skillSelectPopup.isVisible)
                 yield return null;
+
+            // skill select canceled?
             if (Overlay.instance.skillSelectPopup.canceled)
             {
                 avatar.SwitchImage();
                 startButton.Select();
+                StartCoroutine(SelectingCharacter());
                 yield break;
             }
+
+            // set and save selected skill
             Config.instance.skill = Overlay.instance.skillSelectPopup.selectedSkill;
             Config.instance.SaveOptions();
             Overlay.instance.background.Show(Color.clear);
@@ -159,28 +220,21 @@ namespace Jintori.SelectScreen
         }
 
         // -----------------------------------------------------------------------------------	
-        IEnumerator CheckForExit()
+        IEnumerator ExitConfirm()
         {
-            while (true)
-            {
-                if (Overlay.instance.isVisible || Options.instance.isVisible)
-                    yield return null;
+            state = State.ExitConfirm;
 
-                if (Input.GetButtonDown("Cancel"))
-                    yield return StartCoroutine(OnExit());
-            }
-        }
-
-        // -----------------------------------------------------------------------------------	
-        IEnumerator OnExit()
-        {
             MessagePopup popup = Overlay.instance.messagePopup;
             popup.ShowYesNo("EXIT GAME?");
             while (popup.isVisible)
                 yield return null;
-            yield return null;
             if (popup.isYes)
+            {
                 Application.Quit();
+                Debug.Log("Exiting");
+            }
+            else
+                StartCoroutine(SelectingCharacter());
         }
     }
 }

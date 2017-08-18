@@ -83,7 +83,17 @@ namespace Jintori.SelectScreen
             cancel.onClick.AddListener(Close);
             credits.onClick.AddListener(() => { StartCoroutine(ShowCredits()); });
         }
+
+        // -----------------------------------------------------------------------------------
+        private void Update()
+        {
+            if (Input.GetButtonDown("Cancel") && !creditsScreen.activeInHierarchy)
+                Close();
+        }
+
         // --- Methods ----------------------------------------------------------------------------------
+
+
         // -----------------------------------------------------------------------------------
         void OnAccept()
         {
@@ -120,7 +130,7 @@ namespace Jintori.SelectScreen
             yield return StartCoroutine(Transition.instance.Show(false));
             creditsScreen.SetActive(true);
             yield return StartCoroutine(Transition.instance.Hide());
-            while (!(Input.GetButtonDown("Cut") || Input.GetButtonDown("Skill")))
+            while (!(Input.GetButtonDown("Cut") || Input.GetButtonDown("Cancel")))
                 yield return null;
             yield return StartCoroutine(Transition.instance.Show(false));
             creditsScreen.SetActive(false);
@@ -128,6 +138,10 @@ namespace Jintori.SelectScreen
         }
 
         // -----------------------------------------------------------------------------------
+        /// <summary>
+        /// Just set it to "is visible" false. It does not actually hide it, since
+        /// we need to fade out first
+        /// </summary>
         void Close()
         {
             isVisible = false;

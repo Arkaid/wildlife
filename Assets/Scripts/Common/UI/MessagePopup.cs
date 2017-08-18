@@ -41,7 +41,9 @@ namespace Jintori.Common.UI
         // -----------------------------------------------------------------------------------	
         private void Start()
         {
-            yesButton.onClick.AddListener(() => { isYes = true; });
+            yesButton.onClick.AddListener(() => { isYes = true; Close(); });
+            noButton.onClick.AddListener(() => { isYes = false; Close(); });
+            okButton.onClick.AddListener(Close);
         }
 
         // -----------------------------------------------------------------------------------	
@@ -86,7 +88,7 @@ namespace Jintori.Common.UI
         }
 
         // -----------------------------------------------------------------------------------	
-        public void Close()
+        void Close()
         {
             isVisible = false;
             gameObject.SetActive(false);

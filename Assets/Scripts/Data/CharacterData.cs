@@ -249,6 +249,10 @@ namespace Jintori.CharacterFile
         {
             JSONObject json = new JSONObject(JSONObject.Type.ARRAY);
 
+            // create the directory if it doesn't exist yet
+            if (!Directory.Exists(dataPath))
+                Directory.CreateDirectory(dataPath);
+
             string[] files = Directory.GetFiles(dataPath, "*.chr");
             foreach (string file in files)
             {
@@ -289,10 +293,9 @@ namespace Jintori.CharacterFile
                 // can only add extra rounds in this version
                 // not remove or leave empty gaps. So, only increase count
                 // if a new one is added, otherwise keep previous count
-                if (!string.IsNullOrEmpty(roundFiles[i][0]))
+                if (roundFiles[i] != null)
                     availableRounds++;
             }
-
 
             // ----- Validation check -----
             // the update file is null, so all other png files must exist and be set
