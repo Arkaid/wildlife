@@ -18,6 +18,9 @@ namespace Jintori.Game
         /// <summary> Blobby object we use to copy and spawn new instances </summary>
         Blobby sourceBlobby;
 
+        /// <summary> Used to wait until the spawn of one blobby is finished, before starting the next </summary>
+        bool spawnFinished = true;
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
 
@@ -60,6 +63,9 @@ namespace Jintori.Game
             YieldInstruction wait = new WaitForSeconds(spawnTime);
             while(isAlive)
             {
+                while(!spawnFinished)
+                    yield return null;
+
                 while (minionCount == blobCount)
                     yield return null;
 
@@ -70,7 +76,10 @@ namespace Jintori.Game
                     yield return null;
 
                 if (isAlive)
+                {
+                    spawnFinished = false;
                     animator.SetTrigger("Spawn Blob");
+                }
             }
         }
 
@@ -90,6 +99,8 @@ namespace Jintori.Game
             newBlobby.transform.localScale = Vector3.one;
             newBlobby.SetXYFromLocalPosition();
             newBlobby.Run();
+
+            spawnFinished = true;
         }
 
         // -----------------------------------------------------------------------------------	
