@@ -6,7 +6,7 @@ using UnityEngine.UI;
 namespace Jintori.Common.UI
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    public class SkillSelectButton : Selectable
+    public class SkillSelectButton : Button
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
@@ -14,12 +14,6 @@ namespace Jintori.Common.UI
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
-        [SerializeField]
-        Image hover = null;
-
-        [SerializeField]
-        Image background = null;
-
         [SerializeField]
         Game.Skill.Type _skill;
         public Game.Skill.Type skill { get { return _skill; } }
@@ -29,34 +23,5 @@ namespace Jintori.Common.UI
 
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        public void Initialize()
-        {
-            hoverIn += OnHoverIn;
-            hoverOut += OnHoverOut;
-            select += OnSelect;
-        }
-
-        // -----------------------------------------------------------------------------------	
-        private void OnSelect(Selectable obj)
-        {
-            IllogicGate.SoundManager2D.instance.PlaySFX("ui_accept");
-        }
-
-        // -----------------------------------------------------------------------------------	
-        private void OnHoverOut(Selectable obj)
-        {
-            hover.enabled = false;
-            background.enabled = false;
-        }
-
-        // -----------------------------------------------------------------------------------	
-        private void OnHoverIn(Selectable obj)
-        {
-            IllogicGate.SoundManager2D.instance.PlaySFX("ui_select_notch");
-            hover.enabled = true;
-            background.enabled = true;
-            background.color = hover.color;
-        }
-
     }
 }

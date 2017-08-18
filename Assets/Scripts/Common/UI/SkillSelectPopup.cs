@@ -26,19 +26,23 @@ namespace Jintori.Common.UI
         public Game.Skill.Type selectedSkill { get; private set; }
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
-
         // --- Methods ----------------------------------------------------------------------------------
+        private void Update()
+        {
+            if (Input.GetButtonDown("Cancel"))
+                Close(true);
+        }
+
         // -----------------------------------------------------------------------------------	
-        private void Initialize()
+        void Initialize()
         {
             skillButtons = GetComponentsInChildren<SkillSelectButton>();
             for (int i = 0; i < skillButtons.Length; i++)
             {
-                skillButtons[i].Initialize();
-                skillButtons[i].select += OnSkillSelected;
+                SkillSelectButton btn = skillButtons[i];
+                skillButtons[i].onClick.AddListener(() => { OnSkillSelected(btn); });
             }
         }
-        
         // -----------------------------------------------------------------------------------	
         public void Show(Game.Skill.Type setDefault)
         {
@@ -56,7 +60,7 @@ namespace Jintori.Common.UI
         }
 
         // -----------------------------------------------------------------------------------	
-        private void OnSkillSelected(Selectable sender)
+        private void OnSkillSelected(SkillSelectButton sender)
         {
             SkillSelectButton skillButton = sender as SkillSelectButton;
             selectedSkill = skillButton.skill;
@@ -64,7 +68,7 @@ namespace Jintori.Common.UI
         }
         
         // -----------------------------------------------------------------------------------	
-        public void Close(bool canceled)
+        void Close(bool canceled)
         {
             this.canceled = canceled;
             isVisible = false;

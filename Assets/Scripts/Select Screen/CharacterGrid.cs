@@ -112,8 +112,8 @@ namespace Jintori.SelectScreen
             CharacterIcon newIcon = Instantiate(sampleIcon, pagesRoot, true);
             newIcon.characterFile = file;
             newIcon.gameObject.SetActive(true);
-            newIcon.select += OnCharacterSelected;
-            newIcon.hoverIn += OnCharacterHoveredIn;
+            newIcon.selected += OnCharacterSelected;
+            newIcon.highlighted += OnCharacterHighlighted;
 
             return newIcon;
         }
@@ -126,15 +126,15 @@ namespace Jintori.SelectScreen
         }
 
         // -----------------------------------------------------------------------------------	
-        private void OnCharacterHoveredIn(Selectable sender)
+        private void OnCharacterHighlighted(CharacterIcon sender)
         {
-            lastHover = sender as CharacterIcon;
+            lastHover = sender;
         }
 
         // -----------------------------------------------------------------------------------	
-        private void OnCharacterSelected(Selectable sender)
+        private void OnCharacterSelected(CharacterIcon sender)
         {
-            selected = sender as CharacterIcon;
+            selected = sender;
         }
 
         // -----------------------------------------------------------------------------------	
@@ -382,10 +382,9 @@ namespace Jintori.SelectScreen
         {
             Transform firstPage = pagesRoot.GetChild(0);
             Transform first = firstPage.GetChild(0);
-
-            Selectable selectable = first.GetComponent<Selectable>();
-            selectable.Select();
-            selectable.OnSubmit(null);
+            CharacterIcon icon = first.GetComponent<CharacterIcon>();
+            icon.Select();
+            icon.OnSubmit(null);
         }
     }
 }

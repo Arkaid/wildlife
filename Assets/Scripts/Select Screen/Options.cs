@@ -59,7 +59,7 @@ namespace Jintori.SelectScreen
         GameObject creditsScreen = null;
 
         // --- Properties -------------------------------------------------------------------------------
-        public bool isDone { get; private set; }
+        public bool isVisible { get; private set; }
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
@@ -80,7 +80,7 @@ namespace Jintori.SelectScreen
             });
 
             accept.onClick.AddListener(OnAccept);
-            cancel.onClick.AddListener(OnDone);
+            cancel.onClick.AddListener(Close);
             credits.onClick.AddListener(() => { StartCoroutine(ShowCredits()); });
         }
         // --- Methods ----------------------------------------------------------------------------------
@@ -111,7 +111,7 @@ namespace Jintori.SelectScreen
 
             // save and close
             Config.instance.SaveOptions();
-            OnDone();
+            Close();
         }
 
         // -----------------------------------------------------------------------------------
@@ -128,9 +128,9 @@ namespace Jintori.SelectScreen
         }
 
         // -----------------------------------------------------------------------------------
-        void OnDone()
+        void Close()
         {
-            isDone = true;
+            isVisible = false;
         }
 
         // -----------------------------------------------------------------------------------
@@ -142,7 +142,7 @@ namespace Jintori.SelectScreen
         // -----------------------------------------------------------------------------------
         public void Show()
         {
-            isDone = false;
+            isVisible = true;
             gameObject.SetActive(true);
 
             difficulty.value = (int)Config.instance.difficulty;

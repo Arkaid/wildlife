@@ -7,105 +7,61 @@ using UnityEngine.EventSystems;
 namespace Jintori.SelectScreen
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    public class CharacterIcon : Selectable
+    public class CharacterIcon : Toggle
     {
         // --- Events -----------------------------------------------------------------------------------
+        public event System.Action<CharacterIcon> selected;
+        public event System.Action<CharacterIcon> highlighted;
+
         // --- Constants --------------------------------------------------------------------------------
         // --- Static Properties ------------------------------------------------------------------------
-        /// <summary> Keep track of the last icon we selected </summary>
-        static CharacterIcon lastSelected = null;
-
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
-        [SerializeField]
-        Image icon = null;
-
-        [SerializeField]
-        Image background = null;
-
-        [SerializeField]
-        Image hover = null;
-
-        [SerializeField]
-        Image selected = null;
 
         // --- Properties -------------------------------------------------------------------------------
-        bool isSelected = false;
+        /// <summary> Background image (used for highlighting toggled status) </summary>
+        Image background = null;
 
         public CharacterFile.File characterFile { get { return _characterFile; } set { SetCharacterFile(value); } }
         CharacterFile.File _characterFile;
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        protected override void Start()
+        protected override void Awake()
         {
-            base.Start();
+            base.Awake();
 
-            hoverIn += OnHoverIn;
-            hoverOut += OnHoverOut;
-            select += OnSelect;
+            background = GetComponent<Image>();
+            onValueChanged.AddListener(OnValueChanged);
         }
 
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
+        void OnValueChanged(bool value)
+        {
+            // don't change the background for the random character icon
+            if (characterFile != null)
+                background.enabled = value;
+
+            if (value && selected != null)
+                selected(this);
+        }
+
+        // -----------------------------------------------------------------------------------	
+        public override void OnSelect(BaseEventData eventData)
+        {
+            base.OnSelect(eventData);
+            if (highlighted != null)
+                highlighted(this);
+        }
+
+        // -----------------------------------------------------------------------------------	
         void SetCharacterFile(CharacterFile.File file)
         {
             _characterFile = file;
+            Image icon = transform.Find("Icon").GetComponent<Image>();
             icon.sprite = file.baseSheet.icon;
-        }
-
-        // -----------------------------------------------------------------------------------	
-        void Deselect()
-        {
-            isSelected = false;
-            selected.enabled = false;
-
-            if (background != null)
-                background.enabled = false;
-        }
-        // -----------------------------------------------------------------------------------	
-        private void OnSelect(Selectable obj)
-        {
-            // can only select one icon at the time
-            if (lastSelected != null)
-                lastSelected.Deselect();
-
-            lastSelected = this;
-
-            // change selected icon
-            hover.enabled = false;
-            isSelected = true;
-            selected.enabled = true;
-
-            if (background != null)
-            {
-                background.enabled = true;
-                background.color = selected.color;
-            }
-
-            IllogicGate.SoundManager2D.instance.PlaySFX("ui_accept");
-        }
-
-        // -----------------------------------------------------------------------------------	
-        private void OnHoverOut(Selectable obj)
-        {
-            hover.enabled = false;
-            if (background != null)
-                background.enabled = isSelected;
-        }
-
-        // -----------------------------------------------------------------------------------	
-        private void OnHoverIn(Selectable obj)
-        {
-            hover.enabled = true;
-            if (background != null)
-            {
-                background.enabled = true;
-                background.color = hover.color;
-            }
-
-            IllogicGate.SoundManager2D.instance.PlaySFX("ui_select_notch");
         }
     }
 }
