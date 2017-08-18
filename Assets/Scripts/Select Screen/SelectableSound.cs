@@ -1,11 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
+using System;
 
 namespace Jintori.SelectScreen
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    public class ButtonSound : MonoBehaviour
+    [RequireComponent(typeof(Selectable))]
+    public class SelectableSound : MonoBehaviour, IPointerEnterHandler, ISelectHandler
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
@@ -18,5 +22,15 @@ namespace Jintori.SelectScreen
         // -----------------------------------------------------------------------------------	
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            GetComponent<Selectable>().Select();
+        }
+
+        // -----------------------------------------------------------------------------------	
+        public void OnSelect(BaseEventData eventData)
+        {
+            IllogicGate.SoundManager2D.instance.PlaySFX("ui_select_notch");
+        }
     }
 }

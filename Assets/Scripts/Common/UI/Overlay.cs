@@ -35,6 +35,18 @@ namespace Jintori.Common.UI
         public RoundImageViewer roundImageViewer { get { return _roundImageViewer; } }
 
         // --- Properties -------------------------------------------------------------------------------
+        public bool isVisible
+        {
+            get
+            {
+                return
+                    background.isActiveAndEnabled ||
+                    messagePopup.isVisible ||
+                    skillSelectPopup.isVisible ||
+                    roundImageViewer.isActiveAndEnabled;
+            }
+        }
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         // --- Methods ----------------------------------------------------------------------------------

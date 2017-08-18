@@ -32,13 +32,17 @@ namespace Jintori.SelectScreen
         // -----------------------------------------------------------------------------------	
         private void Start()
         {
-            foreach(RoundIcon icon in icons)
-                icon.select += OnRoundSelected;
+            for (int i = 0; i < icons.Length; i++)
+            {
+                RoundIcon icon = icons[i];
+                int round = i;
+                icon.onClick.AddListener(() => { OnRoundSelected(round); });
+            }
         }
 
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        private void OnRoundSelected(Selectable sender)
+        private void OnRoundSelected(int round)
         {
             if (characterFile == null)
             {
@@ -48,23 +52,22 @@ namespace Jintori.SelectScreen
                 return;
             }
 
-            int idx = System.Array.IndexOf(icons, sender);
-            if (stats.rounds[idx].cleared)
+            if (stats.rounds[round].cleared)
             {
                 IllogicGate.SoundManager2D.instance.PlaySFX("ui_accept");
-                Overlay.instance.roundImageViewer.Show(characterFile, idx);
+                Overlay.instance.roundImageViewer.Show(characterFile, round);
             }
-            else if (idx < characterFile.availableRounds)
+            else if (round < characterFile.availableRounds)
             {
                 IllogicGate.SoundManager2D.instance.PlaySFX("ui_cancel");
-                string diff = idx == 3 ? "hard" : "normal";
-                string msg = string.Format("Clear round {0} in {1} difficulty to unlock this image", idx + 1, diff);
+                string diff = round == Config.Rounds - 1 ? "hard" : "normal";
+                string msg = string.Format("Clear round {0} in {1} difficulty to unlock this image", round + 1, diff);
                 Overlay.instance.messagePopup.Show(msg.ToUpper(), "IMAGE LOCKED");
             }
             else
             {
                 IllogicGate.SoundManager2D.instance.PlaySFX("ui_cancel");
-                string msg = string.Format("Character does not have round {0}", idx + 1);
+                string msg = string.Format("Character does not have round {0}", round + 1);
                 Overlay.instance.messagePopup.Show(msg.ToUpper(), "UNAVAILABLE");
             }
         }

@@ -17,6 +17,7 @@ namespace Jintori.SelectScreen
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
+
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
@@ -52,12 +53,13 @@ namespace Jintori.SelectScreen
             // handle buttons
             startButton.onClick.AddListener(OnStart);
             optionsButton.onClick.AddListener(OnOptions);
-            randomButton.select += OnRandomCharacterSelected;
+            randomButton.selected += OnRandomCharacterSelected;
 
             Transition.instance.maskValue = 1;
 
             yield return StartCoroutine(LoadCharacterSheets());
             yield return StartCoroutine(Transition.instance.Hide());
+            StartCoroutine(CheckForExit());
         }
 
         // --- Methods ----------------------------------------------------------------------------------
@@ -72,7 +74,7 @@ namespace Jintori.SelectScreen
                 Debug.Log("Loading: " + file);
                 CharacterFile.File charFile = new CharacterFile.File(file);
                 CharacterIcon icon = characterGrid.AddCharacter(charFile);
-                icon.select += OnCharacterSelected;
+                icon.selected += OnCharacterSelected;
                 yield return null;
             }
             characterGrid.Paginate();
@@ -80,16 +82,15 @@ namespace Jintori.SelectScreen
         }
 
         // -----------------------------------------------------------------------------------
-        private void OnCharacterSelected(Selectable sender)
+        private void OnCharacterSelected(CharacterIcon icon)
         {
-            CharacterIcon icon = sender as CharacterIcon;
             selected = icon.characterFile;
             avatar.SetCharacter(selected);
             roundImages.SetCharacter(selected);
         }
 
         // -----------------------------------------------------------------------------------	
-        private void OnRandomCharacterSelected(Selectable obj)
+        private void OnRandomCharacterSelected(CharacterIcon sender)
         {
             selected = null;
             avatar.SetCharacter(null);
@@ -109,7 +110,7 @@ namespace Jintori.SelectScreen
 
             Options.instance.Show();
             yield return StartCoroutine(Transition.instance.Hide());
-            while (!Options.instance.isDone)
+            while (!Options.instance.isVisible)
                 yield return null;
             yield return StartCoroutine(Transition.instance.Show(false));
             Options.instance.Hide();
@@ -155,6 +156,31 @@ namespace Jintori.SelectScreen
             // start game
             yield return StartCoroutine(Transition.instance.Show());
             SceneManager.LoadScene("Game");
+        }
+
+        // -----------------------------------------------------------------------------------	
+        IEnumerator CheckForExit()
+        {
+            while (true)
+            {
+                if (Overlay.instance.isVisible || Options.instance.isVisible)
+                    yield return null;
+
+                if (Input.GetButtonDown("Cancel"))
+                    yield return StartCoroutine(OnExit());
+            }
+        }
+
+        // -----------------------------------------------------------------------------------	
+        IEnumerator OnExit()
+        {
+            MessagePopup popup = Overlay.instance.messagePopup;
+            popup.ShowYesNo("EXIT GAME?");
+            while (popup.isVisible)
+                yield return null;
+            yield return null;
+            if (popup.isYes)
+                Application.Quit();
         }
     }
 }
