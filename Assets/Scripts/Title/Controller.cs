@@ -105,7 +105,6 @@ namespace Jintori.Title
             progress.Show();
             while (checker.state == UpdateChecker.State.DownloadingCharacters)
             {
-                print(checker.progress);
                 progress.value = checker.progress;
                 yield return null;
             }

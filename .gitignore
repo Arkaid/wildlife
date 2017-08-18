@@ -12,6 +12,7 @@
 # Do not save wildlife downloaded characters
 # =====================================
 [Cc]haracters/
+[Cc]haracters.meta
 
 # =====================================
 # Visual Studio / MonoDevelop generated
