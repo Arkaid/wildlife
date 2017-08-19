@@ -20,11 +20,22 @@ namespace Jintori.Game
             int imageWidth;
             int imageHeight;
 
+            // if set to true, this[,] will return "Cleared" when asking for out of bounds areas
+            bool outOfBoundsAsCleared = false;
+
             // --- Properties -------------------------------------------------------------------------------
             /// <summary> Shorthand to access mask data </summary>
             public byte this[int x, int y]
             {
-                get { return data[y * imageWidth + x]; }
+                get
+                {
+                    if (outOfBoundsAsCleared)
+                    {
+                        if (x < 0 || x >= imageWidth || y < 0 || y >= imageHeight)
+                            return Cleared;
+                    }
+                    return data[y * imageWidth + x];
+                }
                 set { data[y * imageWidth + x] = value; }
             }
 
@@ -88,7 +99,7 @@ namespace Jintori.Game
             public void Clear(int bossX, int bossY)
             {
                 // first pass:
-                // copy old path, leaving everything else cleared
+                // cleare everything, but leave the path as shadow
                 for (int i = 0; i < imageWidth * imageHeight; i++)
                     data[i] = (data[i] == Safe || data[i] == Cut) ? Safe : Cleared;
 
@@ -97,74 +108,35 @@ namespace Jintori.Game
                 Fill(bossX, bossY, Shadowed);
 
                 // third pass:
-                // find invalid paths and erase them
+                // find the edges between shadow and clear,
+                // turn them into safe paths
+                outOfBoundsAsCleared = true;
                 clearedShadowArea = 0;
-                for (int i = 1; i < imageWidth - 1; i++)
+                for (int i = 0; i < imageWidth; i++)
                 {
-                    for (int j = 1; j < imageHeight - 1; j++)
+                    for (int j = 0; j < imageHeight; j++)
                     {
                         int idx = j * imageWidth + i;
 
-                        if (data[idx] == Safe)
+                        // can only turn shadow into path
+                        if (data[idx] != Safe)
                         {
-                            // a safe path is invalid if it's
-                            // between two clear pixels
-                            bool invalid = false;
-                            invalid = invalid || this[i + 1, j] + this[i - 1, j] == Cleared;
-                            invalid = invalid || this[i, j + 1] + this[i, j - 1] == Cleared;
-                            invalid = invalid || this[i + 1, j + 1] + this[i - 1, j - 1] +
-                                                 this[i + 1, j - 1] + this[i - 1, j + 1] == Cleared;
-
-                            if (invalid)
-                                data[idx] = Cleared;
+                            // count pixels in the shadow that have been cleared
+                            if (data[idx] == Cleared)
+                                clearedShadowArea += shadowImage[idx] * data[idx];
+                            continue;
                         }
 
-                        // only count pixels in the
-                        // shadow image that have been cleared
-                        if (data[idx] == Cleared)
-                            clearedShadowArea += shadowImage[idx];
+                        // If any combination of opposite sides is cleared, so is the center
+                        bool isCleared = this[i - 1, j - 1] + this[i + 1, j + 1] == Cleared;
+                        isCleared = isCleared || this[i + 1, j - 1] + this[i - 1, j + 1] == Cleared;
+                        isCleared = isCleared || this[i - 1, j] + this[i + 1, j] == Cleared;
+                        isCleared = isCleared || this[i, j - 1] + this[i, j + 1] == Cleared;
+                        this[i, j] = isCleared ? Cleared : Safe;
                     }
+
                 }
-                clearedShadowArea /= 255;
-
-                // fourth pass:
-                // do the borders. We assume that the area
-                // ouside the border is cleared. So we apply
-                // the same logic. No path between cleared pixels
-                // but path between shadow and cleared
-                for (int i = 1; i < imageWidth - 1; i++)
-                {
-                    bool isSafe = false;
-                    isSafe = this[i - 1, 1] == Shadowed;
-                    isSafe = isSafe || this[i, 1] == Shadowed;
-                    isSafe = isSafe || this[i + 1, 1] == Shadowed;
-                    this[i, 0] = isSafe ? Safe : Cleared;
-
-                    isSafe = this[i - 1, imageHeight - 2] == Shadowed;
-                    isSafe = isSafe || this[i, imageHeight - 2] == Shadowed;
-                    isSafe = isSafe || this[i + 1, imageHeight - 2] == Shadowed;
-                    this[i, imageHeight - 1] = isSafe ? Safe : Cleared;
-                }
-                for (int i = 1; i < imageHeight - 1; i++)
-                {
-                    bool isSafe = false;
-                    isSafe = this[1, i - 1] == Shadowed;
-                    isSafe = isSafe || this[1, i] == Shadowed;
-                    isSafe = isSafe || this[1, i + 1] == Shadowed;
-                    this[0, i] = isSafe ? Safe : Cleared;
-
-                    isSafe = this[imageWidth - 2, i - 1] == Shadowed;
-                    isSafe = isSafe || this[imageWidth - 2, i] == Shadowed;
-                    isSafe = isSafe || this[imageWidth - 2, i + 1] == Shadowed;
-                    this[imageWidth - 1, i] = isSafe ? Safe : Cleared;
-                }
-
-                // pass 5: pass 4 doesn't take in the corners.
-                // so we do them here
-                this[0, 0] = this[1, 1] == Shadowed ? Safe : Cleared;
-                this[imageWidth - 1, 0] = this[imageWidth - 2, 1] == Shadowed ? Safe : Cleared;
-                this[0, imageHeight - 1] = this[1, imageHeight - 2] == Shadowed ? Safe : Cleared;
-                this[imageWidth - 1, imageHeight - 1] = this[imageWidth - 2, imageHeight - 2] == Shadowed ? Safe : Cleared;
+                outOfBoundsAsCleared = false;
 
                 if (maskCleared != null)
                     maskCleared();
