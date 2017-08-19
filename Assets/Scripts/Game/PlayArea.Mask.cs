@@ -128,22 +128,43 @@ namespace Jintori.Game
                 clearedShadowArea /= 255;
 
                 // fourth pass:
-                // do the borders. If they're cleared, you
-                // can use them as safe paths
-                for (int i = 0; i < imageWidth; i++)
+                // do the borders. We assume that the area
+                // ouside the border is cleared. So we apply
+                // the same logic. No path between cleared pixels
+                // but path between shadow and cleared
+                for (int i = 1; i < imageWidth - 1; i++)
                 {
-                    if (this[i, 0] == Cleared)
-                        this[i, 0] = Safe;
-                    if (this[i, imageHeight - 1] == Cleared)
-                        this[i, imageHeight - 1] = Safe;
+                    bool isSafe = false;
+                    isSafe = this[i - 1, 1] == Shadowed;
+                    isSafe = isSafe || this[i, 1] == Shadowed;
+                    isSafe = isSafe || this[i + 1, 1] == Shadowed;
+                    this[i, 0] = isSafe ? Safe : Cleared;
+
+                    isSafe = this[i - 1, imageHeight - 2] == Shadowed;
+                    isSafe = isSafe || this[i, imageHeight - 2] == Shadowed;
+                    isSafe = isSafe || this[i + 1, imageHeight - 2] == Shadowed;
+                    this[i, imageHeight - 1] = isSafe ? Safe : Cleared;
                 }
-                for (int i = 0; i < imageHeight; i++)
+                for (int i = 1; i < imageHeight - 1; i++)
                 {
-                    if (this[0, i] == Cleared)
-                        this[0, i] = Safe;
-                    if (this[imageWidth - 1, i] == Cleared)
-                        this[imageWidth - 1, i] = Safe;
+                    bool isSafe = false;
+                    isSafe = this[1, i - 1] == Shadowed;
+                    isSafe = isSafe || this[1, i] == Shadowed;
+                    isSafe = isSafe || this[1, i + 1] == Shadowed;
+                    this[0, i] = isSafe ? Safe : Cleared;
+
+                    isSafe = this[imageWidth - 2, i - 1] == Shadowed;
+                    isSafe = isSafe || this[imageWidth - 2, i] == Shadowed;
+                    isSafe = isSafe || this[imageWidth - 2, i + 1] == Shadowed;
+                    this[imageWidth - 1, i] = isSafe ? Safe : Cleared;
                 }
+
+                // pass 5: pass 4 doesn't take in the corners.
+                // so we do them here
+                this[0, 0] = this[1, 1] == Shadowed ? Safe : Cleared;
+                this[imageWidth - 1, 0] = this[imageWidth - 2, 1] == Shadowed ? Safe : Cleared;
+                this[0, imageHeight - 1] = this[1, imageHeight - 2] == Shadowed ? Safe : Cleared;
+                this[imageWidth - 1, imageHeight - 1] = this[imageWidth - 2, imageHeight - 2] == Shadowed ? Safe : Cleared;
 
                 if (maskCleared != null)
                     maskCleared();
