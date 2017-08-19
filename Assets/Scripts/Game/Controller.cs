@@ -123,7 +123,7 @@ namespace Jintori.Game
 
             // create a fresh play area
             System.Type bossType = roundBoss[round].GetType();
-            bossType = typeof(Slimy);
+            //bossType = typeof(Wormy);
             playArea = Instantiate(sourcePlayArea, sourcePlayArea.transform.parent, true);
             playArea.gameObject.SetActive(true);
             playArea.Setup(roundData.baseImage, roundData.shadowImage, bossType);
