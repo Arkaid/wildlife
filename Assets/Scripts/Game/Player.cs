@@ -110,6 +110,14 @@ namespace Jintori.Game
                     // check if we can move into the shadowed area
                     int dx = Mathf.RoundToInt(Input.GetAxisRaw("Horizontal"));
                     int dy = Mathf.RoundToInt(Input.GetAxisRaw("Vertical"));
+                    
+                    // out of bounds
+                    if (x + dx >= PlayArea.imageWidth || x + dx < 0)
+                        break;
+                    if (y + dy >= PlayArea.imageHeight|| y + dy < 0)
+                        break;
+
+                    // can only cut into the shadow
                     if (playArea.mask[x + dx, y + dy] == PlayArea.Shadowed)
                     {
                         cutPathStart = new Point(x + dx, y + dy);
