@@ -99,7 +99,7 @@ namespace Jintori.Game
             public void Clear(int bossX, int bossY)
             {
                 // first pass:
-                // cleare everything, but leave the path as shadow
+                // clear everything, but leave the path
                 for (int i = 0; i < imageWidth * imageHeight; i++)
                     data[i] = (data[i] == Safe || data[i] == Cut) ? Safe : Cleared;
 
@@ -118,6 +118,10 @@ namespace Jintori.Game
                     {
                         int idx = j * imageWidth + i;
 
+                        // NOTE: we consider the outer edges as "Safe"
+                        if (i == 0 || i == imageWidth - 1 || j == 0 || j == imageHeight - 1)
+                            data[idx] = Safe;
+
                         // can only turn shadow into path
                         if (data[idx] != Safe)
                         {
@@ -128,8 +132,8 @@ namespace Jintori.Game
                         }
 
                         // If any combination of opposite sides is cleared, so is the center
-                        bool isCleared = this[i - 1, j - 1] + this[i + 1, j + 1] == Cleared;
-                        isCleared = isCleared || this[i + 1, j - 1] + this[i - 1, j + 1] == Cleared;
+                        bool isCleared = this[i - 1, j - 1] + this[i + 1, j + 1] 
+                                       + this[i + 1, j - 1] + this[i - 1, j + 1] == Cleared;
                         isCleared = isCleared || this[i - 1, j] + this[i + 1, j] == Cleared;
                         isCleared = isCleared || this[i, j - 1] + this[i, j + 1] == Cleared;
                         this[i, j] = isCleared ? Cleared : Safe;
