@@ -11,8 +11,8 @@ namespace Jintori.Game
         // --- Constants --------------------------------------------------------------------------------
         public const byte Shadowed = 255;
         public const byte Cleared = 0;
-        public const byte Safe = 254;
-        public const byte Cut = 253;
+        public const byte Safe = 128;
+        public const byte Cut = 2;
 
         static readonly Color CycleColor1 = new Color(0.2f, 0.2f, 0.4f, 1);
         static readonly Color CycleColor2 = new Color(0.4f, 0.4f, 0.7f, 1);

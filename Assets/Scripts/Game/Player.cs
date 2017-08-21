@@ -350,6 +350,23 @@ namespace Jintori.Game
                 nx += dx;
                 ny += dy;
 
+                // precheck
+                closed = playArea.mask[nx, ny] == PlayArea.Safe;
+
+                // center pixel is not in the safe path. 
+                if (!closed)
+                {
+                    // are we coming into the safe path on a corner?
+                    // force closing (avoid 0px spaces)
+                    bool forceClose = false;
+                    forceClose = forceClose || dx != 0 && ny + 1 < PlayArea.imageHeight && playArea.mask[nx, ny + 1] == PlayArea.Safe;
+                    forceClose = forceClose || dx != 0 && ny - 1 >= 0 && playArea.mask[nx, ny - 1] == PlayArea.Safe;
+                    forceClose = forceClose || dy != 0 && nx + 1 < PlayArea.imageWidth && playArea.mask[nx + 1, ny] == PlayArea.Safe;
+                    forceClose = forceClose || dy != 0 && nx - 1 >= 0 && playArea.mask[nx - 1, ny] == PlayArea.Safe;
+                    if (forceClose)
+                        playArea.mask[nx, ny] = PlayArea.Safe;
+                }
+
                 // went back to safe path? -> close
                 closed = playArea.mask[nx, ny] == PlayArea.Safe;
                 if (closed)
@@ -396,7 +413,7 @@ namespace Jintori.Game
             else
                 playArea.cutPath.RedrawPath(cutPathStart.x, cutPathStart.y);
         }
-
+        
         // -----------------------------------------------------------------------------------	
         Collider2D[] overlaps = new Collider2D[16];
         // -----------------------------------------------------------------------------------	

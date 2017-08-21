@@ -99,16 +99,23 @@ namespace Jintori.Game
             StartCoroutine(InitializeRound());
         }
 
-#if UNITY_EDITOR
+        // -----------------------------------------------------------------------------------	
         private void Update()
         {
+
+            if (Input.GetButtonDown("Pause"))
+            {
+                print("pause");
+            }
+
+#if UNITY_EDITOR
             if (Input.GetKeyDown(KeyCode.F9))
             {
                 playArea.mask.maskCleared -= OnMaskCleared;
                 StartCoroutine(WinRound());
             }
-        }
 #endif
+        }
 
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
