@@ -40,7 +40,10 @@ namespace Jintori.Game
 
         // --- Properties -------------------------------------------------------------------------------
         /// <summary> Player speed </summary>
-        int speed = 120;
+        int safeSpeed = 150;
+
+        /// <summary> Player speed </summary>
+        int cutSpeed = 80;
 
         /// <summary> Rewind history </summary>
         Stack<Point> rewindHistory = new Stack<Point>();
@@ -65,6 +68,12 @@ namespace Jintori.Game
         void Update()
         {
             // number of moves left
+            float speed = 0;
+            if (state == State.Cutting || state == State.Rewinding)
+                speed = cutSpeed;
+            else if (state == State.SafePath)
+                speed = safeSpeed;
+
             int left = Mathf.RoundToInt(speed * Skill.instance.speedMultiplier * Time.deltaTime);
 
             // See if we need to change state first
@@ -446,6 +455,8 @@ namespace Jintori.Game
         }
 
         // -----------------------------------------------------------------------------------	
+        bool preferY = false;
+        // -----------------------------------------------------------------------------------	
         /// <summary>
         /// Moves the player on the safe path
         /// Basically, it checks on each direction of movement
@@ -460,41 +471,68 @@ namespace Jintori.Game
             int nx = x;
             int ny = y;
 
-            // +x
-            while (left > 0 && dx > 0 && nx < PlayArea.imageWidth - 1 && 
-                playArea.mask[nx + 1, ny] == PlayArea.Safe)
+            while (left > 0)
             {
-                left--;
-                nx++;
-            }
+                bool moved = false;
 
-            // -x
-            while (left > 0 && dx < 0 && nx > 0 &&
-                playArea.mask[nx - 1, ny] == PlayArea.Safe)
-            {
-                left--;
-                nx--;
-            }
+                // prefer checking y movement first
+                if (preferY)
+                {
+                    moved = moved || MoveOnSafePathY(dy, nx, ref ny);
+                    preferY = !moved; //it didn't move on y, so check first next time around
+                }
 
-            // +y 
-            while (left > 0 && dy > 0 && ny < PlayArea.imageHeight - 1 &&
-                playArea.mask[nx, ny + 1] == PlayArea.Safe)
-            {
-                left--;
-                ny++;
-            }
+                // hasn't moved yet?
+                if (!moved)
+                {
+                    // it moved on x, so next time, check y first
+                    moved = MoveOnSafePathX(dx, ref nx, ny);
+                    preferY = moved;
+                }
 
-            // -y
-            while (left > 0 && dy < 0 && ny > 0 &&
-                playArea.mask[nx, ny - 1] == PlayArea.Safe)
-            {
-                left--;
-                ny--;
-            }
+                // if it hasn't moved so far, try Y
+                moved = moved || MoveOnSafePathY(dy, nx, ref ny);
 
+                if (moved)
+                    left--;
+                else
+                    left = 0;
+            }
+           
             x = nx;
             y = ny;
         }
 
+        // -----------------------------------------------------------------------------------	
+        bool MoveOnSafePathY(int dy, int nx, ref int ny)
+        {
+            int before = ny;
+
+            // +y
+            if (dy > 0 && ny < PlayArea.imageHeight - 1 && playArea.mask[nx, ny + 1] == PlayArea.Safe)
+                ny++;
+
+            // -y
+            if (dy < 0 && ny > 0 && playArea.mask[nx, ny - 1] == PlayArea.Safe)
+                ny--;
+
+            return ny != before;
+        }
+
+        // -----------------------------------------------------------------------------------	
+        bool MoveOnSafePathX(int dx, ref int nx, int ny)
+        {
+            int before = nx;
+
+            // +x
+            if (dx > 0 && nx < PlayArea.imageWidth - 1 && playArea.mask[nx + 1, ny] == PlayArea.Safe)
+                nx++;
+
+            // -x
+            if (dx < 0 && nx > 0 && playArea.mask[nx - 1, ny] == PlayArea.Safe)
+                nx--;
+
+            return nx != before;
+        }
     }
 }
