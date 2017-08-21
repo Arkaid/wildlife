@@ -114,11 +114,11 @@ namespace Jintori.CharacterFile
             baseImage.Apply();
 
             shadowImage = new Texture2D(img_w, img_h, TextureFormat.Alpha8, false);
-            baseImage.filterMode = FilterMode.Point;
+            shadowImage.filterMode = FilterMode.Point;
 #if UNITY_EDITOR
-            baseImage.alphaIsTransparency = true;
+            shadowImage.alphaIsTransparency = true;
 #endif
-            baseImage.wrapMode = TextureWrapMode.Clamp;
+            shadowImage.wrapMode = TextureWrapMode.Clamp;
             shadowImage.LoadRawTextureData(rawShadow);
             shadowImage.Apply();
         }
