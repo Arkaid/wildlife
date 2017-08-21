@@ -63,6 +63,9 @@ namespace Jintori.Game
         // -----------------------------------------------------------------------------------	
         void Update()
         {
+            if (Controller.instance.isPaused)
+                return;
+
             speedMultiplier = type == Type.Speed && isActive ?
                 Config.instance.speedSkillMultiplier : 1;
 
