@@ -136,7 +136,11 @@ namespace Jintori.Game
         {
             YieldInstruction wffu = new WaitForFixedUpdate();
             isAlive = true;
+
+            // to resize the enemy upon clearing the image
+            playArea.mask.maskCleared += OnMaskCleared;
             playArea.mask.maskCleared += KillIfOutsideShadow;
+
             Setup();
             while (isAlive)
             {
@@ -167,7 +171,16 @@ namespace Jintori.Game
                 yield return wffu;
             }
             Finish();
+
+            // Remove listeners
             playArea.mask.maskCleared -= KillIfOutsideShadow;
+            playArea.mask.maskCleared -= OnMaskCleared;
+        }
+
+        // -----------------------------------------------------------------------------------	
+        private void OnMaskCleared(Point center)
+        {
+            transform.localScale = Vector3.one * ScaleBasedOnMaskSize();
         }
 
         // -----------------------------------------------------------------------------------	

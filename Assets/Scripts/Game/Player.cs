@@ -85,7 +85,7 @@ namespace Jintori.Game
             switch (state)
             {
                 case State.SafePath:
-                    if (Input.GetButton("Cut"))
+                    if (Input.GetButtonDown("Cut"))
                     {
                         animator.SetBool("Cut", true);
                         state = State.StartCut;
@@ -93,7 +93,7 @@ namespace Jintori.Game
                     break;
 
                 case State.StartCut:
-                    if (!Input.GetButton("Cut"))
+                    if (Input.GetButtonUp("Cut"))
                     {
                         animator.SetBool("Cut", false);
                         state = State.SafePath;
