@@ -38,6 +38,8 @@ namespace Jintori.Game
         /// </summary>
         public void Setup()
         {
+            return;
+
             playArea = GetComponentInParent<PlayArea>();
 
             // assert that the safe path has been initialzied

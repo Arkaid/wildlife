@@ -22,6 +22,9 @@ namespace Jintori.Game
         [SerializeField, Tooltip("Byte value to search in mask for the path (Cut:64, Safe:128)")]
         byte pathType = 128;
 
+        [SerializeField]
+        Material material;
+
         // --- Properties -------------------------------------------------------------------------------
         /// <summary> Current play area </summary>
         PlayArea playArea
@@ -35,136 +38,95 @@ namespace Jintori.Game
         }
         PlayArea _playArea;
 
-        /// <summary> Line renderer </summary>
-        LineRenderer lineRenderer
-        {
-            get
-            {
-                if (_lineRenderer == null)
-                    _lineRenderer = GetComponentInParent<LineRenderer>();
-                return _lineRenderer;
-            }
-        }
-        LineRenderer _lineRenderer;
-
         /// <summary> List of 3D points used by the line renderer (local coordinates) </summary>
         public Vector3 [] points { get; private set; }
 
         /// <summary> Edge collider </summary>
-        public new EdgeCollider2D collider { get; private set; }
+        public List<EdgeCollider2D> colliders { get; private set; }
 
         /// <summary> Color of the line renderer </summary>
         public Color color
         {
-            get { return lineRenderer.material.color; }
-            set { lineRenderer.material.color = value; }
+            get { return material.color; }
+            set { material.color = value; }
         }
-        
+
+        // active line renderers
+        List<LineRenderer> lineRenderers = new List<LineRenderer>();
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         void Awake()
         {
-            collider = gameObject.AddComponent<EdgeCollider2D>();
-            collider.edgeRadius = 1;
+            colliders = new List<EdgeCollider2D>();
         }
 
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         public void Clear()
         {
-            lineRenderer.positionCount = 0;
-            lineRenderer.SetPositions(new Vector3[]{});
-            collider.points = new Vector2[] { Vector2.zero, Vector2.zero };
-        }
+            foreach (LineRenderer seg in lineRenderers)
+                Destroy(seg.gameObject);
+            lineRenderers = new List<LineRenderer>();
 
-        // -----------------------------------------------------------------------------------	
-        /*
-        public void RedrawPath()
-        {
-            // find at least one point in the path
-            int x = 0;
-            int y = 0;
-            bool found = false;
-            for (; x < PlayArea.imageWidth && !found; x++)
-            {
-                for (; y < PlayArea.imageHeight && !found; y++)
-                    found = playArea.mask[x, y] == pathType;
-            }
-
-            if (found)
-                RedrawPath(x, y);
-        }
-        */
-        // -----------------------------------------------------------------------------------	
-        public void RedrawPath(int x, int y)
-        {
-            // go around the path, trying to find where it changes direction
-            List<Vector3> points = new List<Vector3>();
-            points.Add(new Vector2(x, y));
-
-            int sx = x; int sy = y;
-            Direction dir = GetNextPointDirection(Direction.End, sx, sy, out x, out y);
-            while (!(sx == x && sy == y) && dir != Direction.End)
-            {
-                int tx = x;
-                int ty = y;
-                Direction next = GetNextPointDirection(dir, tx, ty, out x, out y);
-                if (next != dir)
-                {
-                    dir = next;
-                    points.Add(new Vector2(tx, ty));
-                }
-            };
-            this.points = points.ToArray();
-
-            lineRenderer.positionCount = points.Count;
-            lineRenderer.SetPositions(this.points);
-
-            // update line renderer
-            System.Converter<Vector3, Vector2> Vec3ToVec2 = (Vector3 v3) => { return v3; };
-            List<Vector2> points2 = points.ConvertAll(Vec3ToVec2);
-            if (lineRenderer.loop)
-                points2.Add(points2[0]);
-
-            // update collider
-            if (points.Count > 1)
-                collider.points = points2.ToArray();
-
-            // raise event
-            if (pathRedrawn != null)
-                pathRedrawn(this.points);
+            foreach (EdgeCollider2D col in colliders)
+                Destroy(col);
+            colliders = new List<EdgeCollider2D>();
         }
         
         // -----------------------------------------------------------------------------------	
-        Direction GetNextPointDirection(Direction dir, int x, int y, out int ox, out int oy)
+        LineRenderer CreateLineRenderer()
         {
-            ox = x;
-            oy = y;
 
-            PlayArea.Mask mask = playArea.mask;
-            if (dir != Direction.Lt && x + 1 < PlayArea.imageWidth && mask[x + 1, y] == pathType)
-            {
-                ox = x + 1;
-                return Direction.Rt;
-            }
-            if (dir != Direction.Rt && x - 1 >= 0 && mask[x - 1, y] == pathType)
-            {
-                ox = x - 1;
-                return Direction.Lt;
-            }
-            if (dir != Direction.Dw && y + 1 < PlayArea.imageHeight && mask[x, y + 1] == pathType)
-            {
-                oy = y + 1;
-                return Direction.Up;
-            }
-            if (dir != Direction.Up && y - 1 >= 0 && mask[x, y - 1] == pathType)
-            {
-                oy = y - 1;
-                return Direction.Dw;
-            }
+            LineRenderer lineRend = new GameObject("Line Segment").AddComponent<LineRenderer>();
+            lineRend.material = material;
+            lineRend.startWidth = 2;
+            lineRend.endWidth = 2;
+            lineRend.receiveShadows = false;
+            lineRend.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            lineRend.useWorldSpace = false;
 
-            return Direction.End; // path ended!
+            lineRend.transform.SetParent(transform);
+            lineRend.transform.localScale = Vector3.one;
+            lineRend.transform.localPosition = Vector3.zero;
+
+            return lineRend;
         }
+
+        // -----------------------------------------------------------------------------------	
+        public void RedrawPath(int x, int y)
+        {
+            Clear();
+
+            PathBuilder pb = new PathBuilder();
+            List<List<Point>> segments = pb.GetSegments(playArea.mask, x, y, pathType);
+
+            System.Converter<Point, Vector3> Point2Vec3 = (Point pt) => { return (Vector2)pt; };
+            System.Converter<Point, Vector2> Point2Vec2 = (Point pt) => { return pt; };
+
+            foreach (List<Point> segment in segments)
+            {
+                // create a new line renderer for the segment
+                LineRenderer newLine = CreateLineRenderer();
+                lineRenderers.Add(newLine);
+
+                newLine.positionCount = segment.Count;
+                newLine.SetPositions(segment.ConvertAll(Point2Vec3).ToArray());
+
+                // check if the segment is looping (first and last position are 1 px apart)
+                if (Vector2.Distance(segment[0], segment[segment.Count - 1]) == 1)
+                    newLine.loop = true;
+
+                // add a collider for the segment
+                if (segment.Count >= 2)
+                {
+                    EdgeCollider2D col = gameObject.AddComponent<EdgeCollider2D>();
+                    col.edgeRadius = 1;
+                    col.points = segment.ConvertAll(Point2Vec2).ToArray();
+                    colliders.Add(col);
+                }
+            }
+        }
+        
     }
 }
