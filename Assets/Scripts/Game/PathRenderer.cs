@@ -23,7 +23,7 @@ namespace Jintori.Game
         byte pathType = 128;
 
         [SerializeField]
-        Material material;
+        Material material = null;
 
         // --- Properties -------------------------------------------------------------------------------
         /// <summary> Current play area </summary>
