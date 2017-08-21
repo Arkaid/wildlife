@@ -197,7 +197,7 @@ namespace Jintori.Game
         /// bosses, but it does happen for non-boss enemies that get cut out.
         /// It "kills" the enemy, if that is the case
         /// </summary>
-        void KillIfOutsideShadow()
+        void KillIfOutsideShadow(Point center)
         {
             if (playArea.mask[x, y] != PlayArea.Shadowed)
                 Kill(true);

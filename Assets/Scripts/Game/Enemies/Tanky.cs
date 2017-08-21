@@ -52,7 +52,7 @@ namespace Jintori.Game
 
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        private void OnMaskCleared()
+        private void OnMaskCleared(Point center)
         {
             scale = ScaleBasedOnMaskSize();
             transform.localScale = Vector3.one * scale;

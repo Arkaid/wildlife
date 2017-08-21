@@ -43,7 +43,7 @@ namespace Jintori.Game
         int safeSpeed = 150;
 
         /// <summary> Player speed </summary>
-        int cutSpeed = 80;
+        int cutSpeed = 90;
 
         /// <summary> Rewind history </summary>
         Stack<Point> rewindHistory = new Stack<Point>();

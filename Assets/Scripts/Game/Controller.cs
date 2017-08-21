@@ -409,7 +409,7 @@ namespace Jintori.Game
         }
 
         // -----------------------------------------------------------------------------------	
-        private void OnMaskCleared()
+        private void OnMaskCleared(Point centroid)
         {
             // calculate score
             float percentage = playArea.mask.clearedRatio * 100;
