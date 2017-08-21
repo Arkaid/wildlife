@@ -10,7 +10,8 @@ namespace Jintori.Game
         public class Mask
         {
             // --- Events -----------------------------------------------------------------------------------
-            public event System.Action maskCleared;
+            /// <summary> Argument is centroid of the cleared area </summary>
+            public event System.Action<Point> maskCleared;
 
             // --- Constants --------------------------------------------------------------------------------
             // --- Static Properties ------------------------------------------------------------------------
@@ -98,6 +99,13 @@ namespace Jintori.Game
             /// </summary>
             public void Clear(int bossX, int bossY)
             {
+                // create a copy for comparison
+                byte[] oldData = data.Clone() as byte[];
+                
+                // center of the area we cleared
+                Vector2 center = new Vector2();
+                int diffCount = 0;
+
                 // first pass:
                 // clear everything, but leave the path
                 for (int i = 0; i < imageWidth * imageHeight; i++)
@@ -123,27 +131,43 @@ namespace Jintori.Game
                             data[idx] = Safe;
 
                         // can only turn shadow into path
-                        if (data[idx] != Safe)
+                        if (data[idx] == Safe)
                         {
-                            // count pixels in the shadow that have been cleared
-                            if (data[idx] == Cleared)
-                                clearedShadowArea += shadowImage[idx] * data[idx];
-                            continue;
+
+                            // If any combination of opposite sides is cleared, so is the center
+                            bool isCleared = this[i - 1, j - 1] + this[i + 1, j + 1]
+                                           + this[i + 1, j - 1] + this[i - 1, j + 1] == Cleared;
+                            isCleared = isCleared || this[i - 1, j] + this[i + 1, j] == Cleared;
+                            isCleared = isCleared || this[i, j - 1] + this[i, j + 1] == Cleared;
+                            this[i, j] = isCleared ? Cleared : Safe;
+
                         }
 
-                        // If any combination of opposite sides is cleared, so is the center
-                        bool isCleared = this[i - 1, j - 1] + this[i + 1, j + 1] 
-                                       + this[i + 1, j - 1] + this[i - 1, j + 1] == Cleared;
-                        isCleared = isCleared || this[i - 1, j] + this[i + 1, j] == Cleared;
-                        isCleared = isCleared || this[i, j - 1] + this[i, j + 1] == Cleared;
-                        this[i, j] = isCleared ? Cleared : Safe;
+                        // count pixels in the shadow that have been cleared
+                        if (data[idx] == Cleared)
+                            clearedShadowArea += shadowImage[idx];
+
+                        if (oldData[idx] != data[idx])
+                        {
+                            center += new Vector2(i, j);
+                            diffCount++;
+                        }
                     }
 
                 }
+                clearedShadowArea /= 255;
+
                 outOfBoundsAsCleared = false;
 
+                // average the position
+                if (diffCount != 0)
+                {
+                    center = center / diffCount;
+                    Debug.DrawRay(center, Vector2.one * 10, Color.cyan, 15);
+                }
+
                 if (maskCleared != null)
-                    maskCleared();
+                    maskCleared(new Point(center));
             }
 
             // -----------------------------------------------------------------------------------

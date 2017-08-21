@@ -8,9 +8,6 @@ namespace Jintori.Game
     public class PathRenderer : MonoBehaviour
     {
         // --- Events -----------------------------------------------------------------------------------
-        /// <summary> Called after the path changed shape. Argument is array of points for the new path </summary>
-        public event System.Action<Vector3[]> pathRedrawn;
-
         // --- Constants --------------------------------------------------------------------------------
         /// <summary> 4 possible directions to search the path in</summary>
         enum Direction { Rt, Dw, Lt, Up, End }
