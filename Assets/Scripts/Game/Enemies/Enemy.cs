@@ -186,8 +186,9 @@ namespace Jintori.Game
         void CheckPlayerHit()
         {
             Physics2D.Simulate(0.005f);
-            if (collider.IsTouching(playArea.cutPath.collider))
-                playArea.player.Hit(false);
+            foreach(Collider2D col in playArea.cutPath.colliders)
+                if (collider.IsTouching(col))
+                    playArea.player.Hit(false);
         }
 
         // -----------------------------------------------------------------------------------	
