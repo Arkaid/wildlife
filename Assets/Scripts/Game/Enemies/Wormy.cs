@@ -201,7 +201,7 @@ namespace Jintori.Game
 
                     newBug.transform.SetParent(transform.parent, true);
                     newBug.transform.position = sourceBug.transform.position;
-                    newBug.transform.localScale = Vector3.one;
+                    newBug.transform.localScale = Vector3.one * ScaleBasedOnMaskSize();
                     newBug.SetXYFromLocalPosition();
                     newBug.Run();
                 }

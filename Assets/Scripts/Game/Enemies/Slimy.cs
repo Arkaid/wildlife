@@ -26,21 +26,11 @@ namespace Jintori.Game
 
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        private void OnMaskCleared(Point center)
-        {
-            transform.localScale = Vector3.one * ScaleBasedOnMaskSize();
-        }
-
-        // -----------------------------------------------------------------------------------	
         protected override void Setup()
         {
             sourceBlobby = GetComponentInChildren<Blobby>(true);
-
-            playArea.mask.maskCleared += OnMaskCleared;
             killed += OnKilled;
-
             Initialize(settings["speed"].f);
-
             StartCoroutine(SpawnBlobsCoroutine());
         }
 
@@ -100,7 +90,7 @@ namespace Jintori.Game
 
             newBlobby.transform.SetParent(transform.parent, true);
             newBlobby.transform.position = sourceBlobby.transform.position;
-            newBlobby.transform.localScale = Vector3.one;
+            newBlobby.transform.localScale = Vector3.one * ScaleBasedOnMaskSize();
             newBlobby.SetXYFromLocalPosition();
             newBlobby.Run();
 
