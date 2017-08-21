@@ -438,7 +438,12 @@ namespace Jintori.Game
             // is there an enemy blocking the way?
             int hits = Physics2D.OverlapPointNonAlloc(playArea.MaskPositionToWorld(sx + dx, sy + dy), overlaps, PlayArea.EnemiesLayerMask);
             if (hits > 0)
+            {
+                // you hit the enemy, you dumbass!
+                if (!Skill.instance.isShieldActive)
+                    Hit(false);
                 return false;
+            }
 
             if (dx != 0)
             {
