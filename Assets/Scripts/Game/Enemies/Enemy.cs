@@ -103,6 +103,7 @@ namespace Jintori.Game
             if (settings != null)
                 settings = settings[Controller.instance.round];
 
+            // ready sprite renderers and prepare frozen material
             spriteRenderers = GetComponentsInChildren<SpriteRenderer>(true);
             defaultMaterial = spriteRenderers[0].material;
             frozenMaterial = new Material(Shader.Find("Sprites/Frozen"));
@@ -139,6 +140,10 @@ namespace Jintori.Game
             Setup();
             while (isAlive)
             {
+                // do nothing while paused
+                while (Controller.instance.isPaused)
+                    yield return null;
+
                 // don't move while frozen
                 if (Skill.instance.isFreezeActive)
                 {

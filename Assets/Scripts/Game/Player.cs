@@ -59,14 +59,19 @@ namespace Jintori.Game
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        void Start()
+        protected override void Start()
         {
+            base.Start();
             playArea.cutPath.Clear();
         }
 
         // -----------------------------------------------------------------------------------	
         void Update()
         {
+            // do nothing while paused
+            if (Controller.instance.isPaused)
+                return;
+
             // number of moves left
             float speed = 0;
             if (state == State.Cutting || state == State.Rewinding)

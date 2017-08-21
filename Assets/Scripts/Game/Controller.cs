@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 
 namespace Jintori.Game
 {
+    using Common.UI;
+
     // --- Class Declaration ------------------------------------------------------------------------
     /// <summary>
     /// Controls three rounds of a game.
@@ -12,6 +14,8 @@ namespace Jintori.Game
     public class Controller : IllogicGate.SingletonBehaviour<Controller>
     {
         // --- Events -----------------------------------------------------------------------------------
+        public event System.Action<bool> paused;
+
         // --- Constants --------------------------------------------------------------------------------
 #if UNITY_EDITOR
         const string DEBUG_file = "Assets/Characters/arkaid01.chr";
@@ -60,6 +64,9 @@ namespace Jintori.Game
         /// <summary> Draw one boss at the time from here for each round </summary>
         List<Enemy> roundBoss;
 
+        /// <summary> True, if the game is paused </summary>
+        public bool isPaused { get; private set; }
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         void Start()
@@ -102,12 +109,6 @@ namespace Jintori.Game
         // -----------------------------------------------------------------------------------	
         private void Update()
         {
-
-            if (Input.GetButtonDown("Pause"))
-            {
-                print("pause");
-            }
-
 #if UNITY_EDITOR
             if (Input.GetKeyDown(KeyCode.F9))
             {
@@ -249,9 +250,40 @@ namespace Jintori.Game
             // start timer
             Timer.instance.StartTimer();
 
+            // Handle the pause from here on out
+            StartCoroutine("PauseHandler");
+
             yield break;
         }
 
+        // -----------------------------------------------------------------------------------	
+        IEnumerator PauseHandler()
+        {
+            while (true)
+            {
+                while (!Input.GetButtonDown("Pause"))
+                    yield return null;
+
+                isPaused = true;
+                Timer.instance.StopTimer();
+
+                if (paused != null)
+                    paused(isPaused);
+
+                MessagePopup popup = Overlay.instance.messagePopup;
+                popup.ShowYesNo("END GAME?", "PAUSED");
+                while (popup.isVisible)
+                    yield return null;
+
+                isPaused = false;
+                Timer.instance.StartTimer();
+                if (paused != null)
+                    paused(isPaused);
+
+                if (popup.isYes)
+                    OnTimerTimedOut();
+            }
+        }
         // -----------------------------------------------------------------------------------	
         private void OnMinionKilled(Enemy minion, bool killedByPlayer)
         {
@@ -285,6 +317,9 @@ namespace Jintori.Game
         /// </summary>
         IEnumerator GameOver()
         {
+            // no more pause handling
+            StopCoroutine("PauseHandler");
+
             // stop timer
             Timer.instance.StopTimer();
 
@@ -315,6 +350,9 @@ namespace Jintori.Game
         /// </summary>
         IEnumerator WinRound()
         {
+            // no more pause handling
+            StopCoroutine("PauseHandler");
+
             // stop timer
             Timer.instance.StopTimer();
 

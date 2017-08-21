@@ -45,8 +45,9 @@ namespace Jintori.Game
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        void Start()
+        protected override void Start()
         {
+            base.Start();
             sourceBally = GetComponentInChildren<Bally>(true);
         }
 
@@ -121,6 +122,10 @@ namespace Jintori.Game
 
                     yield return wait;
 
+                    // do nothing while paused
+                    while (Controller.instance.isPaused)
+                        yield return null;
+
                     // don't spawn while frozen
                     while (Skill.instance.isFreezeActive)
                         yield return null;
@@ -150,6 +155,10 @@ namespace Jintori.Game
 
             while (elapsed <= RotateTime)
             {
+                // do nothing while paused
+                while (Controller.instance.isPaused)
+                    yield return null;
+
                 // don't move while frozen
                 while (Skill.instance.isFreezeActive)
                     yield return null;
@@ -208,6 +217,14 @@ namespace Jintori.Game
             float elapsed = 0;
             while (elapsed < time)
             {
+                // do nothing while paused
+                while (Controller.instance.isPaused)
+                    yield return null;
+
+                // don't move while frozen
+                while (Skill.instance.isFreezeActive)
+                    yield return null;
+
                 // hold on rotating if it began shooting
                 while (isShooting)
                     yield return null;

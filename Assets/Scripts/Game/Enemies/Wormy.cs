@@ -184,6 +184,10 @@ namespace Jintori.Game
 
                 yield return wait;
 
+                // do nothing while paused
+                while (Controller.instance.isPaused)
+                    yield return null;
+
                 // don't spawn while frozen
                 while (Skill.instance.isFreezeActive)
                     yield return null;
