@@ -45,6 +45,9 @@ namespace Jintori.SelectScreen
         Button prevPageButton = null;
 
         // --- Properties -------------------------------------------------------------------------------
+        /// <summary> Becomes true when it's ready to be used </summary>
+        public bool isReady { get { return iconsPerPageX != 0; } }
+
         /// <summary> Number of icons per page, in the x axis </summary>
         int iconsPerPageX;
         

@@ -7,7 +7,7 @@ using UnityEditorInternal;
 namespace IllogicGate
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    [CustomEditor(typeof(SoundManager2D))]
+    [CustomEditor(typeof(SoundManager2D), true)]
     public class SoundManager2DEditor : Editor
     {
         // --- Events -----------------------------------------------------------------------------------

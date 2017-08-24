@@ -65,10 +65,7 @@ namespace Jintori.Title
 
             Debug.Log("Application started. Client version: " + Application.version);
 
-            IllogicGate.SoundManager2D sndMgr = IllogicGate.SoundManager2D.instance;
-            sndMgr.bgmVolume = Config.instance.bgmVolume / 100f;
-            sndMgr.sfxVolume = Config.instance.sfxVolume / 100f;
-            sndMgr.PlayBGM("outgame");
+            SoundManager.instance.PlayBGM("outgame");
 
             animator = GetComponent<Animator>();
             

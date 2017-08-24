@@ -94,7 +94,7 @@ namespace IllogicGate
         /// <summary>
         /// Start playing a background music clip immediately
         /// </summary>
-        public void PlayBGM(string clip)
+        public void PlayBGM(string clip, float time = 0)
         {
             ClipData data = clipsByName[clip];
 
@@ -105,6 +105,7 @@ namespace IllogicGate
             bgm.loop = data.loop;
             bgm.volume = data.volume * bgmVolume;
             bgm.priority = data.priority;
+            bgm.time = time;
             bgm.Play();
         }
 

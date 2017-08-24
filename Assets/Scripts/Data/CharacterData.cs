@@ -532,6 +532,15 @@ namespace Jintori.CharacterFile
 
         // -----------------------------------------------------------------------------------	
         /// <summary>
+        /// Returns whether the image for that round is portrait or not
+        /// </summary>
+        public bool IsPortrait(int round)
+        {
+            return header.isPortrait[round];
+        }
+
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
         /// Loads the images for a given round
         /// </summary>
         public RoundImages LoadRound(int round)
