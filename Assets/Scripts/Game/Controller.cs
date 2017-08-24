@@ -131,11 +131,11 @@ namespace Jintori.Game
 
             // create a fresh play area
             System.Type bossType = roundBoss[round].GetType();
-            //bossType = typeof(Wormy);
+            bossType = typeof(Slimy);
             playArea = Instantiate(sourcePlayArea, sourcePlayArea.transform.parent, true);
             playArea.gameObject.SetActive(true);
             playArea.Setup(roundData.baseImage, roundData.shadowImage, bossType);
-            //currentPlay.Setup(DEBUG_baseImage, DEBUG_shadowImage, typeof(Slimy));
+            //currentPlay.Setup(DEBUG_baseImage, DEBUG_shadowImage, bossType);
 
             // reset percentage tracker to zero
             lastPercentage = 0;

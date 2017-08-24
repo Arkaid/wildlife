@@ -36,6 +36,21 @@ namespace Jintori.Game
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
+        private void OnCollisionEnter2D(Collision2D collision)
+        {
+            // obtain normal from contact points
+            Vector2 normal = Vector3.zero;
+            foreach(ContactPoint2D cp in collision.contacts)
+                normal += cp.normal;
+            normal.Normalize();
+
+            // reflect velocity
+            velocity = Vector2.Reflect(velocity, normal).normalized * speed;
+
+            // clamp if necessary
+            if (lock45)
+                ClampVelocity45();
+        }
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         /// <summary>
@@ -93,33 +108,12 @@ namespace Jintori.Game
         }
 
         // -----------------------------------------------------------------------------------	
-        RaycastHit2D[] hits = new RaycastHit2D[8];
-        // -----------------------------------------------------------------------------------	
         /// <summary>
         /// Moves the object and bounces it at exactly so it comes out at a 45
         /// degree angle. Optionally, may add a little noise to the bounce
         /// </summary>
         protected void MoveAndBounce()
         {
-            float distance = (velocity * Time.fixedDeltaTime).magnitude;
-            distance *= 2;
-            // cast ahead to see if we're going to collide with something
-            int nHits = Physics2D.BoxCastNonAlloc(transform.position, collider.bounds.size, 0, velocity, hits, distance, PlayArea.EdgesLayerMask);
-            if (nHits > 0)
-            {
-                // obtain normal from contact points
-                Vector2 normal = Vector3.zero;
-                for (int j = 0; j < nHits; j++)
-                    normal += hits[j].normal;
-                normal.Normalize();
-
-                velocity = Vector2.Reflect(velocity, normal).normalized * speed;
-                
-                // adjust velocity direction
-                if (lock45)
-                    ClampVelocity45();
-            }
-
             position += velocity * Time.fixedDeltaTime;
             x = Mathf.RoundToInt(position.x);
             y = Mathf.RoundToInt(position.y);

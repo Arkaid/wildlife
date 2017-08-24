@@ -12,17 +12,27 @@ namespace Jintori.Game
         /// <summary> 4 possible directions to search the path in</summary>
         enum Direction { Rt, Dw, Lt, Up, End }
 
+        /// <summary> Type of path to render </summary>
+        public enum Type
+        {
+            Safe,
+            Cut
+        }
+
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
-        [SerializeField, Tooltip("Byte value to search in mask for the path (Cut:64, Safe:128)")]
-        byte pathType = 128;
+        [SerializeField]
+        Type type;
 
         [SerializeField]
         Material material = null;
 
         // --- Properties -------------------------------------------------------------------------------
+        /// <summary> Byte value to search on the mask </summary>
+        byte pathValue { get { return type == Type.Safe ? PlayArea.Safe : PlayArea.Cut; } }
+        
         /// <summary> Current play area </summary>
         PlayArea playArea
         {
@@ -96,7 +106,11 @@ namespace Jintori.Game
             Clear();
 
             PathBuilder pb = new PathBuilder();
-            List<List<Point>> segments = pb.GetSegments(playArea.mask, x, y, pathType);
+            List<List<Point>> segments = pb.GetSegments(playArea.mask, x, y, pathValue);
+
+            // add play area edges, if needed
+            if (type == Type.Safe)
+                AddPlayAreaEdges(segments);
 
             System.Converter<Point, Vector3> Point2Vec3 = (Point pt) => { return (Vector2)pt; };
             System.Converter<Point, Vector2> Point2Vec2 = (Point pt) => { return pt; };
@@ -120,10 +134,49 @@ namespace Jintori.Game
                     EdgeCollider2D col = gameObject.AddComponent<EdgeCollider2D>();
                     col.edgeRadius = 1;
                     col.points = segment.ConvertAll(Point2Vec2).ToArray();
+                    col.isTrigger = type == Type.Cut;
                     colliders.Add(col);
                 }
             }
         }
-        
+
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Checks if we need to add the edges of the play area
+        /// This is needed until the player connects the inner square with the
+        /// outer edges
+        /// </summary>
+        /// <param name="segments"></param>
+        public void AddPlayAreaEdges(List<List<Point>> segments)
+        {
+            // check each corner. If it is "safe" but doesn't have a segment that passes
+            // through that corner, we need to add them
+            List<Point> corners = new List<Point>()
+            {
+                new Point(0, 0),
+                new Point(0, PlayArea.imageHeight - 1),
+                new Point(PlayArea.imageWidth - 1, PlayArea.imageHeight - 1),
+                new Point(PlayArea.imageWidth - 1, 0),
+                new Point(0, 0), // to loop back only
+            };
+
+            for (int i = 0; i < 4; i++)
+            {
+                Point pt = corners[i];
+
+                // corner is not Safe -> can't draw safe path here
+                if (playArea.mask[pt.x, pt.y] != PlayArea.Safe)
+                    return;
+
+                // all four corners need to be without a match for this to work
+                // so if any corner is already covered by a segment, return
+                if (segments.Find(seg => seg.Contains(pt)) != null)
+                    return; 
+            }
+
+            // if we got this far, it means that all 4 corners are safe
+            // AND neither has a segment going through them. Draw an extra path
+            segments.Add(corners);
+        }
     }
 }
