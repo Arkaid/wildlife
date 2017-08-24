@@ -34,15 +34,21 @@ namespace Jintori.Game
         /// <summary> Position in float, as not to accumulate rounding errors from x, y </summary>
         Vector2 position;
 
+        /// <summary> repulsion velocity used to move away from walls </summary>
+        Vector2 replusion;
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         private void OnCollisionEnter2D(Collision2D collision)
         {
             // obtain normal from contact points
             Vector2 normal = Vector3.zero;
-            foreach(ContactPoint2D cp in collision.contacts)
+            foreach (ContactPoint2D cp in collision.contacts)
                 normal += cp.normal;
             normal.Normalize();
+
+            // calculate repulsion velocity
+            replusion = normal * speed;
 
             // reflect velocity
             velocity = Vector2.Reflect(velocity, normal).normalized * speed;
@@ -51,6 +57,26 @@ namespace Jintori.Game
             if (lock45)
                 ClampVelocity45();
         }
+
+        // -----------------------------------------------------------------------------------	
+        void OnCollisionStay2D(Collision2D collision)
+        {
+            // obtain normal from contact points
+            Vector2 normal = Vector3.zero;
+            foreach (ContactPoint2D cp in collision.contacts)
+                normal += cp.normal;
+            normal.Normalize();
+
+            // calculate repulsion velocity
+            replusion = normal * speed;
+        }
+        
+        // -----------------------------------------------------------------------------------	
+        void OnCollisionExit2D(Collision2D collision)
+        {
+            replusion = Vector2.zero;
+        }
+
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         /// <summary>
@@ -112,9 +138,12 @@ namespace Jintori.Game
         /// Moves the object and bounces it at exactly so it comes out at a 45
         /// degree angle. Optionally, may add a little noise to the bounce
         /// </summary>
-        protected void MoveAndBounce()
+        protected void Move()
         {
-            position += velocity * Time.fixedDeltaTime;
+            // use repulsion velocity if available, otherwise move as planned
+            Vector2 vel = replusion != Vector2.zero ? replusion : velocity;
+
+            position += vel * Time.fixedDeltaTime;
             x = Mathf.RoundToInt(position.x);
             y = Mathf.RoundToInt(position.y);
         }
