@@ -71,21 +71,18 @@
 			"Wormy": [{
 					"max_speed": 250,
 					"max_steering": 10,
-					"history_length": 26,
 					"bug_spawn_time": 10,
 					"bug_max_count": 1
 				},
 				{
 					"max_speed": 275,
 					"max_steering": 10,
-					"history_length": 23,
 					"bug_spawn_time": 9,
 					"bug_max_count": 2
 				},
 				{
 					"max_speed": 300,
 					"max_steering": 10,
-					"history_length": 23,
 					"bug_spawn_time": 8,
 					"bug_max_count": 3
 				}
@@ -214,21 +211,18 @@
 			"Wormy": [{
 					"max_speed": 300,
 					"max_steering": 10,
-					"history_length": 22,
 					"bug_spawn_time": 8,
 					"bug_max_count": 2
 				},
 				{
 					"max_speed": 325,
 					"max_steering": 10,
-					"history_length": 22,
 					"bug_spawn_time": 6,
 					"bug_max_count": 3
 				},
 				{
 					"max_speed": 350,
 					"max_steering": 10,
-					"history_length": 18,
 					"bug_spawn_time": 6,
 					"bug_max_count": 4
 				}
@@ -366,28 +360,24 @@
 			"Wormy": [{
 					"max_speed": 350,
 					"max_steering": 20,
-					"history_length": 18,
 					"bug_spawn_time": 4,
 					"bug_max_count": 3
 				},
 				{
 					"max_speed": 400,
 					"max_steering": 20,
-					"history_length": 18,
 					"bug_spawn_time": 3.5,
 					"bug_max_count": 4
 				},
 				{
 					"max_speed": 450,
 					"max_steering": 20,
-					"history_length": 14,
 					"bug_spawn_time": 3,
 					"bug_max_count": 5
 				},
 				{
 					"max_speed": 500,
 					"max_steering": 25,
-					"history_length": 14,
 					"bug_spawn_time": 2.5,
 					"bug_max_count": 5
 				}
