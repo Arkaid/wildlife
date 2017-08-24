@@ -33,12 +33,30 @@ namespace Jintori.Game
         /// <summary> Collider used to detect whether the boss is in or out of view </summary>
         new BoxCollider2D collider = null;
 
+        /// <summary> This becomes true when the boss gets out of the collider </summary>
+        bool isBossOutsideScreen = false;
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         void Start()
         {
             collider = GetComponent<BoxCollider2D>();
         }
+
+        // -----------------------------------------------------------------------------------	
+        void OnTriggerEnter2D(Collider2D other)
+        {
+            if (isBossOutsideScreen && other == boss.collider)
+                isBossOutsideScreen = false;
+        }
+
+        // -----------------------------------------------------------------------------------	
+        void OnTriggerExit2D(Collider2D other)
+        {
+            if (!isBossOutsideScreen && other == boss.collider)
+                isBossOutsideScreen = true;
+        }
+
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         public void Reset()
@@ -58,8 +76,6 @@ namespace Jintori.Game
             this.boss = boss;
             boss.killed += (Enemy e, bool killedByPlayer) => { this.boss = null; };
 
-            SetupCollider();
-
             // start tracking
             gameObject.SetActive(true);
             StartCoroutine(TrackCoroutine());
@@ -71,7 +87,7 @@ namespace Jintori.Game
         /// Resizes and recenters the collider so it
         /// fits the camera frustrum
         /// </summary>
-        public void SetupCollider()
+        void UpdateCollider()
         {
             Camera cam = Camera.main;
             Vector2 size = new Vector2();
@@ -108,13 +124,17 @@ namespace Jintori.Game
 
             while (boss != null)
             {
+                // update collider to keep track
+                // as the camera moves with the player / screen resizes
+                UpdateCollider();
+
                 up.gameObject.SetActive(false);
                 down.gameObject.SetActive(false);
                 left.gameObject.SetActive(false);
                 right.gameObject.SetActive(false);
 
                 // no need to track here
-                if (collider.IsTouching(boss.collider))
+                if (!isBossOutsideScreen)
                 {
                     yield return null;
                     continue;
