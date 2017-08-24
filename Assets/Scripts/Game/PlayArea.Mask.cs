@@ -161,10 +161,7 @@ namespace Jintori.Game
 
                 // average the position
                 if (diffCount != 0)
-                {
                     center = center / diffCount;
-                    Debug.DrawRay(center, Vector2.one * 10, Color.cyan, 15);
-                }
 
                 if (maskCleared != null)
                     maskCleared(new Point(center));

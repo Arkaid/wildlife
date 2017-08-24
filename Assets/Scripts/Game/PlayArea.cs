@@ -82,9 +82,6 @@ namespace Jintori.Game
         }
         Effects _effects;
 
-        /// <summary> Collider around the edges of the play area </summary>
-        EdgeCollider2D edgeCollider;
-
         /// <summary> Current boss. Only becomes valid after setting up the play area </summary>
         public Enemy boss { get; private set; }
 
@@ -310,13 +307,6 @@ namespace Jintori.Game
 
             MeshFilter mf = GetComponent<MeshFilter>();
             mf.mesh = quad;
-
-            // add a collider to the quad and a RB to make it a trigger
-            edgeCollider = gameObject.AddComponent<EdgeCollider2D>();
-            edgeCollider.edgeRadius = 1;
-            edgeCollider.points = new Vector2[] {
-                corners[0], corners[1], corners[2], corners[3], corners[0]
-            };
         }
     }
 }
