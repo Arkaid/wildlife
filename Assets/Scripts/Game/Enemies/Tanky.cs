@@ -150,6 +150,7 @@ namespace Jintori.Game
             const float RotateAngle = 22.5f;
             const float RotateTime = 0.5f;
 
+            Collider2D turretCollider = turretTransform.GetComponent<Collider2D>();
             Vector2 start = turretTransform.up;
             float elapsed = 0;
 
@@ -161,6 +162,10 @@ namespace Jintori.Game
 
                 // don't move while frozen
                 while (Skill.instance.isFreezeActive)
+                    yield return null;
+
+                // don't shoot if the turret is touching the edges
+                while (turretCollider.IsTouchingLayers(PlayArea.EdgesLayerMask))
                     yield return null;
 
                 elapsed += Time.deltaTime;
