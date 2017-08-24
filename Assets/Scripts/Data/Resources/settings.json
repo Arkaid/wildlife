@@ -143,7 +143,7 @@
 	},
 
 	"Normal": {
-		"round_time": 180,
+		"round_time": 240,
 		"clear_ratio": 0.85,
 		"start_lives": 3,
 		"skill_speed_multiplier": 1.75,
@@ -285,7 +285,7 @@
 		}
 	},
 	"Hard": {
-		"round_time": 120,
+		"round_time": 180,
 		"clear_ratio": 0.90,
 		"start_lives": 3,
 		"skill_speed_multiplier": 1.50,
