@@ -15,9 +15,14 @@ namespace Jintori.Common.UI
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
-        
+        [SerializeField]
+        RawImage landscape;
+        [SerializeField]
+        RawImage portrait;
+        [SerializeField]
+        GameObject localBackground;
+
         // --- Properties -------------------------------------------------------------------------------
-        RawImage rawImage;
 
         Stats stats;
 
@@ -27,10 +32,11 @@ namespace Jintori.Common.UI
         // -----------------------------------------------------------------------------------	
         public void Show(CharacterFile.File characterFile, int round)
         {
-            rawImage = GetComponent<RawImage>();
             stats = GetComponentInChildren<Stats>(true);
             stats.Hide();
-            rawImage.enabled = false;
+            landscape.enabled = false;
+            portrait.enabled = false;
+            localBackground.SetActive(false);
             Overlay.instance.background.Show(Color.clear);
 
             gameObject.SetActive(true);
@@ -44,11 +50,14 @@ namespace Jintori.Common.UI
             GameObject prevSelection = EventSystem.current.currentSelectedGameObject;
             EventSystem.current.SetSelectedGameObject(null);
 
+            RawImage target = characterFile.IsPortrait(round) ? portrait : landscape;
+
             // transition to black, load the images
             yield return StartCoroutine(Transition.instance.Show());
             CharacterFile.RoundImages images = characterFile.LoadRound(round);
-            rawImage.texture = images.baseImage;
-            rawImage.enabled = true;
+            target.texture = images.baseImage;
+            target.enabled = true;
+            localBackground.SetActive(true);
             Overlay.instance.background.Show();
             yield return StartCoroutine(Transition.instance.Hide());
 
@@ -69,7 +78,8 @@ namespace Jintori.Common.UI
             yield return StartCoroutine(Transition.instance.Show());
             Overlay.instance.background.Hide();
             stats.Hide();
-            rawImage.enabled = false;
+            localBackground.SetActive(false);
+            target.enabled = false;
             yield return StartCoroutine(Transition.instance.Hide());
 
             // disable the game object

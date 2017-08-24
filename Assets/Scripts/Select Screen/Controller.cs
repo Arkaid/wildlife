@@ -76,6 +76,14 @@ namespace Jintori.SelectScreen
             state = State.Initializing;
             Debug.Log("Initializing character selection screen");
 
+            // load the sound manager if we didn't come in from the title screen
+            // (ie, game ended)
+            if (SoundManager.instance == null)
+            {
+                Instantiate(Resources.Load("Outgame Sound Manager"));
+                SoundManager.instance.PlayBGM("outgame", 4.8f);
+            }
+
             // handle buttons
             startButton.onClick.AddListener(() => { StartCoroutine(StartGame()); });
             optionsButton.onClick.AddListener(() => { StartCoroutine(ShowOptions()); });
@@ -107,6 +115,11 @@ namespace Jintori.SelectScreen
                 icon.selected += OnCharacterSelected;
                 yield return null;
             }
+
+            // wait until the charcter grid finishes initializing
+            while (!characterGrid.isReady)
+                yield return null;
+                     
             characterGrid.Paginate();
             characterGrid.SelectFirst();
         }
