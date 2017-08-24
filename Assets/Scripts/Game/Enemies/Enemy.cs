@@ -250,6 +250,12 @@ namespace Jintori.Game
             // object must be a boss
             Debug.Assert(isBoss);
 
+            // to check for intersection
+            Vector3 min = playArea.MaskPositionToWorld(playerInitalSquare.xMin, playerInitalSquare.yMin);
+            Vector3 max = playArea.MaskPositionToWorld(playerInitalSquare.xMax, playerInitalSquare.yMax);
+            Bounds initalSquare = new Bounds();
+            initalSquare.SetMinMax(min, max);
+
             // create a random position within the play
             // area that 
             // a) is outside the initial square and
@@ -257,18 +263,22 @@ namespace Jintori.Game
             Bounds bounds = collider.bounds;
             while (true)
             {
-                Vector2 test = new Vector2();
-                test.x = Random.Range(bounds.extents.x, PlayArea.imageWidth - bounds.extents.x);
-                test.y = Random.Range(bounds.extents.y, PlayArea.imageHeight - bounds.extents.y);
-                
-                if (playerInitalSquare.Contains(test))
-                    continue;
+                Vector2 center = new Vector2();
+                int minX = (int)bounds.extents.x; int maxX = PlayArea.imageWidth - minX;
+                int minY = (int)bounds.extents.y; int maxY = PlayArea.imageHeight - minY;
+                center.x = Random.Range(minX, maxX);
+                center.y = Random.Range(minY, maxY);
 
-                x = (int)test.x;
-                y = (int)test.y;
+                bounds.center = playArea.MaskPositionToWorld(center);
 
-                if (collider.IsTouchingLayers(PlayArea.EdgesLayerMask))
+                if (bounds.Intersects(initalSquare))
+                {
+                    Debug.DrawLine(bounds.min, bounds.max, Color.green, 10);
                     continue;
+                }
+                print(center);
+                x = (int)center.x;
+                y = (int)center.y;
 
                 break;
             }
