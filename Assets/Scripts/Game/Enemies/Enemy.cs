@@ -257,9 +257,7 @@ namespace Jintori.Game
             initalSquare.SetMinMax(min, max);
 
             // create a random position within the play
-            // area that 
-            // a) is outside the initial square and
-            // b) does not overlap borders or path
+            // area that does not intersect with the initial area
             Bounds bounds = collider.bounds;
             while (true)
             {
@@ -276,7 +274,7 @@ namespace Jintori.Game
                     Debug.DrawLine(bounds.min, bounds.max, Color.green, 10);
                     continue;
                 }
-                print(center);
+
                 x = (int)center.x;
                 y = (int)center.y;
 

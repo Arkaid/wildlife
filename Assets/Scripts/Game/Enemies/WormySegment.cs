@@ -20,6 +20,10 @@ namespace Jintori.Game
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         // position gets updated by Wormy
-        protected override void UpdatePosition() {}
+        protected override void UpdatePosition()
+        {
+            SetXYFromLocalPosition();
+        }
+
     }
 }

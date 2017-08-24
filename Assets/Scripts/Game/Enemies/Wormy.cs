@@ -13,6 +13,8 @@ namespace Jintori.Game
         /// <summary> Radius of the sprite / collider, used for avoiding going out of bounds </summary>
         const float Radius = 16;
 
+        const int HistoryLength = 50;
+
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
@@ -39,6 +41,9 @@ namespace Jintori.Game
         /// <summary> History of rotations, used to trail the segments </summary>
         List<Quaternion> rotationHistory;
 
+        /// <summary> Steps between indices in the history to keep the segments evenly spaced </summary>
+        int historyStep;
+
         /// <summary> Used by CircleCast </summary>
         RaycastHit2D[] hits = new RaycastHit2D[8];
 
@@ -49,6 +54,8 @@ namespace Jintori.Game
         protected override void Setup()
         {
             killed += OnKilled;
+            playArea.mask.maskCleared += OnMaskCleared;
+            OnMaskCleared(new Point());
 
             position = new Vector2(x, y);
             target = position;
@@ -56,7 +63,7 @@ namespace Jintori.Game
             // create an empty list first
             positionHistory = new List<Vector2>();
             rotationHistory = new List<Quaternion>();
-            for (int i = 0; i < settings["history_length"].i; i++)
+            for (int i = 0; i < HistoryLength; i++)
             {
                 positionHistory.Add(transform.localPosition);
                 rotationHistory.Add(Quaternion.identity);
@@ -76,9 +83,20 @@ namespace Jintori.Game
         }
 
         // -----------------------------------------------------------------------------------	
+        private void OnMaskCleared(Point obj)
+        {
+            // calculate historyStep based on maximum speed
+            const float SegmentDistance = 30;
+            float maxSpeed = settings["max_speed"].f;
+            float perUpdateDistance = maxSpeed * Time.fixedDeltaTime;
+            historyStep = Mathf.RoundToInt((SegmentDistance * ScaleBasedOnMaskSize()) / perUpdateDistance);
+        }
+
+        // -----------------------------------------------------------------------------------	
         private void OnKilled(Enemy obj, bool killedByPlayer)
         {
             animator.SetTrigger("Die");
+            playArea.mask.maskCleared -= OnMaskCleared;
 
             // wait a few seconds to destroy the object
             // to give the animation time to finish
@@ -147,19 +165,16 @@ namespace Jintori.Game
         void UpdateSegments()
         {
             // enqueue current position and rotation
-            positionHistory.RemoveAt(0);
-            positionHistory.Add(transform.localPosition);
+            positionHistory.Insert(0, transform.localPosition);
+            positionHistory.RemoveAt(HistoryLength);
 
-            rotationHistory.RemoveAt(0);
-            rotationHistory.Add(transform.rotation);
-
-            // calculate "delay" of each part
-            int idxJump = (positionHistory.Count - 1) / parts.Length;
+            rotationHistory.Insert(0, transform.rotation);
+            rotationHistory.RemoveAt(HistoryLength);
 
             // apply delayed position and rotation
             for (int i = 0; i < parts.Length; i++)
             {
-                int idx = idxJump * (parts.Length - 1 - i);
+                int idx = historyStep * (i + 1);
                 parts[i].localPosition = positionHistory[idx];
                 parts[i].rotation = rotationHistory[idx];
             }
