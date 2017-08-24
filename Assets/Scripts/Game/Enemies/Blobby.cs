@@ -44,7 +44,7 @@ namespace Jintori.Game
         // -----------------------------------------------------------------------------------	
         protected override void UpdatePosition()
         {
-            MoveAndBounce();
+            Move();
         }
     }
 }

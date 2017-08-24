@@ -42,7 +42,7 @@ namespace Jintori.Game
         // -----------------------------------------------------------------------------------	
         protected override void UpdatePosition()
         {
-            MoveAndBounce();
+            Move();
 
             // rotate the sprite to face the forward movement
             transform.localRotation = Quaternion.FromToRotation(Vector2.up, velocity);

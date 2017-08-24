@@ -38,7 +38,7 @@ namespace Jintori.Game
         protected override void UpdatePosition()
         {
             if (animator.GetCurrentAnimatorStateInfo(0).IsName("Moving"))
-                MoveAndBounce();
+                Move();
         }
 
         // -----------------------------------------------------------------------------------	

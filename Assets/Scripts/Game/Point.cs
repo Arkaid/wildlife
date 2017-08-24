@@ -50,5 +50,20 @@ namespace Jintori.Game
                 return this == (Point)obj;
             return false;
         }
+
+        // -----------------------------------------------------------------------------------	
+        public override int GetHashCode()
+        {
+            const int LargePrime1 = 126781;
+            const int LargePrime2 = 578603;
+            unchecked // Overflow is fine, just wrap
+            {
+                int hash = LargePrime1;
+                // Suitable nullity checks etc, of course :)
+                hash = hash * LargePrime2 + x.GetHashCode();
+                hash = hash * LargePrime2 + y.GetHashCode();
+                return hash;
+            }
+        }
     }
 }
