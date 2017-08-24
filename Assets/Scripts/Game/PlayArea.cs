@@ -85,16 +85,7 @@ namespace Jintori.Game
         /// <summary> Current boss. Only becomes valid after setting up the play area </summary>
         public Enemy boss { get; private set; }
 
-        /// <summary> Color of the cut path </summary>
-        Color cutPathColor;
-
         // --- MonoBehaviour ----------------------------------------------------------------------------
-        // -----------------------------------------------------------------------------------	
-        void Start()
-        {
-            cutPathColor = cutPath.color;
-        }
-
         // -----------------------------------------------------------------------------------	
         void Update()
         {
@@ -186,28 +177,6 @@ namespace Jintori.Game
 
             if (cancelWait)
                 mask.Apply();
-        }
-
-        // -----------------------------------------------------------------------------------	
-        /// <summary>
-        /// Used by the Shield skill to protect the cut path, by changing it
-        /// to a safe path. Enemies will bounce off from it rather than go
-        /// through it (although colliders may be still activated and Hit() can happen)
-        /// </summary>
-        /// <param name="protect"></param>
-        public void ProtectCutPath(bool protect)
-        {
-            if (protect)
-            {
-                cutPath.color = safePath.color;
-                cutPath.gameObject.layer = LayerMask.NameToLayer("Edges");
-            }
-
-            else
-            {
-                cutPath.color = cutPathColor;
-                cutPath.gameObject.layer = LayerMask.NameToLayer("Default");
-            }
         }
 
         // -----------------------------------------------------------------------------------	

@@ -53,7 +53,10 @@ namespace Jintori.Game
         // -----------------------------------------------------------------------------------	
         void OnTriggerExit2D(Collider2D other)
         {
-            if (!isBossOutsideScreen && other == boss.collider)
+            // boss was killed
+            if (boss == null)
+                isBossOutsideScreen = false;
+            else if (!isBossOutsideScreen && other == boss.collider)
                 isBossOutsideScreen = true;
         }
 

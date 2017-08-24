@@ -171,7 +171,10 @@ namespace Jintori.Game
 
             // stop protecting
             if (Config.instance.skill == Skill.Type.Shield)
-                playArea.ProtectCutPath(false);
+            {
+                playArea.cutPath.isShielded = false;
+                playArea.cutPath.RedrawPath(cutPathStart.x, cutPathStart.y);
+            }
         }
 
         // -----------------------------------------------------------------------------------	
@@ -181,9 +184,12 @@ namespace Jintori.Game
 
             // start shielding the path
             if (Config.instance.skill == Skill.Type.Shield)
-                playArea.ProtectCutPath(true);
+            {
+                playArea.cutPath.isShielded = true;
+                playArea.cutPath.RedrawPath(cutPathStart.x, cutPathStart.y);
+            }
         }
-        
+
         // -----------------------------------------------------------------------------------	
         /// <summary> Hides and disables the player </summary>
         public void Hide(int x = -1, int y = -1)

@@ -29,6 +29,9 @@ namespace Jintori.Game
         [SerializeField]
         Material material = null;
 
+        [SerializeField, Tooltip("Material to use when the Shield skill is used. Only valid for Cut type path")]
+        Material shieldedMaterial = null;
+
         // --- Properties -------------------------------------------------------------------------------
         /// <summary> Byte value to search on the mask </summary>
         byte pathValue { get { return type == Type.Safe ? PlayArea.Safe : PlayArea.Cut; } }
@@ -51,15 +54,12 @@ namespace Jintori.Game
         /// <summary> Edge collider </summary>
         public List<EdgeCollider2D> colliders { get; private set; }
 
-        /// <summary> Color of the line renderer </summary>
-        public Color color
-        {
-            get { return material.color; }
-            set { material.color = value; }
-        }
-
         // active line renderers
         List<LineRenderer> lineRenderers = new List<LineRenderer>();
+
+        /// <summary>Set to true to protect. Only works with the cut path </summary>
+        [HideInInspector]
+        public bool isShielded;
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
@@ -86,7 +86,7 @@ namespace Jintori.Game
         {
 
             LineRenderer lineRend = new GameObject("Line Segment").AddComponent<LineRenderer>();
-            lineRend.material = material;
+            lineRend.material = isShielded ? shieldedMaterial : material;
             lineRend.startWidth = 2;
             lineRend.endWidth = 2;
             lineRend.receiveShadows = false;
@@ -134,7 +134,7 @@ namespace Jintori.Game
                     EdgeCollider2D col = gameObject.AddComponent<EdgeCollider2D>();
                     col.edgeRadius = 1;
                     col.points = segment.ConvertAll(Point2Vec2).ToArray();
-                    col.isTrigger = type == Type.Cut;
+                    col.isTrigger = type == Type.Cut && !isShielded;
                     colliders.Add(col);
                 }
             }
