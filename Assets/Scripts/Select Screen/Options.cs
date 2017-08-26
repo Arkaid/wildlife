@@ -44,6 +44,9 @@ namespace Jintori.SelectScreen
         Volume bgm;
 
         [SerializeField]
+        Dropdown zoom = null;
+
+        [SerializeField]
         Toggle fullscreen = null;
 
         [SerializeField]
@@ -104,6 +107,7 @@ namespace Jintori.SelectScreen
             Config.instance.sfxVolume = sfx.value;
             Config.instance.bgmVolume = bgm.value;
             Config.instance.fullScreen = fullscreen.isOn;
+            Config.instance.zoom = zoom.value + 2;
 
             // apply screen resolution
             int w, h;
@@ -163,6 +167,8 @@ namespace Jintori.SelectScreen
             sfx.value = Config.instance.sfxVolume;
             bgm.value = Config.instance.bgmVolume;
             fullscreen.isOn = Config.instance.fullScreen;
+            zoom.value = Config.instance.zoom - 2;
+
 
             difficulty.Select();
         }

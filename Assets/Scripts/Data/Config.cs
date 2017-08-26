@@ -50,7 +50,13 @@ namespace Jintori
         /// <summary> shortcut to the JSON branch for the current difficulty </summary>
         JSONObject json { get { return settings[difficulty.ToString()]; } }
 
-        
+        /// <summary> Round image zoom </summary>
+        public int zoom
+        {
+            get { return Mathf.Clamp((int)options.json["zoom"].i, 2, 4); }
+            set { options.json.SetField("zoom", value); }
+        }
+
         /// <summary> Game difficulty </summary>
         public Difficulty difficulty
         {
