@@ -270,10 +270,7 @@ namespace Jintori.Game
                 bounds.center = playArea.MaskPositionToWorld(center);
 
                 if (bounds.Intersects(initalSquare))
-                {
-                    Debug.DrawLine(bounds.min, bounds.max, Color.green, 10);
                     continue;
-                }
 
                 x = (int)center.x;
                 y = (int)center.y;

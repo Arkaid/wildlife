@@ -361,23 +361,6 @@ namespace Jintori.Game
                 nx += dx;
                 ny += dy;
 
-                // precheck
-                closed = playArea.mask[nx, ny] == PlayArea.Safe;
-
-                // center pixel is not in the safe path. 
-                if (!closed)
-                {
-                    // are we coming into the safe path on a corner?
-                    // force closing (avoid 0px spaces)
-                    bool forceClose = false;
-                    forceClose = forceClose || dx != 0 && ny + 1 < PlayArea.imageHeight && playArea.mask[nx, ny + 1] == PlayArea.Safe;
-                    forceClose = forceClose || dx != 0 && ny - 1 >= 0 && playArea.mask[nx, ny - 1] == PlayArea.Safe;
-                    forceClose = forceClose || dy != 0 && nx + 1 < PlayArea.imageWidth && playArea.mask[nx + 1, ny] == PlayArea.Safe;
-                    forceClose = forceClose || dy != 0 && nx - 1 >= 0 && playArea.mask[nx - 1, ny] == PlayArea.Safe;
-                    if (forceClose)
-                        playArea.mask[nx, ny] = PlayArea.Safe;
-                }
-
                 // went back to safe path? -> close
                 closed = playArea.mask[nx, ny] == PlayArea.Safe;
                 if (closed)
@@ -392,39 +375,100 @@ namespace Jintori.Game
             y = ny;
 
             if (closed)
-            {
-                rewindHistory.Clear();
-                playArea.cutPath.Clear();
-                playArea.mask.Clear(playArea.boss.x, playArea.boss.y);
-                playArea.mask.Apply();
-
-                IllogicGate.SoundManager2D.instance.PlaySFX("clear_mask");
-
-                animator.SetBool("Cut", false);
-                state = State.SafePath;
-
-                // if we already won, there's nothing else to do
-                if (playArea.mask.clearedRatio >= Config.instance.clearRatio)
-                    return;
-
-                // the path might have dissappeared
-                // this happens when we fill an entire section all the way
-                // up to the border sometimes
-                // if that's the case, move the player back to where it
-                // began cutting
-                if (playArea.mask[x, y] != PlayArea.Safe)
-                {
-                    x = cutPathStart.x;
-                    y = cutPathStart.y;
-                }
-
-                playArea.safePath.RedrawPath(x, y);
-            }
-
+                CloseCutPath();
             else
                 playArea.cutPath.RedrawPath(cutPathStart.x, cutPathStart.y);
         }
+
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Closes the cutpath when going back to the safe path
+        /// </summary>
+        void CloseCutPath()
+        {
+            // go back to safe path
+            state = State.SafePath;
+
+            CleanupSafePath();
+
+            rewindHistory.Clear();
+            playArea.cutPath.Clear();
+            playArea.mask.Clear(playArea.boss.x, playArea.boss.y);
+            playArea.mask.Apply();
+
+            IllogicGate.SoundManager2D.instance.PlaySFX("clear_mask");
+
+            animator.SetBool("Cut", false);
+
+            // if we already won, there's nothing else to do
+            if (playArea.mask.clearedRatio >= Config.instance.clearRatio)
+                return;
+
+            // the path might have dissappeared
+            // this happens when we fill an entire section all the way
+            // up to the border sometimes
+            // if that's the case, move the player back to where it
+            // began cutting
+            if (playArea.mask[x, y] != PlayArea.Safe)
+            {
+                x = cutPathStart.x;
+                y = cutPathStart.y;
+            }
+
+            playArea.safePath.RedrawPath(x, y);
+        }
         
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Cleans up the safe path right after cutting, to avoid 0px spaces between the cut and safe paths
+        /// Call after closing the path
+        /// </summary>
+        void CleanupSafePath()
+        {
+            // look around every cut path pixel for a safe path pixel
+            while(rewindHistory.Count > 0)
+            {
+                Point pt = rewindHistory.Pop();
+
+                // look in 4 directions for a safe pixel
+                bool lt = false, rt = false, up = false, dw = false;
+                bool safeFound = false;
+                safeFound = safeFound || (lt = pt.x - 1 >= 0 && playArea.mask[pt.x - 1, pt.y] == PlayArea.Safe);
+                safeFound = safeFound || (dw = pt.y - 1 >= 0 && playArea.mask[pt.x, pt.y - 1] == PlayArea.Safe);
+                safeFound = safeFound || (rt = pt.x + 1 < PlayArea.imageWidth && playArea.mask[pt.x + 1, pt.y] == PlayArea.Safe);
+                safeFound = safeFound || (up = pt.y + 1 < PlayArea.imageHeight && playArea.mask[pt.x, pt.y + 1] == PlayArea.Safe);
+
+                // there are no 0px spaces here
+                if (!safeFound)
+                    continue;
+
+                // move the point to the safe location
+                if (lt) pt.x--;
+                if (dw) pt.y--;
+                if (rt) pt.x++;
+                if (up) pt.y++;
+
+                // check around that safe pixel in 8 directions. 
+                // If there are no shadowed areas around it, it's 
+                // not a valid safe path anymore
+                bool hasShadow = false;
+                hasShadow = hasShadow || pt.x - 1 >= 0 && playArea.mask[pt.x - 1, pt.y] == PlayArea.Shadowed;
+                hasShadow = hasShadow || pt.y - 1 >= 0 && playArea.mask[pt.x, pt.y - 1] == PlayArea.Shadowed;
+                hasShadow = hasShadow || pt.x + 1 < PlayArea.imageWidth && playArea.mask[pt.x + 1, pt.y] == PlayArea.Shadowed;
+                hasShadow = hasShadow || pt.y + 1 < PlayArea.imageHeight && playArea.mask[pt.x, pt.y + 1] == PlayArea.Shadowed;
+
+                hasShadow = hasShadow || pt.x - 1 >= 0 && pt.y - 1 >= 0 && playArea.mask[pt.x - 1, pt.y - 1] == PlayArea.Shadowed;
+                hasShadow = hasShadow || pt.x - 1 >= 0 && pt.y + 1 < PlayArea.imageHeight && playArea.mask[pt.x - 1, pt.y + 1] == PlayArea.Shadowed;
+
+                hasShadow = hasShadow || pt.x + 1 < PlayArea.imageWidth && pt.y - 1 >= 0 && playArea.mask[pt.x + 1, pt.y - 1] == PlayArea.Shadowed;
+                hasShadow = hasShadow || pt.x + 1 < PlayArea.imageWidth && pt.y + 1 < PlayArea.imageHeight && playArea.mask[pt.x + 1, pt.y + 1] == PlayArea.Shadowed;
+
+                // there are no shadows around this safe path: clear it
+                if (!hasShadow)
+                    playArea.mask[pt.x, pt.y] = PlayArea.Cleared;
+            }
+        }
+
         // -----------------------------------------------------------------------------------	
         Collider2D[] overlaps = new Collider2D[16];
         // -----------------------------------------------------------------------------------	
