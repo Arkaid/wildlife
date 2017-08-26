@@ -67,7 +67,7 @@ namespace Jintori.Title
             SoundManager.instance.PlayBGM("Intersekt - Track 01");
 
             // set up full screen if config'd like so
-            Screen.fullScreen = Config.instance.fullScreen;
+            Util.SetResolutionFromConfig();
 
             animator = GetComponent<Animator>();
             
