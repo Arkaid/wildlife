@@ -43,7 +43,7 @@ namespace Jintori.Data
             json.AddField("bgm_volume", 100);
             json.AddField("resolution_w", 1366);
             json.AddField("resolution_h", 768);
-            json.AddField("fullscreen", true);
+            json.AddField("fullscreen", false);
             json.AddField("zoom", 2);
 
             json.AddField("debug", false);
