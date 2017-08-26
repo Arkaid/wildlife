@@ -64,8 +64,7 @@ namespace Jintori.Title
                 IllogicGate.LogToFile.Activate();
 
             Debug.Log("Application started. Client version: " + Application.version);
-
-            SoundManager.instance.PlayBGM("outgame");
+            SoundManager.instance.PlayBGM("Intersekt - Track 01");
 
             animator = GetComponent<Animator>();
             

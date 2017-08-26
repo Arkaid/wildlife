@@ -77,12 +77,13 @@ namespace Jintori.SelectScreen
             Debug.Log("Initializing character selection screen");
 
             // load the sound manager if we didn't come in from the title screen
-            // (ie, game ended)
+            // (ie, loaded directly from editor)
             if (SoundManager.instance == null)
-            {
-                Instantiate(Resources.Load("Outgame Sound Manager"));
-                SoundManager.instance.PlayBGM("outgame", 4.8f);
-            }
+                Instantiate(Resources.Load("Sound Manager"));
+
+            // when it gets back from the game, there isn't any BGM playbg
+            if (!SoundManager.instance.IsPlayingBGM("Intersekt - Track 01"))
+                SoundManager.instance.PlayBGM("Intersekt - Track 01", 4.8f);
 
             // handle buttons
             startButton.onClick.AddListener(() => { StartCoroutine(StartGame()); });
@@ -222,10 +223,8 @@ namespace Jintori.SelectScreen
             Overlay.instance.background.Show(Color.clear);
 
             // fade out BGM and destroy sound manager (in game has its own manager)
-            IllogicGate.SoundManager2D sndMgr = IllogicGate.SoundManager2D.instance;
-            sndMgr.FadeoutBGM(1f);
+            SoundManager.instance.FadeoutBGM(1f);
             yield return new WaitForSeconds(1f);
-            DestroyObject(sndMgr.gameObject);
 
             // start game
             yield return StartCoroutine(Transition.instance.Show());

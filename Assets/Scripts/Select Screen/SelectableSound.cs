@@ -30,7 +30,7 @@ namespace Jintori.SelectScreen
         // -----------------------------------------------------------------------------------	
         public void OnSelect(BaseEventData eventData)
         {
-            IllogicGate.SoundManager2D.instance.PlaySFX("ui_select_notch");
+            SoundManager.instance.PlaySFX("ui_select_notch");
         }
     }
 }

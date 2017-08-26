@@ -46,7 +46,7 @@ namespace Jintori.SelectScreen
         {
             if (characterFile == null)
             {
-                IllogicGate.SoundManager2D.instance.PlaySFX("ui_cancel");
+                SoundManager.instance.PlaySFX("ui_cancel");
                 string msg = string.Format("Select a non-random character");
                 Overlay.instance.messagePopup.Show(msg.ToUpper(), "UNAVAILABLE");
                 return;
@@ -54,19 +54,19 @@ namespace Jintori.SelectScreen
 
             if (stats.rounds[round].cleared)
             {
-                IllogicGate.SoundManager2D.instance.PlaySFX("ui_accept");
+                SoundManager.instance.PlaySFX("ui_accept");
                 Overlay.instance.roundImageViewer.Show(characterFile, round);
             }
             else if (round < characterFile.availableRounds)
             {
-                IllogicGate.SoundManager2D.instance.PlaySFX("ui_cancel");
+                SoundManager.instance.PlaySFX("ui_cancel");
                 string diff = round == Config.Rounds - 1 ? "hard" : "normal";
                 string msg = string.Format("Clear round {0} in {1} difficulty to unlock this image", round + 1, diff);
                 Overlay.instance.messagePopup.Show(msg.ToUpper(), "IMAGE LOCKED");
             }
             else
             {
-                IllogicGate.SoundManager2D.instance.PlaySFX("ui_cancel");
+                SoundManager.instance.PlaySFX("ui_cancel");
                 string msg = string.Format("Character does not have round {0}", round + 1);
                 Overlay.instance.messagePopup.Show(msg.ToUpper(), "UNAVAILABLE");
             }
