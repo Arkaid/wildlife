@@ -68,7 +68,7 @@ namespace Jintori.SelectScreen
             sfx.slider.onValueChanged.AddListener((float value) => 
             {
                 sfx.value = Mathf.RoundToInt(value);
-                IllogicGate.SoundManager2D sndMgr = IllogicGate.SoundManager2D.instance;
+                SoundManager sndMgr = SoundManager.instance;
                 sndMgr.sfxVolume = sfx.value / 100f;
                 sndMgr.PlaySFX("ui_select_notch");
             });
@@ -76,7 +76,7 @@ namespace Jintori.SelectScreen
             bgm.slider.onValueChanged.AddListener((float value) => 
             {
                 bgm.value = Mathf.RoundToInt(value);
-                IllogicGate.SoundManager2D.instance.bgmVolume = bgm.value / 100f;
+                SoundManager.instance.bgmVolume = bgm.value / 100f;
             });
 
             accept.onClick.AddListener(OnAccept);

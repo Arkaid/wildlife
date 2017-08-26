@@ -7,7 +7,7 @@ public class Transition : IllogicGate.SingletonBehaviour<Transition>
 {
     // --- Events -----------------------------------------------------------------------------------
     // --- Constants --------------------------------------------------------------------------------
-    const float TransitionTime = 0.45f;
+    public const float TransitionTime = 0.45f;
 
     // --- Static Properties ------------------------------------------------------------------------
     // --- Static Methods ---------------------------------------------------------------------------

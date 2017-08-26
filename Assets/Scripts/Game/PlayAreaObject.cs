@@ -84,7 +84,7 @@ namespace Jintori.Game
         // -----------------------------------------------------------------------------------	
         void AnimationEvent_PlaySound(string clip)
         {
-            IllogicGate.SoundManager2D.instance.PlaySFX(clip);
+            SoundManager.instance.PlaySFX(clip);
         }
         
         // -----------------------------------------------------------------------------------	

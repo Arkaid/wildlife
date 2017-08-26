@@ -9,7 +9,13 @@ namespace Jintori
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
+        static readonly string[] RoundClips = new string []
+        {
+            "Kurorak - Fulcrum",
+        };
         // --- Static Properties ------------------------------------------------------------------------
+        static public new SoundManager instance { get { return IllogicGate.SoundManager2D.instance as SoundManager; } }
+
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
@@ -25,5 +31,10 @@ namespace Jintori
 
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
+        public void PlayRandomRoundClip()
+        {
+            string randomClip = RoundClips[Random.Range(0, RoundClips.Length)];
+            PlayBGM(randomClip);
+        }
     }
 }

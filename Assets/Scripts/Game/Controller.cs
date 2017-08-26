@@ -79,11 +79,6 @@ namespace Jintori.Game
             cameraController = Camera.main.GetComponent<CameraController>();
             sourcePlayArea.gameObject.SetActive(false);
 
-            // set volume for the in-game sound manager
-            IllogicGate.SoundManager2D sndMgr = IllogicGate.SoundManager2D.instance;
-            sndMgr.bgmVolume = Config.instance.bgmVolume / 100f;
-            sndMgr.sfxVolume = Config.instance.sfxVolume / 100f;
-
             // randomize bosses (we have 3, but need 4)
             roundBoss = new List<Enemy>(sourcePlayArea.GetBosses());
             for(int i = 0; i < 100; i++)
@@ -125,6 +120,11 @@ namespace Jintori.Game
             // destroy previous area
             if (playArea != null)
                 Destroy(playArea.gameObject);
+
+            // Play a random track
+            if (SoundManager.instance == null)
+                Instantiate(Resources.Load("Sound Manager"));
+            SoundManager.instance.PlayRandomRoundClip();
 
             // Load the images
             CharacterFile.RoundImages roundData = sourceFile.LoadRound(round);
@@ -337,8 +337,12 @@ namespace Jintori.Game
             while (!Input.GetButtonDown("Cut"))
                 yield return null;
 
-            // transition out
+            // fade out BGM
+            SoundManager.instance.FadeoutBGM(1f);
+
+            // transition out and wait for the rest of the fadeout
             yield return StartCoroutine(Transition.instance.Show());
+            yield return new WaitForSeconds(1f - Transition.TransitionTime);
 
             SceneManager.LoadScene("Select Menu");
         }
@@ -400,8 +404,12 @@ namespace Jintori.Game
             while (!Input.GetButtonDown("Cut"))
                 yield return null;
 
-            // transition out
+            // fade out BGM
+            SoundManager.instance.FadeoutBGM(1f);
+
+            // transition out and wait for the rest of the fadeout
             yield return StartCoroutine(Transition.instance.Show());
+            yield return new WaitForSeconds(1f - Transition.TransitionTime);
 
             // hide the scores
             UI.instance.scoreResults.Hide();

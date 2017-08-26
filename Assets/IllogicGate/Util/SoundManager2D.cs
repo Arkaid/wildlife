@@ -89,7 +89,16 @@ namespace IllogicGate
             if (bgm != null && bgm.clip != null)
                 bgm.volume = _bgmVolume * clipsByName[bgm.clip.name].volume;
         }
-        
+
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Returns true if the given clip is playing
+        /// </summary>
+        public bool IsPlayingBGM(string clip)
+        {
+            return bgm != null && bgm.isPlaying && bgm.clip != null && bgm.clip.name == clip;
+        }
+
         // -----------------------------------------------------------------------------------	
         /// <summary>
         /// Start playing a background music clip immediately
