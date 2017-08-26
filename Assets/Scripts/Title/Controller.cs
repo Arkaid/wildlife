@@ -66,6 +66,9 @@ namespace Jintori.Title
             Debug.Log("Application started. Client version: " + Application.version);
             SoundManager.instance.PlayBGM("Intersekt - Track 01");
 
+            // set up full screen if config'd like so
+            Screen.fullScreen = Config.instance.fullScreen;
+
             animator = GetComponent<Animator>();
             
             while (!animator.GetCurrentAnimatorStateInfo(0).IsName("Updating Content"))
