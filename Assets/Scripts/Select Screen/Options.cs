@@ -109,19 +109,7 @@ namespace Jintori.SelectScreen
             Config.instance.fullScreen = fullscreen.isOn;
             Config.instance.zoom = zoom.value + 2;
 
-            // apply screen resolution
-            int w, h;
-            if (fullscreen.isOn)
-            {
-                w = Screen.currentResolution.width;
-                h = Screen.currentResolution.height;
-            }
-            else
-            {
-                w = (int)Config.instance.resolution.x;
-                h = (int)Config.instance.resolution.y;
-            }
-            Screen.SetResolution(w, h, fullscreen.isOn);
+            Util.SetResolutionFromConfig();
 
             // save and close
             Config.instance.SaveOptions();

@@ -15,6 +15,26 @@ namespace Jintori
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         /// <summary>
+        /// Sets the screen resolution from the config settings
+        /// </summary>
+        public static void SetResolutionFromConfig()
+        {
+            int w, h;
+            if (Config.instance.fullScreen)
+            {
+                w = Screen.currentResolution.width;
+                h = Screen.currentResolution.height;
+            }
+            else
+            {
+                w = (int)Config.instance.resolution.x;
+                h = (int)Config.instance.resolution.y;
+            }
+            Screen.SetResolution(w, h, Config.instance.fullScreen);
+        }
+
+        // -----------------------------------------------------------------------------------
+        /// <summary>
         /// Formats a number of seconds in mm:ss:mili
         /// </summary>
         public static string FormatTime(float seconds)
