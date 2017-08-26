@@ -75,6 +75,8 @@ namespace Jintori.Game
             if (sourceFile == null)
                 sourceFile = new CharacterFile.File(DEBUG_file);
 #endif
+            if (SoundManager.instance == null)
+                Instantiate(Resources.Load("Sound Manager"));
 
             cameraController = Camera.main.GetComponent<CameraController>();
             sourcePlayArea.gameObject.SetActive(false);
@@ -122,8 +124,6 @@ namespace Jintori.Game
                 Destroy(playArea.gameObject);
 
             // Play a random track
-            if (SoundManager.instance == null)
-                Instantiate(Resources.Load("Sound Manager"));
             SoundManager.instance.PlayRandomRoundClip();
 
             // Load the images
@@ -281,7 +281,7 @@ namespace Jintori.Game
                     paused(isPaused);
 
                 if (popup.isYes)
-                    OnTimerTimedOut();
+                    StartCoroutine(GameOver(true));
             }
         }
         // -----------------------------------------------------------------------------------	
@@ -301,7 +301,7 @@ namespace Jintori.Game
         // -----------------------------------------------------------------------------------	
         private void OnPlayerDied()
         {
-            StartCoroutine(GameOver());
+            StartCoroutine(GameOver(false));
         }
 
         // -----------------------------------------------------------------------------------	
@@ -315,7 +315,8 @@ namespace Jintori.Game
         /// <summary>
         /// Runs when the player loses his last life
         /// </summary>
-        IEnumerator GameOver()
+        /// <param name="isUserExit">If true, the game over was triggered by the menu, not gameplay</param>
+        IEnumerator GameOver(bool isUserExit)
         {
             // no more pause handling
             StopCoroutine("PauseHandler");
@@ -324,7 +325,8 @@ namespace Jintori.Game
             Timer.instance.StopTimer();
 
             // played the final result before hiding the UI
-            UI.instance.PlayResult(false);
+            if (!isUserExit)
+                UI.instance.PlayResult(false);
 
             // hide the player at its current position
             playArea.player.Hide(playArea.player.x, playArea.player.y);
@@ -332,10 +334,21 @@ namespace Jintori.Game
             // stop tracking player
             cameraController.StopTracking(false);
 
-            // wait until the player hits fire again
-            yield return null;
-            while (!Input.GetButtonDown("Cut"))
+            bool retry = false;
+            if (!isUserExit)
+            {
+                // wait until the player hits fire again
                 yield return null;
+                while (!Input.GetButtonDown("Cut"))
+                    yield return null;
+
+                // present retry dialog
+                MessagePopup popup = Overlay.instance.messagePopup;
+                popup.ShowYesNo("RETRY?", "GAME OVER");
+                while (popup.isVisible)
+                    yield return null;
+                retry = popup.isYes;
+            }
 
             // fade out BGM
             SoundManager.instance.FadeoutBGM(1f);
@@ -344,7 +357,7 @@ namespace Jintori.Game
             yield return StartCoroutine(Transition.instance.Show());
             yield return new WaitForSeconds(1f - Transition.TransitionTime);
 
-            SceneManager.LoadScene("Select Menu");
+            SceneManager.LoadScene(retry ? "Game" : "Select Menu");
         }
 
 
