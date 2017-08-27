@@ -181,6 +181,10 @@ namespace Jintori.CharacterFile
             public string guid;
             public int availableRounds;
             public string tags;
+            public string artist;
+            public string characterName;
+            public DateTime createdDate;
+            public DateTime updatedDate;
             public Entry characterSheet;
             public bool[] isPortrait;
             public Entry[] roundBase;
@@ -192,6 +196,10 @@ namespace Jintori.CharacterFile
                 this.guid = guid;
                 availableRounds = Config.Rounds;
                 tags = "";
+                artist = "";
+                characterName = "";
+                createdDate = DateTime.Now;
+                updatedDate = DateTime.Now;
                 characterSheet = new Entry();
                 isPortrait = new bool[Config.Rounds];
                 roundBase = new Entry[Config.Rounds];
@@ -203,7 +211,12 @@ namespace Jintori.CharacterFile
                 version = br.ReadByte();
                 guid = br.ReadString();
                 availableRounds = br.ReadInt32();
+
+                characterName = br.ReadString();
+                artist = br.ReadString();
                 tags = br.ReadString();
+                createdDate = DateTime.Parse(br.ReadString());
+                updatedDate = DateTime.Parse(br.ReadString());
 
                 characterSheet = new Entry(br);
                 isPortrait = new bool[Config.Rounds];
@@ -223,7 +236,12 @@ namespace Jintori.CharacterFile
                 bw.Write(version);
                 bw.Write(guid);
                 bw.Write(availableRounds);
+
+                bw.Write(characterName);
+                bw.Write(artist);
                 bw.Write(tags);
+                bw.Write(createdDate.ToString());
+                bw.Write(updatedDate.ToString());
 
                 characterSheet.Save(bw);
                 for (int i = 0; i < availableRounds; i++)
@@ -282,7 +300,7 @@ namespace Jintori.CharacterFile
         /// <param name="charSheetFile"> PNG file with the character sheet </param>
         /// <param name="roundFiles"> PNG files for each round (base, shadow) </param>
         /// <param name="updateFile"> File to update. If null, a new one is created </param>
-        public static void CreateFile(string filename, string guid, string tags, string charSheetFile, List<string[]> roundFiles, File updateFile = null)
+        public static void CreateFile(string filename, string guid, string characterName, string artist, string tags, string charSheetFile, List<string[]> roundFiles, File updateFile = null)
         {
             string tempFile = Application.temporaryCachePath + "/temp_charfile.chr";
 
@@ -330,6 +348,11 @@ namespace Jintori.CharacterFile
             Header header = new Header(Version1, guid);
             header.availableRounds = availableRounds;
             header.tags = tags;
+            header.artist = artist;
+            header.characterName = characterName;
+            // if we're updating, keep creation date
+            if (updateFile != null)
+                header.createdDate = updateFile.header.createdDate;
             header.Save(bw);
 
             byte[] data;
@@ -476,6 +499,18 @@ namespace Jintori.CharacterFile
         /// <summary> Unique identifier </summary>
         public string guid { get { return header.guid; } }
         
+        /// <summary> Character's name </summary>
+        public string characterName {  get { return header.characterName; } }
+
+        /// <summary> Artist </summary>
+        public string artist { get { return header.artist; } }
+        
+        /// <summary> Date the file was first created </summary>
+        public DateTime createdDate { get { return header.createdDate; } }
+
+        /// <summary> Date the fle was last updated </summary>
+        public DateTime updatedDate { get { return header.updatedDate; } }
+
         /// <summary> Number of round images available in this file </summary>
         public int availableRounds { get { return header.availableRounds; } }
 
