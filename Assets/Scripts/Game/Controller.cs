@@ -81,6 +81,15 @@ namespace Jintori.Game
             cameraController = Camera.main.GetComponent<CameraController>();
             sourcePlayArea.gameObject.SetActive(false);
 
+            // character is now set as played
+            Data.SaveFile saveFile = Data.SaveFile.instance;
+            Data.CharacterStats stats = saveFile.GetCharacterStats(sourceFile.guid);
+            if (!stats.played)
+            {
+                stats.played = true;
+                saveFile.Save();
+            }
+
             // randomize bosses (we have 3, but need 4)
             roundBoss = new List<Enemy>(sourcePlayArea.GetBosses());
             for(int i = 0; i < 100; i++)
