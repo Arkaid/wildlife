@@ -94,6 +94,9 @@ namespace Jintori.Data
         /// <summary> GUID to identify the character. This matches CharacterDataFile.guid </summary>
         public string guid { get; private set; }
 
+        /// <summary> true, if the character was played (regardless whehter it was beat or not) </summary>
+        public bool played;
+
         /// <summary> Array of rounds, 0 to Config.Rounds - 1 </summary>
         public RoundData[] rounds { get; private set; }
 
@@ -102,6 +105,7 @@ namespace Jintori.Data
         {
             JSONObject json = new JSONObject();
             json.AddField("guid", guid);
+            json.AddField("played", played);
 
             JSONObject jsonList = new JSONObject();
             foreach (RoundData round in rounds)
@@ -115,6 +119,7 @@ namespace Jintori.Data
         public CharacterStats(JSONObject json)
         {
             guid = json["guid"].str;
+            played = json["played"].b;
             rounds = new RoundData[Config.Rounds];
             for (int i = 0; i < Config.Rounds; i++)
                 rounds[i] = new RoundData(json["rounds"][i]);
@@ -126,6 +131,7 @@ namespace Jintori.Data
         public CharacterStats(string guid)
         {
             this.guid = guid;
+            played = false;
             rounds = new RoundData[Config.Rounds];
             for (int i = 0; i < Config.Rounds; i++)
                 rounds[i] = new RoundData();

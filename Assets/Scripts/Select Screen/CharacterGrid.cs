@@ -7,11 +7,20 @@ using UnityEngine.UI;
 namespace Jintori.SelectScreen
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    public class CharacterGrid : UnityEngine.UI.Selectable
+    public class CharacterGrid : Selectable
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
         const float IconSize = 150;
+
+        public enum SortCriteria
+        {
+            DateCreated,
+            DateUpdated,
+            Unplayed,
+            Artist,
+            CharacterName,
+        }
 
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
@@ -36,7 +45,7 @@ namespace Jintori.SelectScreen
         CharacterIcon random = null;
 
         [SerializeField]
-        UnityEngine.UI.Selectable startButton = null;
+        Selectable startButton = null;
 
         [SerializeField]
         Button nextPageButton = null;
@@ -69,6 +78,12 @@ namespace Jintori.SelectScreen
         /// <summary> Icon we last hovered on </summary>
         public CharacterIcon lastHover { get; private set; }
 
+        /// <summary> Sort criteria for the characters </summary>
+        SortCriteria sortBy = SortCriteria.DateUpdated;
+
+        /// <summary> If true, sort backwards </summary>
+        public bool sortReversed = false;
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         protected override void Start()
@@ -94,6 +109,7 @@ namespace Jintori.SelectScreen
         }
 
         // --- Methods ----------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------	
         public CharacterFile.File SelectRandomCharacter()
         {
             CharacterIcon[] availableCharacters = GetComponentsInChildren<CharacterIcon>(true);
@@ -113,6 +129,7 @@ namespace Jintori.SelectScreen
         public CharacterIcon AddCharacter(CharacterFile.File file)
         {
             CharacterIcon newIcon = Instantiate(sampleIcon, pagesRoot, true);
+            newIcon.name = file.guid;
             newIcon.characterFile = file;
             newIcon.gameObject.SetActive(true);
             newIcon.selected += OnCharacterSelected;
@@ -121,6 +138,85 @@ namespace Jintori.SelectScreen
             return newIcon;
         }
 
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Sorts the icons on the grid by the given criteria
+        /// </summary>
+        List<CharacterIcon> GetSortedCharacters()
+        {
+            // get a list of characters, removing "random" icon
+            List<CharacterIcon> availableCharacters = new List<CharacterIcon>(GetComponentsInChildren<CharacterIcon>(true));
+            availableCharacters.Remove(random);
+
+            // now sort
+            switch (sortBy)
+            {
+                case SortCriteria.DateCreated:
+                    availableCharacters.Sort(SortFunc_ByDateCreated); break;
+                case SortCriteria.DateUpdated:
+                    availableCharacters.Sort(SortFunc_ByDateUpdated); break;
+                case SortCriteria.Artist:
+                    availableCharacters.Sort(SortFunc_ByArtist); break;
+                case SortCriteria.CharacterName:
+                    availableCharacters.Sort(SortFunc_ByCharacterName); break;
+                case SortCriteria.Unplayed:
+                    availableCharacters.Sort(SortFunc_ByUnplayed); break;
+            }
+
+            if (sortReversed)
+                availableCharacters.Reverse();
+
+            return availableCharacters;
+        }
+
+        // -----------------------------------------------------------------------------------	
+        int SortFunc_ByDateCreated(CharacterIcon a, CharacterIcon b)
+        {
+            System.TimeSpan diff = a.characterFile.createdDate - b.characterFile.createdDate;
+            if (diff.TotalSeconds > 0)
+                return 1;
+            else if (diff.TotalSeconds < 0)
+                return -1;
+            else
+                return 0;
+        }
+        // -----------------------------------------------------------------------------------	
+        int SortFunc_ByDateUpdated(CharacterIcon a, CharacterIcon b)
+        {
+            System.TimeSpan diff = a.characterFile.updatedDate - b.characterFile.updatedDate;
+            if (diff.TotalSeconds > 0)
+                return 1;
+            else if (diff.TotalSeconds < 0)
+                return -1;
+            else
+                return 0;
+        }
+        // -----------------------------------------------------------------------------------	
+        int SortFunc_ByArtist(CharacterIcon a, CharacterIcon b)
+        {
+            return string.Compare(a.characterFile.artist, b.characterFile.artist);
+        }
+        // -----------------------------------------------------------------------------------	
+        int SortFunc_ByCharacterName(CharacterIcon a, CharacterIcon b)
+        {
+            return string.Compare(a.characterFile.characterName, b.characterFile.characterName);
+        }
+        // -----------------------------------------------------------------------------------	
+        int SortFunc_ByUnplayed(CharacterIcon a, CharacterIcon b)
+        {
+            Data.CharacterStats stats_a = Data.SaveFile.instance.GetCharacterStats(a.characterFile.guid);
+            Data.CharacterStats stats_b = Data.SaveFile.instance.GetCharacterStats(b.characterFile.guid);
+
+            // if both are either played, or unplayed; sort by last updated
+            if (stats_a.played == stats_b.played)
+                return SortFunc_ByDateUpdated(a, b);
+
+            // else, unplayed comes first
+            if (!stats_a.played)
+                return 1;
+            else
+                return -1;
+        }
         // -----------------------------------------------------------------------------------	
         IEnumerator DelayedSelect()
         {
@@ -206,13 +302,25 @@ namespace Jintori.SelectScreen
 
         // -----------------------------------------------------------------------------------	
         /// <summary>
+        /// A version of paginate that also changes the sorting order
+        /// </summary>
+        /// <param name="sortBy"></param>
+        /// <param name="reverse"></param>
+        public void Paginate(SortCriteria sortBy, bool reverse)
+        {
+            this.sortBy = sortBy;
+            sortReversed = reverse;
+            Paginate();
+        }
+
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
         /// (Re)creates pages according to the number of characters / icons available
         /// </summary>
         public void Paginate()
         {
             // first, deparent all icons
-            List<CharacterIcon> icons = new List<CharacterIcon>(GetComponentsInChildren<CharacterIcon>());
-            icons.Remove(random);
+            List<CharacterIcon> icons = GetSortedCharacters();
             foreach (CharacterIcon icon in icons)
                 icon.transform.SetParent(null, true);
 
