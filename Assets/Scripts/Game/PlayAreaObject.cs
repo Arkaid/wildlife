@@ -74,7 +74,7 @@ namespace Jintori.Game
         }
 
         // -----------------------------------------------------------------------------------	
-        private void OnDestroy()
+        virtual protected void OnDestroy()
         {
             if (Controller.instance != null)
                 Controller.instance.paused -= OnPaused;
