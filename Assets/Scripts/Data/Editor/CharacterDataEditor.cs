@@ -34,6 +34,12 @@ namespace Jintori.CharacterFile
         /// <summary> comma separated tags </summary>
         string tags;
 
+        /// <summary> artist name </summary>
+        string artist;
+
+        /// <summary> character's name </summary>
+        string characterName;
+
         /// <summary> loaded file, if any </summary>
         File loadedFile;
 
@@ -72,6 +78,20 @@ namespace Jintori.CharacterFile
             if (GUILayout.Button("New ID", GUILayout.Width(120)))
                 guid = System.Guid.NewGuid().ToString().ToUpper();
             guid = EditorGUILayout.TextField(guid);
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Character", GUILayout.Width(120));
+            characterName = EditorGUILayout.TextField(characterName);
+            GUILayout.Label("Artist", GUILayout.Width(120));
+            artist = EditorGUILayout.TextField(artist);
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Created:", GUILayout.Width(120));
+            EditorGUILayout.LabelField(loadedFile != null ? loadedFile.createdDate.ToString() : "NEW");
+            GUILayout.Label("Updated", GUILayout.Width(120));
+            EditorGUILayout.LabelField(loadedFile != null ? loadedFile.updatedDate.ToString() : "NEW");
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
@@ -143,6 +163,8 @@ namespace Jintori.CharacterFile
             loadedFile = null;
             guid = System.Guid.NewGuid().ToString().ToUpper();
             tags = "";
+            artist = "";
+            characterName = "";
             baseSheet = null;
             rounds = new RoundImages[Config.Rounds];
             characterSheetFile = null;
@@ -161,7 +183,7 @@ namespace Jintori.CharacterFile
             if (string.IsNullOrEmpty(target))
                 return;
 
-            File.CreateFile(target, guid, tags, characterSheetFile, roundFiles, loadedFile);
+            File.CreateFile(target, guid, characterName, artist, tags, characterSheetFile, roundFiles, loadedFile);
         }
         
         // -----------------------------------------------------------------------------------	
@@ -180,6 +202,8 @@ namespace Jintori.CharacterFile
             baseSheet = loadedFile.baseSheet;
 
             guid = loadedFile.guid;
+            artist = loadedFile.artist;
+            characterName = loadedFile.characterName;
             tags = loadedFile.tags;
 
             for (int i = 0; i < loadedFile.availableRounds; i++)
