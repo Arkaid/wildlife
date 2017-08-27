@@ -79,10 +79,10 @@ namespace Jintori.SelectScreen
         public CharacterIcon lastHover { get; private set; }
 
         /// <summary> Sort criteria for the characters </summary>
-        SortCriteria sortBy = SortCriteria.DateUpdated;
+        SortCriteria sortBy = SortCriteria.DateCreated;
 
         /// <summary> If true, sort backwards </summary>
-        public bool sortReversed = false;
+        bool sortReversed = false;
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
