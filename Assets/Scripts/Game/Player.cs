@@ -154,8 +154,9 @@ namespace Jintori.Game
         }
 
         // -----------------------------------------------------------------------------------	
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
+            base.OnDestroy();
             if (Skill.instance != null)
             {
                 Skill.instance.skillTriggered -= OnSkillTriggered;
