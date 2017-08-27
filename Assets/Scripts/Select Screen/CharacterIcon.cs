@@ -59,6 +59,13 @@ namespace Jintori.SelectScreen
         // -----------------------------------------------------------------------------------	
         void SetCharacterFile(CharacterFile.File file)
         {
+            if (file != null)
+            {
+                bool isNew = !Data.SaveFile.instance.GetCharacterStats(file.guid).played;
+                GameObject newImage = transform.Find("New").gameObject;
+                newImage.SetActive(isNew);
+            }
+
             _characterFile = file;
             Image icon = transform.Find("Icon").GetComponent<Image>();
             icon.sprite = file.baseSheet.icon;

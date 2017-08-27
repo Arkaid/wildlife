@@ -73,6 +73,13 @@ namespace Jintori.Game
             Controller.instance.paused += OnPaused;
         }
 
+        // -----------------------------------------------------------------------------------	
+        private void OnDestroy()
+        {
+            if (Controller.instance != null)
+                Controller.instance.paused -= OnPaused;
+        }
+
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         void OnPaused(bool pause)
