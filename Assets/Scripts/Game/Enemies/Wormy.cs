@@ -113,10 +113,10 @@ namespace Jintori.Game
 
             // Check if we're about to hit path,
             // in which case, steer harder and set a diffent target
-            const float LookAhead = Radius * 4;
             float maxSteering = settings["max_steering"].f;
             float maxSpeed = settings["max_speed"].f;
-            int nHits = Physics2D.CircleCast(transform.position, Radius, velocity, PlayArea.EdgeContactFilter, hits, LookAhead);
+            float lookAheadDistance = 2 * Radius * maxSpeed * Time.fixedDeltaTime;
+            int nHits = Physics2D.CircleCast(transform.position, Radius, velocity, PlayArea.EdgeContactFilter, hits, lookAheadDistance);
             if (nHits > 0)
             {
                 // hard steering began, switch target

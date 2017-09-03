@@ -1,17 +1,19 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using IllogicGate;
 
 namespace Jintori
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    public class SoundManager : IllogicGate.SoundManager2D
+    public class SoundManager : SoundManager2D
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
         static readonly string[] RoundClips = new string []
         {
             "Kurorak - Fulcrum",
+            "Kurorak - Gravibender",
         };
         // --- Static Properties ------------------------------------------------------------------------
         static public new SoundManager instance { get { return IllogicGate.SoundManager2D.instance as SoundManager; } }
@@ -20,6 +22,9 @@ namespace Jintori
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
         // --- Properties -------------------------------------------------------------------------------
+        /// <summary> Randomized list of bgms </summary>
+        List<string> bgmPlayList = new List<string>();
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         protected override void Awake()
@@ -33,7 +38,14 @@ namespace Jintori
         // -----------------------------------------------------------------------------------	
         public void PlayRandomRoundClip()
         {
-            string randomClip = RoundClips[Random.Range(0, RoundClips.Length)];
+            if (bgmPlayList.Count == 0)
+            {
+                bgmPlayList = new List<string>(RoundClips);
+                bgmPlayList.Shuffle();
+            }
+
+            string randomClip = bgmPlayList[0];
+            bgmPlayList.RemoveAt(0);
             PlayBGM(randomClip);
         }
     }
