@@ -412,6 +412,7 @@ namespace Jintori.Game
                 yield return null;
 
             // show score results
+            SoundManager.instance.PlaySFX("ui_sweep_in");
             UI.instance.scoreResults.Show(
                 Timer.instance.elapsedTime,
                 Timer.instance.remainingTime,
