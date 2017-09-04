@@ -73,7 +73,7 @@ namespace Jintori.SelectScreen
                 sfx.value = Mathf.RoundToInt(value);
                 SoundManager sndMgr = SoundManager.instance;
                 sndMgr.sfxVolume = sfx.value / 100f;
-                sndMgr.PlaySFX("ui_select_notch");
+                sndMgr.PlaySFX("ui_hover");
             });
 
             bgm.slider.onValueChanged.AddListener((float value) => 

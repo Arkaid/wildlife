@@ -54,7 +54,6 @@ namespace Jintori.SelectScreen
 
             if (stats.rounds[round].cleared)
             {
-                SoundManager.instance.PlaySFX("ui_accept");
                 Overlay.instance.roundImageViewer.Show(characterFile, round);
             }
             else if (round < characterFile.availableRounds)

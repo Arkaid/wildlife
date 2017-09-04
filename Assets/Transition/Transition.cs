@@ -2,78 +2,84 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// --- Class Declaration ------------------------------------------------------------------------
-public class Transition : IllogicGate.SingletonBehaviour<Transition> 
+namespace Jintori
 {
-    // --- Events -----------------------------------------------------------------------------------
-    // --- Constants --------------------------------------------------------------------------------
-    public const float TransitionTime = 0.45f;
-
-    // --- Static Properties ------------------------------------------------------------------------
-    // --- Static Methods ---------------------------------------------------------------------------
-    // -----------------------------------------------------------------------------------
-    // --- Inspector --------------------------------------------------------------------------------
-    [SerializeField]
-    GameObject loading;
-
-    [SerializeField]
-    UnityEngine.UI.Image maskImage;
-
-    // --- Properties -------------------------------------------------------------------------------
-    public float maskValue
+    // --- Class Declaration ------------------------------------------------------------------------
+    public class Transition : IllogicGate.SingletonBehaviour<Transition>
     {
-        get { return _maskValue; }
-        set { SetMaskValue(value); }
-    }
-    float _maskValue;
+        // --- Events -----------------------------------------------------------------------------------
+        // --- Constants --------------------------------------------------------------------------------
+        public const float TransitionTime = 0.45f;
 
-    Material material { get { return maskImage.material; } }
-        
-    // --- MonoBehaviour ----------------------------------------------------------------------------
-    // -----------------------------------------------------------------------------------	
-    // --- Methods ----------------------------------------------------------------------------------
-    // -----------------------------------------------------------------------------------	
-    protected override void Awake()
-    {
-        base.Awake();
-        DontDestroyOnLoad(gameObject);
-    }
+        // --- Static Properties ------------------------------------------------------------------------
+        // --- Static Methods ---------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------
+        // --- Inspector --------------------------------------------------------------------------------
+        [SerializeField]
+        GameObject loading;
 
-    // -----------------------------------------------------------------------------------	
-    void SetMaskValue(float value)
-    {
-        _maskValue = Mathf.Clamp01(value);
-        material.SetFloat("_MaskValue", _maskValue);
-    }
+        [SerializeField]
+        UnityEngine.UI.Image maskImage;
 
-    // -----------------------------------------------------------------------------------	
-    public IEnumerator Show(bool displayLoading = true)
-    {
-        gameObject.SetActive(true);
-        loading.SetActive(displayLoading);
-        yield return StartCoroutine(Run(0, 1));
-    }
-    
-    // -----------------------------------------------------------------------------------	
-    public IEnumerator Hide()
-    {
-        gameObject.SetActive(true);
-        loading.SetActive(false);
-        yield return StartCoroutine(Run(1, 0));
-        gameObject.SetActive(false);
-    }
-
-    // -----------------------------------------------------------------------------------	
-    IEnumerator Run(float from, float to)
-    {
-        float elapsed = 0;
-        while(elapsed < TransitionTime)
+        // --- Properties -------------------------------------------------------------------------------
+        public float maskValue
         {
-            elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / TransitionTime);
-            maskValue = Mathf.Lerp(from, to, t);
-           yield return null;
+            get { return _maskValue; }
+            set { SetMaskValue(value); }
         }
-        maskValue = to;
+        float _maskValue;
+
+        Material material { get { return maskImage.material; } }
+
+        // --- MonoBehaviour ----------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------	
+        // --- Methods ----------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------	
+        protected override void Awake()
+        {
+            base.Awake();
+            DontDestroyOnLoad(gameObject);
+        }
+
+        // -----------------------------------------------------------------------------------	
+        void SetMaskValue(float value)
+        {
+            _maskValue = Mathf.Clamp01(value);
+            material.SetFloat("_MaskValue", _maskValue);
+        }
+
+        // -----------------------------------------------------------------------------------	
+        public IEnumerator Show(bool displayLoading = true, bool playSound = true)
+        {
+            gameObject.SetActive(true);
+            loading.SetActive(displayLoading);
+            yield return StartCoroutine(Run(0, 1, playSound));
+        }
+
+        // -----------------------------------------------------------------------------------	
+        public IEnumerator Hide(bool playSound = true)
+        {
+            gameObject.SetActive(true);
+            loading.SetActive(false);
+            yield return StartCoroutine(Run(1, 0, playSound));
+            gameObject.SetActive(false);
+        }
+
+        // -----------------------------------------------------------------------------------	
+        IEnumerator Run(float from, float to, bool playSound)
+        {
+            if (playSound)
+                SoundManager.instance.PlaySFX("ui_transition");
+
+            float elapsed = 0;
+            while (elapsed < TransitionTime)
+            {
+                elapsed += Time.deltaTime;
+                float t = Mathf.Clamp01(elapsed / TransitionTime);
+                maskValue = Mathf.Lerp(from, to, t);
+                yield return null;
+            }
+            maskValue = to;
+        }
     }
 }

@@ -67,6 +67,7 @@ namespace Jintori.Common.UI
                 yield return null;
 
             // show stats
+            SoundManager.instance.PlaySFX("ui_sweep_in");
             stats.Show(round, characterFile.guid);
 
             // wait
