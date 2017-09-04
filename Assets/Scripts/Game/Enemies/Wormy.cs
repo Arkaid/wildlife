@@ -32,9 +32,6 @@ namespace Jintori.Game
         /// <summary> Current position (play area coordinates) </summary>
         Vector2 position = Vector2.zero;
 
-        /// <summary> If true, hard steering has been engaged to avoid hitting an edge </summary>
-        bool hardSteering = false;
-
         /// <summary> History of positions, used to trail the segments </summary>
         List<Vector2> positionHistory;
 
@@ -106,24 +103,24 @@ namespace Jintori.Game
         // -----------------------------------------------------------------------------------	
         protected override void UpdatePosition()
         {
-#if UNITY_EDITOR
-            Vector2 worldTarget = playArea.MaskPositionToWorld(target);
-            Debug.DrawLine(transform.position, worldTarget, Color.red);
-#endif
-
             // Check if we're about to hit path,
             // in which case, steer harder and set a diffent target
             float maxSteering = settings["max_steering"].f;
             float maxSpeed = settings["max_speed"].f;
-            float lookAheadDistance = 2 * Radius * maxSpeed * Time.fixedDeltaTime;
+            float speed = velocity.magnitude;
+            float lookAheadDistance = speed * Time.fixedDeltaTime * 0.5f * Radius;
+
+#if UNITY_EDITOR
+            Vector2 worldTarget = playArea.MaskPositionToWorld(target);
+            Debug.DrawLine(transform.position, worldTarget, Color.red);
+            Debug.DrawRay(transform.position, velocity / speed * lookAheadDistance, Color.cyan);
+#endif
+
             int nHits = Physics2D.CircleCast(transform.position, Radius, velocity, PlayArea.EdgeContactFilter, hits, lookAheadDistance);
             if (nHits > 0)
             {
-                // hard steering began, switch target
-                if (!hardSteering)
-                    target = FindValidTarget(position, Radius);
-
-                hardSteering = true;
+                // find a new target
+                target = FindValidTarget(position, Radius);
 
                 // calculate the steering force as a function of distance
                 // (the closer to the edge, the harder it steers)
@@ -131,11 +128,8 @@ namespace Jintori.Game
                 float multiplier = Math.Max(1f / distance, 1);
                 maxSteering *= multiplier;
             }
-            else
-                hardSteering = false;
 
             // calculate new velocity based on steering
-
             Vector2 desired = (target - position).normalized * maxSpeed;
             Vector2 steering = desired - velocity;
             steering = Vector2.ClampMagnitude(steering, maxSteering);
