@@ -321,17 +321,17 @@
 					"blob_spawn_time": 3
 				},
 				{
-					"speed": 250,
+					"speed": 225,
 					"blob_max_count": 5,
 					"blob_spawn_time": 2.5
 				},
 				{
-					"speed": 275,
+					"speed": 250,
 					"blob_max_count": 6,
 					"blob_spawn_time": 2
 				},
 				{
-					"speed": 300,
+					"speed": 275,
 					"blob_max_count": 8,
 					"blob_spawn_time": 2
 				}
@@ -359,25 +359,25 @@
 			],
 			"Wormy": [{
 					"max_speed": 350,
-					"max_steering": 20,
+					"max_steering": 15,
 					"bug_spawn_time": 4,
 					"bug_max_count": 3
 				},
 				{
-					"max_speed": 400,
-					"max_steering": 20,
+					"max_speed": 375,
+					"max_steering": 15,
 					"bug_spawn_time": 3.5,
 					"bug_max_count": 4
 				},
 				{
-					"max_speed": 450,
+					"max_speed": 400,
 					"max_steering": 20,
 					"bug_spawn_time": 3,
 					"bug_max_count": 5
 				},
 				{
-					"max_speed": 500,
-					"max_steering": 25,
+					"max_speed": 425,
+					"max_steering": 20,
 					"bug_spawn_time": 2.5,
 					"bug_max_count": 5
 				}
@@ -408,7 +408,7 @@
 					"cannonball_speed": 120
 				},
 				{
-					"speed": 80,
+					"speed": 75,
 					"rotation_speed_angle": 0.07,
 					"shoot_time": 2.5,
 					"cannonballs_per_shot": 4,
@@ -416,7 +416,7 @@
 					"cannonball_speed": 130
 				},
 				{
-					"speed": 90,
+					"speed": 80,
 					"rotation_speed_angle": 0.07,
 					"shoot_time": 2,
 					"cannonballs_per_shot": 5,
@@ -424,7 +424,7 @@
 					"cannonball_speed": 140
 				},
 				{
-					"speed": 100,
+					"speed": 85,
 					"rotation_speed_angle": 0.07,
 					"shoot_time": 1,
 					"cannonballs_per_shot": 6,
