@@ -202,6 +202,17 @@ namespace IllogicGate
         }
 
         // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Stops a sound effect (if still running)
+        /// </summary>
+        public void StopSFX(string clip)
+        {
+            AudioSource source = sfx.Find(src => src.clip.name == clip);
+            if (source != null)
+                source.Stop();
+        }
+
+        // -----------------------------------------------------------------------------------	
         IEnumerator PlaySFX(ClipData data)
         {
             // create a new audio source for the clip
