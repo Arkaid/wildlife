@@ -72,6 +72,8 @@ namespace Jintori.Game
             // can we activate the skill?
             if (!isActive && remainingTime > 0 && Input.GetButton("Skill"))
             {
+                string clip = "game_skill_" + type.ToString().ToLower();
+                SoundManager.instance.PlaySFX(clip);
                 isActive = true;
                 if (skillTriggered != null)
                     skillTriggered();
@@ -80,6 +82,8 @@ namespace Jintori.Game
             // do we have to deactivate the skill
             else if (isActive && (remainingTime <= 0 || !Input.GetButton("Skill")))
             {
+                string clip = "game_skill_" + type.ToString().ToLower();
+                SoundManager.instance.StopSFX(clip);
                 isActive = false;
                 if (skillReleased != null)
                     skillReleased();
