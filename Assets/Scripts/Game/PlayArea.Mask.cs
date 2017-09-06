@@ -108,61 +108,68 @@ namespace Jintori.Game
 
                 // first pass:
                 // clear everything, but leave the path
+                List<int> path = new List<int>();
                 for (int i = 0; i < imageWidth * imageHeight; i++)
-                    data[i] = (data[i] == Safe || data[i] == Cut) ? Safe : Cleared;
+                {
+                    // we consider the borders as safe
+                    int x = i % imageWidth;
+                    int y = i / imageWidth;
+                    bool isBorder = (x == 0 || x == imageWidth - 1 || y == 0 || y == imageHeight - 1);
+
+                    if (isBorder || data[i] == Safe || data[i] == Cut)
+                        path.Add(i);
+                    else
+                        data[i] = Cleared;
+                }
 
                 // second pass:
                 // fill area from boss into "shadowed"
                 Fill(bossX, bossY, Shadowed);
 
-                // third pass:
-                // find the edges between shadow and clear,
-                // turn them into safe paths
+                // third pass: 
+                // Run through the path. If any 8-direction pixel is shadow
+                // turn it to safe, otherwise cleared
                 outOfBoundsAsCleared = true;
-                clearedShadowArea = 0;
-                for (int i = 0; i < imageWidth; i++)
+                foreach (int i in path)
                 {
-                    for (int j = 0; j < imageHeight; j++)
+                    int x = i % imageWidth;
+                    int y = i / imageWidth;
+
+                    bool hasShadow = false;
+                    hasShadow = hasShadow || this[x - 1, y - 1] == Shadowed;
+                    hasShadow = hasShadow || this[x - 1, y + 1] == Shadowed;
+                    hasShadow = hasShadow || this[x + 1, y + 1] == Shadowed;
+                    hasShadow = hasShadow || this[x + 1, y - 1] == Shadowed;
+                    hasShadow = hasShadow || this[x + 1, y] == Shadowed;
+                    hasShadow = hasShadow || this[x - 1, y] == Shadowed;
+                    hasShadow = hasShadow || this[x, y + 1] == Shadowed;
+                    hasShadow = hasShadow || this[x, y - 1] == Shadowed;
+
+                    data[i] = hasShadow ? Safe : Cleared;
+                }
+                outOfBoundsAsCleared = false;
+
+                // fourth pass:
+                // count pixels and find center point of difference
+                clearedShadowArea = 0;
+                for (int i = 0; i < imageWidth * imageHeight; i++)
+                {
+                    if (oldData[i] != data[i])
                     {
-                        int idx = j * imageWidth + i;
-
-                        // NOTE: we consider the outer edges as "Safe"
-                        if (i == 0 || i == imageWidth - 1 || j == 0 || j == imageHeight - 1)
-                            data[idx] = Safe;
-
-                        // can only turn shadow into path
-                        if (data[idx] == Safe)
-                        {
-
-                            // If any combination of opposite sides is cleared, so is the center
-                            bool isCleared = this[i - 1, j - 1] + this[i + 1, j + 1]
-                                           + this[i + 1, j - 1] + this[i - 1, j + 1] == Cleared;
-                            isCleared = isCleared || this[i - 1, j] + this[i + 1, j] == Cleared;
-                            isCleared = isCleared || this[i, j - 1] + this[i, j + 1] == Cleared;
-                            this[i, j] = isCleared ? Cleared : Safe;
-
-                        }
-
-                        // count pixels in the shadow that have been cleared
-                        if (data[idx] == Cleared)
-                            clearedShadowArea += shadowImage[idx];
-
-                        if (oldData[idx] != data[idx])
-                        {
-                            center += new Vector2(i, j);
-                            diffCount++;
-                        }
+                        center += new Vector2(i % imageWidth, i / imageWidth);
+                        diffCount++;
                     }
 
+                    if (data[i] == Cleared)
+                        clearedShadowArea += shadowImage[i];
                 }
                 clearedShadowArea /= 255;
-
-                outOfBoundsAsCleared = false;
 
                 // average the position
                 if (diffCount != 0)
                     center = center / diffCount;
 
+                // raise event
                 if (maskCleared != null)
                     maskCleared(new Point(center));
             }

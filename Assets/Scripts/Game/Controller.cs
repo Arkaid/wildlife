@@ -35,14 +35,6 @@ namespace Jintori.Game
         [SerializeField]
         MeshFilter initialSquare = null;
 
-#if UNITY_EDITOR
-        [SerializeField]
-        Texture2D DEBUG_baseImage = null;
-
-        [SerializeField]
-        Texture2D DEBUG_shadowImage = null;
-#endif
-
         // --- Properties -------------------------------------------------------------------------------
         /// <summary> Current round (1, 2 or 3) </summary>
         public int round { get; private set; }
@@ -122,6 +114,8 @@ namespace Jintori.Game
         // -----------------------------------------------------------------------------------	
         IEnumerator InitializeRound()
         {
+            Debug.Log("Starting round: " + (round + 1));
+
             // destroy previous area
             if (playArea != null)
                 Destroy(playArea.gameObject);
@@ -138,7 +132,7 @@ namespace Jintori.Game
             playArea = Instantiate(sourcePlayArea, sourcePlayArea.transform.parent, true);
             playArea.gameObject.SetActive(true);
             playArea.Setup(roundData.baseImage, roundData.shadowImage, bossType);
-            //currentPlay.Setup(DEBUG_baseImage, DEBUG_shadowImage, bossType);
+            Debug.Log("Boss: " + bossType.Name.ToString());
 
             // reset percentage tracker to zero
             lastPercentage = 0;
