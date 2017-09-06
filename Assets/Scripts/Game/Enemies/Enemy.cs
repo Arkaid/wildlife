@@ -216,7 +216,10 @@ namespace Jintori.Game
         /// </summary>
         void KillIfOutsideShadow(Point center)
         {
-            if (playArea.mask[x, y] != PlayArea.Shadowed)
+            // this should not happen, but as a safety net...
+            bool isOutOfBounds = x < 0 || x >= PlayArea.imageWidth || y < 0 || y >= PlayArea.imageHeight;
+
+            if (isOutOfBounds || playArea.mask[x, y] != PlayArea.Shadowed)
                 Kill(true);
         }
 

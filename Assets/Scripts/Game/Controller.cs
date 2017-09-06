@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using IllogicGate;
 
 namespace Jintori.Game
 {
@@ -92,14 +93,7 @@ namespace Jintori.Game
 
             // randomize bosses (we have 3, but need 4)
             roundBoss = new List<Enemy>(sourcePlayArea.GetBosses());
-            for(int i = 0; i < 100; i++)
-            {
-                int a = Random.Range(0, roundBoss.Count);
-                int b = Random.Range(0, roundBoss.Count);
-                Enemy tmp = roundBoss[a];
-                roundBoss[a] = roundBoss[b];
-                roundBoss[b] = tmp;
-            }
+            roundBoss.Shuffle();
             roundBoss.Add(roundBoss[Random.Range(0, roundBoss.Count)]);
 
             // basic initialization
