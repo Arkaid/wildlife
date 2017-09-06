@@ -303,6 +303,9 @@ namespace Jintori.Game
         // -----------------------------------------------------------------------------------	
         private void OnPlayerSpawned()
         {
+            // this solves the problem of the player dying while using a skill
+            Skill.instance.Deactivate();
+
             livesLeft--;
             UI.instance.lives = livesLeft;
         }

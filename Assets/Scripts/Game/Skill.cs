@@ -55,9 +55,7 @@ namespace Jintori.Game
         // -----------------------------------------------------------------------------------	
         private void OnDisable()
         {
-            if (isActive && skillReleased != null)
-                skillReleased();
-            isActive = false;
+            Deactivate();
         }
 
         // -----------------------------------------------------------------------------------	
@@ -81,13 +79,7 @@ namespace Jintori.Game
 
             // do we have to deactivate the skill
             else if (isActive && (remainingTime <= 0 || !Input.GetButton("Skill")))
-            {
-                string clip = "game_skill_" + type.ToString().ToLower();
-                SoundManager.instance.StopSFX(clip);
-                isActive = false;
-                if (skillReleased != null)
-                    skillReleased();
-            }
+                Deactivate();
 
             if (isActive)
             {
@@ -103,6 +95,21 @@ namespace Jintori.Game
             maxTime = Config.instance.GetSkillTime(type);
             remainingTime = maxTime;
             speedMultiplier = 1;
+        }
+
+        // -----------------------------------------------------------------------------------	
+        /// <summary> Resets the skill to its inactive state </summary>
+        public void Deactivate()
+        {
+            if (SoundManager.instance != null)
+            {
+                string clip = "game_skill_" + type.ToString().ToLower();
+                SoundManager.instance.StopSFX(clip);
+            }
+
+            isActive = false;
+            if (skillReleased != null)
+                skillReleased();
         }
 
         // -----------------------------------------------------------------------------------	
