@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Globalization;
 using System.IO;
 
 #if UNITY_EDITOR
@@ -215,8 +216,8 @@ namespace Jintori.CharacterFile
                 characterName = br.ReadString();
                 artist = br.ReadString();
                 tags = br.ReadString();
-                createdDate = DateTime.Parse(br.ReadString());
-                updatedDate = DateTime.Parse(br.ReadString());
+                createdDate = DateTime.Parse(br.ReadString(), CultureInfo.InvariantCulture);
+                updatedDate = DateTime.Parse(br.ReadString(), CultureInfo.InvariantCulture);
 
                 characterSheet = new Entry(br);
                 isPortrait = new bool[Config.Rounds];
