@@ -151,28 +151,30 @@ namespace Jintori.Game
             const float RotateTime = 0.5f;
 
             Collider2D turretCollider = turretTransform.GetComponent<Collider2D>();
-            Vector2 start = turretTransform.up;
-            float elapsed = 0;
 
-            while (elapsed <= RotateTime)
+            // keep rotating as long as the turret is touching an edge
+            do
             {
-                // do nothing while paused
-                while (Controller.instance.isPaused)
+                Vector2 start = turretTransform.up;
+                float elapsed = 0;
+
+                while (elapsed <= RotateTime)
+                {
+                    // do nothing while paused
+                    while (Controller.instance.isPaused)
+                        yield return null;
+
+                    // don't move while frozen
+                    while (Skill.instance.isFreezeActive)
+                        yield return null;
+
+                    elapsed += Time.deltaTime;
+                    float t = Mathf.Clamp01(elapsed / RotateTime);
+                    turretTransform.up = Quaternion.Euler(0, 0, RotateAngle * t) * start;
                     yield return null;
 
-                // don't move while frozen
-                while (Skill.instance.isFreezeActive)
-                    yield return null;
-
-                // don't shoot if the turret is touching the edges
-                while (turretCollider.IsTouchingLayers(PlayArea.EdgesLayerMask))
-                    yield return null;
-
-                elapsed += Time.deltaTime;
-                float t = Mathf.Clamp01(elapsed / RotateTime);
-                turretTransform.up = Quaternion.Euler(0, 0, RotateAngle * t) * start;
-                yield return null;
-            }
+                }
+            } while (turretCollider.IsTouchingLayers(PlayArea.EdgesLayerMask));
 
             animator.SetTrigger("Shoot");
             while (animator.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
