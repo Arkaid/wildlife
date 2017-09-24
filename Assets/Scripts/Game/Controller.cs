@@ -431,9 +431,9 @@ namespace Jintori.Game
             // play next round or go back to top menu?
             round++;
             int lastRound = sourceFile.availableRounds;
-            if (Config.instance.difficulty != Config.Difficulty.Hard && 
+            if (Config.instance.difficulty == Config.Difficulty.Easy && 
                 sourceFile.availableRounds == Config.Rounds)
-                lastRound = Config.Rounds - 1; // the last round can only be played in Hard mode
+                lastRound = Config.Rounds - 1; // Round 4 can only be played on Normal or Hard
 
             if (round < lastRound)
             {
@@ -460,7 +460,15 @@ namespace Jintori.Game
             Data.CharacterStats stats = Data.SaveFile.instance.GetCharacterStats(sourceFile.guid);
             Data.RoundData roundData = stats.rounds[round];
             Data.Records records = roundData.records[Config.instance.difficulty];
-            roundData.cleared = true;
+
+            // only set as cleared if not on easy AND round is one less than the last one
+            if (!roundData.cleared)
+            {
+                bool isHardOnlyRound = round == Config.Rounds - 1;
+                Config.Difficulty diff = Config.instance.difficulty;
+                roundData.cleared = diff == Config.Difficulty.Hard
+                                || (diff == Config.Difficulty.Normal && !isHardOnlyRound);
+            }
 
             float elapsed = Timer.instance.elapsedTime;
             isBestTime = records.bestTime == -1 || elapsed < records.bestTime;
