@@ -110,5 +110,25 @@ namespace Jintori.Game
             _y = Mathf.RoundToInt(pos.y + PlayArea.imageHeight * 0.5f);
             _y = Mathf.Clamp(_y, 0, PlayArea.imageHeight - 1);
         }
+
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Checks whether this object is in the shadow or not. Requires a collider
+        /// If object does not have a collider it will throw an exception
+        /// </summary>
+        /// <returns></returns>
+        public bool IsInShadow()
+        {
+            Collider2D collider = GetComponent<Collider2D>();
+            if (collider == null)
+                throw new System.Exception("Cannot determine size without a collider");
+
+            // first check: is the position within the shadow?
+            if (playArea.mask[x, y] != PlayArea.Shadowed)
+                return false;
+
+            // second check. Are the bounds intersecting with the safe path in any way?
+            return !playArea.safePath.Intersects(collider.bounds);
+        }
     }
 }

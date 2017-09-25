@@ -253,33 +253,12 @@ namespace Jintori.Game
             // object must be a boss
             Debug.Assert(isBoss);
 
-            // to check for intersection
-            Vector3 min = playArea.MaskPositionToWorld(playerInitalSquare.xMin, playerInitalSquare.yMin);
-            Vector3 max = playArea.MaskPositionToWorld(playerInitalSquare.xMax, playerInitalSquare.yMax);
-            Bounds initalSquare = new Bounds();
-            initalSquare.SetMinMax(min, max);
-
-            // create a random position within the play
-            // area that does not intersect with the initial area
-            Bounds bounds = collider.bounds;
-            while (true)
+            // find a valid position in the shadow
+            do
             {
-                Vector2 center = new Vector2();
-                int minX = (int)bounds.extents.x; int maxX = PlayArea.imageWidth - minX;
-                int minY = (int)bounds.extents.y; int maxY = PlayArea.imageHeight - minY;
-                center.x = Random.Range(minX, maxX);
-                center.y = Random.Range(minY, maxY);
-
-                bounds.center = playArea.MaskPositionToWorld(center);
-
-                if (bounds.Intersects(initalSquare))
-                    continue;
-
-                x = (int)center.x;
-                y = (int)center.y;
-
-                break;
-            }
+                x = Random.Range(0, PlayArea.imageWidth);
+                y = Random.Range(0, PlayArea.imageHeight);
+            } while (!IsInShadow());
         }
 
         // -----------------------------------------------------------------------------------	

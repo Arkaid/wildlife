@@ -48,9 +48,6 @@ namespace Jintori.Game
         }
         PlayArea _playArea;
 
-        /// <summary> List of 3D points used by the line renderer (local coordinates) </summary>
-        public Vector3 [] points { get; private set; }
-
         /// <summary> Edge collider </summary>
         public List<EdgeCollider2D> colliders { get; private set; }
 
@@ -147,7 +144,7 @@ namespace Jintori.Game
         /// outer edges
         /// </summary>
         /// <param name="segments"></param>
-        public void AddPlayAreaEdges(List<List<Point>> segments)
+        void AddPlayAreaEdges(List<List<Point>> segments)
         {
             // check each corner. If it is "safe" but doesn't have a segment that passes
             // through that corner, we need to add them
@@ -177,6 +174,36 @@ namespace Jintori.Game
             // if we got this far, it means that all 4 corners are safe
             // AND neither has a segment going through them. Draw an extra path
             segments.Add(corners);
+        }
+
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Checks every edge on the path to see if intersects the bounds, in world coordinates
+        /// </summary>
+        /// <param name="bounds"></param>
+        /// <returns></returns>
+        public bool Intersects(Bounds bounds)
+        {
+            foreach(LineRenderer rend in lineRenderers)
+            {
+                Vector3 pt_a = transform.TransformPoint(rend.GetPosition(0));
+                pt_a.z = bounds.center.z;
+                for (int i = 1; i < rend.positionCount; i++)
+                {
+                    Vector3 pt_b = transform.TransformPoint(rend.GetPosition(i));
+                    pt_b.z = pt_a.z;
+
+                    Vector3 line = pt_b - pt_a;
+                    Ray ray = new Ray(pt_a, line);
+                    float distance;
+                    if (bounds.IntersectRay(ray, out distance) && distance <= line.magnitude)
+                        return true;
+
+                    pt_a = pt_b;
+                }
+
+            }
+            return false;
         }
     }
 }
