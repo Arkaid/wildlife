@@ -17,13 +17,17 @@ namespace Jintori.Common.UI
         // --- Inspector --------------------------------------------------------------------------------
         [SerializeField]
         RawImage landscape;
+
         [SerializeField]
         RawImage portrait;
+
         [SerializeField]
         GameObject localBackground;
 
-        // --- Properties -------------------------------------------------------------------------------
+        [SerializeField]
+        Text artist;
 
+        // --- Properties -------------------------------------------------------------------------------
         Stats stats;
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
@@ -37,6 +41,7 @@ namespace Jintori.Common.UI
             landscape.enabled = false;
             portrait.enabled = false;
             localBackground.SetActive(false);
+            artist.text = "";
             Overlay.instance.background.Show(Color.clear);
 
             gameObject.SetActive(true);
@@ -57,6 +62,7 @@ namespace Jintori.Common.UI
             CharacterFile.RoundImages images = characterFile.LoadRound(round);
             target.texture = images.baseImage;
             target.enabled = true;
+            artist.text = "ARTIST:" + characterFile.artist.ToUpper();
             localBackground.SetActive(true);
             Overlay.instance.background.Show();
             yield return StartCoroutine(Transition.instance.Hide());
@@ -80,6 +86,7 @@ namespace Jintori.Common.UI
             Overlay.instance.background.Hide();
             stats.Hide();
             localBackground.SetActive(false);
+            artist.text = "";
             target.enabled = false;
             yield return StartCoroutine(Transition.instance.Hide());
 
