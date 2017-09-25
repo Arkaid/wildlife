@@ -51,6 +51,16 @@ namespace Jintori.Game
         ScoreResults _scoreResults = null;
         public ScoreResults scoreResults { get { return _scoreResults; } }
 
+        [SerializeField]
+        Text _artist = null;
+        public string artist
+        {
+            set
+            {
+                _artist.gameObject.SetActive(!string.IsNullOrEmpty(value));
+                _artist.text = "ARTIST:" + value.ToUpper();
+            }
+        }
 
         // --- Properties -------------------------------------------------------------------------------
         /// <summary> Total lives to show </summary>
@@ -75,6 +85,8 @@ namespace Jintori.Game
 
             lives = livesLeft;
             livesIcon.color = Config.instance.skillColor;
+
+            artist = "";
 
             timeDisplay.Reset(roundTime);
             percentageBar.Reset(clearPercentage);

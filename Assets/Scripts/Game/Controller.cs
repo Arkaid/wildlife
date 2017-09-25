@@ -397,6 +397,9 @@ namespace Jintori.Game
             yield return StartCoroutine(playArea.DiscoverShadow());
             UI.instance.HideResult();
 
+            // show the artist's name
+            UI.instance.artist = sourceFile.artist;
+
             // wait until the player hits fire again
             yield return null;
             while (!Input.GetButtonDown("Cut"))
