@@ -20,6 +20,9 @@ namespace Jintori.Game
         [SerializeField]
         new Animation animation = null;
 
+        [SerializeField]
+        Text musicText = null;
+
         // --- Properties -------------------------------------------------------------------------------
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
@@ -33,18 +36,35 @@ namespace Jintori.Game
         public void Reset()
         {
             gameObject.SetActive(false);
+            musicText.text = "";
         }
 
         // -----------------------------------------------------------------------------------	
-        public IEnumerator Show(int round)
+        public IEnumerator Show(int round, string musicCredits)
         {
             Debug.Assert(round >= 0 && round < rounds.Length);
+
+            musicText.text = "œ " + musicCredits.ToUpper() + " œ";
 
             gameObject.SetActive(true);
             for (int i = 0; i < rounds.Length; i++)
                 rounds[i].gameObject.SetActive(i == round);
 
             animation.Play();
+            while (animation.isPlaying)
+                yield return null;
+        }
+
+        // -----------------------------------------------------------------------------------	
+        public void Hide()
+        {
+            StartCoroutine(HideCoroutine());
+        }
+
+        // -----------------------------------------------------------------------------------	
+        IEnumerator HideCoroutine()
+        {
+            animation.Play("music_credits_out");
             while (animation.isPlaying)
                 yield return null;
 

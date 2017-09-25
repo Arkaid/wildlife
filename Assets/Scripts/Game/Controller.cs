@@ -169,7 +169,7 @@ namespace Jintori.Game
             yield return StartCoroutine(Transition.instance.Hide());
 #endif
             // play the intro animation for the round
-            yield return StartCoroutine(UI.instance.roundStart.Show(round));
+            yield return StartCoroutine(UI.instance.roundStart.Show(round, SoundManager.instance.currentBGM));
 
             // Create a square that randomly changes sizes
             // until the fire button gets pressed
@@ -211,6 +211,9 @@ namespace Jintori.Game
                 if (wait > 0)
                     break;
             }
+
+            // hide the round start UI
+            UI.instance.roundStart.Hide();
 
             IntRect rect = new IntRect()
             {

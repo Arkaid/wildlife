@@ -26,6 +26,9 @@ namespace Jintori
         /// <summary> Randomized list of bgms </summary>
         List<string> bgmPlayList = new List<string>();
 
+        /// <summary> Name of the BGM currently playing </summary>
+        public string currentBGM { get; private set; }
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         protected override void Awake()
@@ -45,9 +48,9 @@ namespace Jintori
                 bgmPlayList.Shuffle();
             }
 
-            string randomClip = bgmPlayList[0];
+            currentBGM = bgmPlayList[0];
             bgmPlayList.RemoveAt(0);
-            PlayBGM(randomClip);
+            PlayBGM(currentBGM);
         }
     }
 }
