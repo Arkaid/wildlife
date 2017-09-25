@@ -12,10 +12,13 @@ namespace Jintori
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
         /// <summary> Server URL for API calls </summary>
-        public const string ServerURL = "https://arkaid.duckdns.org/jintori/";
+        public const string ServerURL = "https://arkaid.duckdns.org/wildlife/";
 
         /// <summary> Directory within the server where the character files are </summary>
         public const string CharactersURL = ServerURL + "characters/";
+
+        /// <summary> API URL </summary>
+        public const string APIURL = ServerURL + "api/";
 
         /// <summary> Color to paint the player, according to skill </summary>
         public static readonly Dictionary<Skill.Type, Color> SkillColor = new Dictionary<Skill.Type, Color>()

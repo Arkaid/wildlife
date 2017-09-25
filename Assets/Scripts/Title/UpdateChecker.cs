@@ -84,7 +84,7 @@ namespace Jintori.Title
             form.AddField("cmd", "chk_ver");
             form.AddField("ver", Application.version);
 
-            WWW www = new WWW(Config.ServerURL, form.data);
+            WWW www = new WWW(Config.APIURL, form.data);
             yield return www;
 
             if (!string.IsNullOrEmpty(www.error))
@@ -110,7 +110,7 @@ namespace Jintori.Title
             // request character list
             WWWForm form = new WWWForm();
             form.AddField("cmd", "get_list");
-            WWW www = new WWW(Config.ServerURL, form.data);
+            WWW www = new WWW(Config.APIURL, form.data);
             yield return www;
 
             if (!string.IsNullOrEmpty(www.error))
