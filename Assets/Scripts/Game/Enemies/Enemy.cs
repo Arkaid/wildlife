@@ -242,27 +242,6 @@ namespace Jintori.Game
 
         // -----------------------------------------------------------------------------------	
         /// <summary>
-        /// Sets the position of the boss at the start of the game
-        /// </summary>
-        /// <param name="playerInitalSquare">Needed to know where NOT to start</param>
-        public void SetBossStartPosition(IntRect playerInitalSquare)
-        {
-            // object must be active for this to work...
-            Debug.Assert(gameObject.activeInHierarchy);
-
-            // object must be a boss
-            Debug.Assert(isBoss);
-
-            // find a valid position in the shadow
-            do
-            {
-                x = Random.Range(0, PlayArea.imageWidth);
-                y = Random.Range(0, PlayArea.imageHeight);
-            } while (!IsInShadow());
-        }
-
-        // -----------------------------------------------------------------------------------	
-        /// <summary>
         /// Finds a random point on the shadow it can move to without being interrupted
         /// </summary>
         protected Vector2 FindValidTarget(Vector2 from, float bossRadius)

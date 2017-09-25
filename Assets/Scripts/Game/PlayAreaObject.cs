@@ -130,5 +130,19 @@ namespace Jintori.Game
             // second check. Are the bounds intersecting with the safe path in any way?
             return !playArea.safePath.Intersects(collider.bounds);
         }
+
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Places this object randomly on the play area. It requires a collider to estimate size
+        /// </summary>
+        public void PlaceRandomly()
+        {
+            // find a valid position in the shadow
+            do
+            {
+                x = Random.Range(0, PlayArea.imageWidth);
+                y = Random.Range(0, PlayArea.imageHeight);
+            } while (!IsInShadow());
+        }
     }
 }

@@ -240,7 +240,7 @@ namespace Jintori.Game
             // now that the play area has colliders, 
             // place the boss safely in the shadow
             playArea.boss.gameObject.SetActive(true);
-            playArea.boss.SetBossStartPosition(rect);
+            playArea.boss.PlaceRandomly();
             playArea.boss.minionKilled += OnMinionKilled;
             playArea.boss.Run();
 
