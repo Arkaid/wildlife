@@ -20,57 +20,19 @@ namespace Jintori.Game
         TextMeshEffect textMeshEffect;
 
         // --- Properties -------------------------------------------------------------------------------
-        /// <summary> Play area we play the effects on </summary>
-        PlayArea playArea;
 
-        float prevScore;
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         /// <summary>
-        /// Resets the effects for the new round
-        /// You MUST call this after creating the initial square
+        /// Shows the "+X,XXX PTS" effect. position is in world coordinates
         /// </summary>
-        public void Setup()
+        public void ShowScore(int score, Vector3 position)
         {
-            playArea = GetComponentInParent<PlayArea>();
-
-            // save the initial score
-            prevScore = Controller.instance.score;
-
-            // callback to update the cleared area effects after the safe path is redrawn
-            playArea.mask.maskCleared += OnMaskCleared;
-
-            // callback to display score effects on minions' deaths
-            playArea.boss.minionKilled += OnMinionKilled;
-        }
-
-        // -----------------------------------------------------------------------------------	
-        private void OnMinionKilled(Enemy enemy, bool killedByPlayer)
-        {
-            if (!killedByPlayer)
-                return;
-
             TextMeshEffect tme = Instantiate(textMeshEffect, transform, true);
             tme.gameObject.SetActive(true);
-            tme.ShowScore(enemy.score, enemy.transform.position);
-        }
-
-        // -----------------------------------------------------------------------------------	
-        void OnMaskCleared(Point center)
-        {
-            // Create a text with the score for the cleared section
-            int diffScore = Mathf.FloorToInt(Controller.instance.score - prevScore);
-            prevScore = Controller.instance.score;
-
-            // we need the centroid in world coordinates
-            Vector3 worldCenter = playArea.MaskPositionToWorld(center);
-
-            // play effect
-            TextMeshEffect tme = Instantiate(textMeshEffect, transform, true);
-            tme.gameObject.SetActive(true);
-            tme.ShowScore(diffScore, worldCenter);
+            tme.Show(string.Format("+{0:###,###,##0}<size=10>    </size>PTS", score), position);
         }
     }
 }

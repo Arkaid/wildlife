@@ -22,18 +22,9 @@ namespace Jintori.Game
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         /// <summary>
-        /// Shows the "+X,XXX PTS" effect. start is in world coordinates
-        /// </summary>
-        public void ShowScore(int score, Vector3 start)
-        {
-            Run(string.Format("+{0:###,###,##0}<size=10>    </size>PTS", score), start);
-        }
-
-        // -----------------------------------------------------------------------------------	
-        /// <summary>
         /// Shows any text effect. start is in world coordinates
         /// </summary>
-        public void Run(string text, Vector3 start)
+        public void Show(string text, Vector3 start)
         {
             TextMesh[] tms = GetComponentsInChildren<TextMesh>();
             foreach (TextMesh tm in tms)

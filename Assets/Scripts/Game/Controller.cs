@@ -233,10 +233,6 @@ namespace Jintori.Game
             playArea.CreateStartingZone(rect);
             initialSquare.gameObject.SetActive(false);
 
-            // setup the play area ffects
-            // we have to do it here since we need the initial path
-            playArea.effects.Setup();
-
             // now that the play area has colliders, 
             // place the boss safely in the shadow
             playArea.boss.gameObject.SetActive(true);
@@ -287,8 +283,11 @@ namespace Jintori.Game
         // -----------------------------------------------------------------------------------	
         private void OnMinionKilled(Enemy minion, bool killedByPlayer)
         {
-            if (killedByPlayer)
-                score += minion.score;
+            if (!killedByPlayer)
+                return;
+
+            score += minion.score;
+            playArea.effects.ShowScore(minion.score, minion.transform.position);
         }
 
         // -----------------------------------------------------------------------------------	
@@ -500,6 +499,9 @@ namespace Jintori.Game
             score += deltaScore;
             lastPercentage = percentage;
             UI.instance.scoreDisplay.score = (long)score;
+
+            // show effect
+            playArea.effects.ShowScore((int)deltaScore, playArea.MaskPositionToWorld(centroid));
 
             // calculate skill recharge
             Skill.instance.Recharge(delta);
