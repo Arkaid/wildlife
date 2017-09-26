@@ -26,6 +26,7 @@ namespace Jintori.Game
         };
         public const int EnemiesLayerMask = 1 << 9;
 
+        public const int BonusesLayerMask = 1 << 10;
 
         /// <summary> Width of the main game image in landscape mode, in pixels </summary>
         public const int LandscapeWidth = 960;
@@ -141,7 +142,7 @@ namespace Jintori.Game
         }
         
         // -----------------------------------------------------------------------------------	
-        /// <summary> Retreive a list of bosses for the play ara </summary>
+        /// <summary> Retreive a list of bosses for the play area </summary>
         public Enemy [] GetBosses()
         {
             Enemy[] enemies = GetComponentsInChildren<Enemy>(true);

@@ -1,51 +1,45 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jintori.Game
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    /// <summary>
-    /// Handles effects that play on the play area, rather than the 2D canvas UI
-    /// </summary>
-    public class Effects : MonoBehaviour
+    public class ExtraLifeItem : BonusItem
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
+        /// <summary> Per game-play, how many extra lives to offer </summary>
+        static readonly int[] MaxInstancesPerDifficulty = new int[] { 2, 1, 1 };
+
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
-        [SerializeField]
-        TextMeshEffect textMeshEffect;
-
         // --- Properties -------------------------------------------------------------------------------
+        public override float maxTotalInstanceCount { get { return MaxInstancesPerDifficulty[(int)Config.instance.difficulty]; } }
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        /// <summary>
-        /// Shows the "+X,XXX PTS" effect. position is in world coordinates
-        /// </summary>
-        public void ShowScore(int score, Vector3 position)
+        protected override void Award()
         {
-            TextMeshEffect tme = Instantiate(textMeshEffect, transform, true);
-            tme.gameObject.SetActive(true);
-            tme.Show(string.Format("+{0:###,###,##0}<size=10>    </size>PTS", score), position);
+            Vector3 pos = playArea.MaskPositionToWorld(x, y);
+            playArea.effects.ShowExtraLife(pos);
+            Destroy(gameObject);
         }
 
         // -----------------------------------------------------------------------------------	
-        /// <summary>
-        /// Shows the extra life effect
-        /// </summary>
-        /// <param name="position">Where to show it, in world coordinates</param>
-        public void ShowExtraLife(Vector3 position)
+        public override float SpawnChance(float clearedRatio, int round, int totalRounds)
         {
-            TextMeshEffect tme = Instantiate(textMeshEffect, transform, true);
-            tme.gameObject.SetActive(true);
-            position.z = - 5;
-            tme.Show(" <size=300>1UP!</size>", position);
+            float progress = (round + clearedRatio) / totalRounds;
+
+            if (progress < 0.5f)
+                return progress * 2;
+            else
+                return 1f - (progress - 0.5f) * 2f;
         }
     }
 }

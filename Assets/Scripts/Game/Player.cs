@@ -487,7 +487,10 @@ namespace Jintori.Game
             dy *= 2;
 
             // is there an enemy blocking the way?
-            int hits = Physics2D.OverlapPointNonAlloc(playArea.MaskPositionToWorld(sx + dx, sy + dy), overlaps, PlayArea.EnemiesLayerMask);
+            int hits = Physics2D.OverlapPointNonAlloc(
+                playArea.MaskPositionToWorld(sx + dx, sy + dy), overlaps, 
+                PlayArea.EnemiesLayerMask);
+
             if (hits > 0)
             {
                 // you hit the enemy, you dumbass!
@@ -496,6 +499,14 @@ namespace Jintori.Game
                 return false;
             }
 
+            // is there an bonus item blocking the way?
+            hits = Physics2D.OverlapPointNonAlloc(
+                playArea.MaskPositionToWorld(sx + dx, sy + dy), overlaps,
+                PlayArea.BonusesLayerMask);
+            if (hits > 0)
+                return false;
+
+            // check for mask values
             if (dx != 0)
             {
                 for (int i = y - 1; i <= y + 1; i++)

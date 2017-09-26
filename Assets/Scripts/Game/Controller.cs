@@ -93,6 +93,10 @@ namespace Jintori.Game
             livesLeft = Config.instance.startLives;
             Skill.instance.Initialize();
             Timer.instance.timedOut += OnTimerTimedOut;
+            BonusItemManager.instance.InitializeGame(sourceFile.availableRounds);
+
+            // Bonus manager event handling
+            BonusItemManager.instance.bonusAwarded += OnBonusAwarded;
 
             // start the first round
             StartCoroutine(InitializeRound());
@@ -157,6 +161,9 @@ namespace Jintori.Game
 
             // reset the timer
             Timer.instance.ResetTimer(Config.instance.roundTime);
+
+            // Let the bonus manager know a new round started
+            BonusItemManager.instance.InitializeRound(playArea, round);
 
             // Hide the player
             playArea.player.Hide();
@@ -511,6 +518,19 @@ namespace Jintori.Game
             {
                 playArea.mask.maskCleared -= OnMaskCleared;
                 StartCoroutine(WinRound());
+            }
+        }
+
+        // -----------------------------------------------------------------------------------	
+        private void OnBonusAwarded(BonusItem obj)
+        {
+            // Let's do the correct thing according to item type
+            System.Type type = obj.GetType();
+
+            if (type == typeof(ExtraLifeItem))
+            {
+                livesLeft++;
+                UI.instance.lives = livesLeft;
             }
         }
     }

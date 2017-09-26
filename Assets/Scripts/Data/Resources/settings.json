@@ -36,6 +36,7 @@
 		"bonus_time_score": 100,
 
 		"enemies": {
+
 			"Slimy": [{
 					"speed": 150,
 					"blob_max_count": 2,
@@ -136,7 +137,8 @@
 				}
 			]
 
-		}
+		},
+	
 	},
 
 	"Normal": {
