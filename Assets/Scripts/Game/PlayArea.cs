@@ -19,10 +19,10 @@ namespace Jintori.Game
         const float CycleTime = 3f;
 
         public const int EdgesLayerMask = 1 << 8;
-        public static readonly ContactFilter2D EdgeContactFilter = new ContactFilter2D()
+        public static readonly ContactFilter2D ObstacleFilter = new ContactFilter2D()
         {
             useLayerMask = true,
-            layerMask = EdgesLayerMask
+            layerMask = EdgesLayerMask | BonusesLayerMask
         };
         public const int EnemiesLayerMask = 1 << 9;
 

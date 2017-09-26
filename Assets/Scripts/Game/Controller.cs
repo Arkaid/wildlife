@@ -382,6 +382,9 @@ namespace Jintori.Game
             // stop timer
             Timer.instance.StopTimer();
 
+            // cleanup remaining items
+            BonusItemManager.instance.EndRound();
+
             // kill boss and hide player
             playArea.boss.Kill(false);
             playArea.player.Hide();

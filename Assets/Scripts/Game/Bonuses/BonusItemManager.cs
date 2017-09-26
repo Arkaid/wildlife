@@ -35,8 +35,8 @@ namespace Jintori.Game
         /// <summary> To keep track of instance by item type (overall) </summary>
         Dictionary<System.Type, int> totalInstanceCount = new Dictionary<System.Type, int>();
 
-        /// <summary> List of active instances </summary>
-        List<BonusItem> activeInstances;
+        /// <summary> List of instances that have been created (some might have been destroyed) </summary>
+        List<BonusItem> createdInstances;
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
@@ -58,16 +58,14 @@ namespace Jintori.Game
         /// </summary>
         public void InitializeRound(PlayArea playArea, int round)
         {
-            if (this.playArea != null)
-                this.playArea.mask.maskCleared -= OnMaskCleared;
-
             this.playArea = playArea;
             this.round = round;
 
-            playArea.mask.maskCleared += OnMaskCleared;
-
+            createdInstances = new List<BonusItem>();
             instanceCount = new Dictionary<System.Type, int>();
             bonusItems = new List<BonusItem>(playArea.GetComponentsInChildren<BonusItem>());
+
+            StartCoroutine(SpawnItems());
         }
         
         // -----------------------------------------------------------------------------------	
@@ -76,46 +74,73 @@ namespace Jintori.Game
         /// </summary>
         public void EndRound()
         {
-            
+            foreach(BonusItem item in createdInstances)
+            {
+                // might have been destroyed before the end of the round
+                if (item == null)
+                    continue;
+
+                // Any items untaken at the end of the round, may be
+                // taken later in other rounds
+                totalInstanceCount[item.GetType()]--;
+
+                Destroy(item.gameObject);
+            }
+            createdInstances = null;
+            playArea = null;
+            StopAllCoroutines();
         }
 
         // -----------------------------------------------------------------------------------	
-        private void OnMaskCleared(Point obj)
+        IEnumerator SpawnItems()
         {
-            // check if we need to spawn new items
-            foreach (BonusItem item in bonusItems)
+            while (playArea != null)
             {
-                // make sure we don't go over the max instance count
-                System.Type type = item.GetType();
-                if (!instanceCount.ContainsKey(type))
-                    instanceCount[type] = 0;
+                // check if we need to spawn new items
+                foreach (BonusItem item in bonusItems)
+                {
+                    // make sure we don't go over the max instance count
+                    System.Type type = item.GetType();
+                    if (!instanceCount.ContainsKey(type))
+                        instanceCount[type] = 0;
 
-                if (instanceCount[type] >= item.maxSimultaneousInstanceCount)
-                    continue;
+                    if (instanceCount[type] >= item.maxSimultaneousInstanceCount)
+                        continue;
 
-                // or the total instance count
-                if (!totalInstanceCount.ContainsKey(type))
-                    totalInstanceCount[type] = 0;
+                    // or the total instance count
+                    if (!totalInstanceCount.ContainsKey(type))
+                        totalInstanceCount[type] = 0;
 
-                if (totalInstanceCount[type] >= item.maxTotalInstanceCount)
-                    continue;
+                    if (totalInstanceCount[type] >= item.maxTotalInstanceCount)
+                        continue;
 
-                // check the chance of spawnning
-                float chance = item.SpawnChance(playArea.mask.clearedRatio, round, totalRounds);
-                print(chance);
-                if (Random.value > chance)
-                    continue;
+                    // check the chance of spawnning
+                    float chance = item.SpawnChance(playArea.mask.clearedRatio, round, totalRounds);
+                    print(chance);
+                    if (Random.value > chance)
+                        continue;
 
-                print("INSTANCED");
+                    // if it's paused, wait before spawning
+                    while (Controller.instance.isPaused)
+                        yield return null;
 
-                // create instance
-                instanceCount[type] = instanceCount[type] + 1;
-                totalInstanceCount[type] = totalInstanceCount[type] + 1;
+                    print("INSTANCED");
 
-                BonusItem copy = Instantiate(item, item.transform.parent, true);
-                activeInstances.Add(copy);
-                copy.awarded += OnBonusAwarded;
-                copy.Activate();
+                    // create instance
+                    instanceCount[type] = instanceCount[type] + 1;
+                    totalInstanceCount[type] = totalInstanceCount[type] + 1;
+
+                    BonusItem copy = Instantiate(item, item.transform.parent, true);
+                    createdInstances.Add(copy);
+                    copy.awarded += OnBonusAwarded;
+                    copy.Activate();
+
+                    // only spawn 1 item per loop
+                    break;
+                }
+
+                // wait a bit between item spawning
+                yield return new WaitForSeconds(5);
             }
         }
 
@@ -125,8 +150,6 @@ namespace Jintori.Game
             // decrease instance count
             item.awarded -= OnBonusAwarded;
             instanceCount[item.GetType()]--;
-
-            activeInstances.Remove(item);
 
             // raise event
             if (bonusAwarded != null)

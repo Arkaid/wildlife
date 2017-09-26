@@ -83,7 +83,7 @@ namespace Jintori.Game
             // in which case, stop and find new target
             int nHits = Physics2D.CircleCast(
                 transform.position, scaledRadius, velocity, 
-                PlayArea.EdgeContactFilter, hits, scaledRadius);
+                PlayArea.ObstacleFilter, hits, scaledRadius);
             if (nHits > 0)
             {
                 target = FindValidTarget(position, scaledRadius);

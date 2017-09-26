@@ -116,7 +116,7 @@ namespace Jintori.Game
             Debug.DrawRay(transform.position, velocity / speed * lookAheadDistance, Color.cyan);
 #endif
 
-            int nHits = Physics2D.CircleCast(transform.position, Radius, velocity, PlayArea.EdgeContactFilter, hits, lookAheadDistance);
+            int nHits = Physics2D.CircleCast(transform.position, Radius, velocity, PlayArea.ObstacleFilter, hits, lookAheadDistance);
             if (nHits > 0)
             {
                 // find a new target

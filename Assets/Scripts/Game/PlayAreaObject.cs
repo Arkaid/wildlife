@@ -66,9 +66,21 @@ namespace Jintori.Game
         }
         Animator _animator;
 
-        // --- MonoBehaviour ----------------------------------------------------------------------------
-        // -----------------------------------------------------------------------------------	
-        virtual protected void Start()
+        /// <summary> Collider, if available </summary>
+        public new Collider2D collider
+        {
+            get
+            {
+                if (_collider == null)
+                    _collider = GetComponent<Collider2D>();
+                return _collider;
+            }
+        }
+        Collider2D _collider;
+
+    // --- MonoBehaviour ----------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------	
+    virtual protected void Start()
         {
             Controller.instance.paused += OnPaused;
         }
@@ -119,7 +131,6 @@ namespace Jintori.Game
         /// <returns></returns>
         public bool IsInShadow()
         {
-            Collider2D collider = GetComponent<Collider2D>();
             if (collider == null)
                 throw new System.Exception("Cannot determine size without a collider");
 
@@ -132,17 +143,30 @@ namespace Jintori.Game
         }
 
         // -----------------------------------------------------------------------------------	
+        Collider2D[] overlaps = new Collider2D[16];
+        // -----------------------------------------------------------------------------------	
         /// <summary>
         /// Places this object randomly on the play area. It requires a collider to estimate size
         /// </summary>
         public void PlaceRandomly()
         {
+            
             // find a valid position in the shadow
             do
             {
                 x = Random.Range(0, PlayArea.imageWidth);
                 y = Random.Range(0, PlayArea.imageHeight);
-            } while (!IsInShadow());
+
+                // it's valid in the shadow
+                if (IsInShadow())
+                {
+                    // does it overlap something else?
+                    Bounds bounds = collider.bounds;
+                    int hits = Physics2D.OverlapAreaNonAlloc(bounds.min, bounds.max, overlaps);
+                    if (hits == 1) // only overlaps itself
+                        break;
+                }
+            } while (true);
         }
     }
 }

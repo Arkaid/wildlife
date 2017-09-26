@@ -12,7 +12,7 @@ namespace Jintori.Game
 
         // --- Constants --------------------------------------------------------------------------------
         /// <summary> Time the item stays active on the play area (easy, normal, hard) </summary>
-        static readonly float[] DefaultActiveTime = new float[] { 60, 45, 30 };
+        static readonly float[] DefaultActiveTime = new float[] { 60, 35, 25 };
 
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------

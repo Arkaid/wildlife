@@ -11,7 +11,7 @@ namespace Jintori.Game
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
         /// <summary> Per game-play, how many extra lives to offer </summary>
-        static readonly int[] MaxInstancesPerDifficulty = new int[] { 2, 1, 1 };
+        static readonly int[] MaxInstancesPerDifficulty = new int[] { 2, 2, 2 };
 
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
@@ -34,12 +34,37 @@ namespace Jintori.Game
         // -----------------------------------------------------------------------------------	
         public override float SpawnChance(float clearedRatio, int round, int totalRounds)
         {
-            float progress = (round + clearedRatio) / totalRounds;
+            switch (Config.instance.difficulty)
+            {
+                case Config.Difficulty.Easy:
+                    switch(round)
+                    {
+                        case 0: return 0.10f; 
+                        case 1: return 0.25f;
+                        case 2: return 0.25f;
+                    }
+                    break;
+                case Config.Difficulty.Normal:
+                    switch(round)
+                    {
+                        case 0: return 0.05f;
+                        case 1: return 0.10f;
+                        case 2: 
+                        case 3: return 0.05f + 0.35f * clearedRatio;
+                    }
+                    break;
+                case Config.Difficulty.Hard:
+                    switch (round)
+                    {
+                        case 0: return 0.2f * clearedRatio;
+                        case 1: return 0.4f * clearedRatio;
+                        case 2: return 0.6f * clearedRatio;
+                        case 3: return 0.8f * clearedRatio;
+                    }
+                    break;
+            }
 
-            if (progress < 0.5f)
-                return progress * 2;
-            else
-                return 1f - (progress - 0.5f) * 2f;
+            return 0f;
         }
     }
 }
