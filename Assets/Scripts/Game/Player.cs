@@ -471,7 +471,7 @@ namespace Jintori.Game
         }
 
         // -----------------------------------------------------------------------------------	
-        Collider2D[] overlaps = new Collider2D[16];
+        private Collider2D[] overlaps = new Collider2D[16];
         // -----------------------------------------------------------------------------------	
         /// <summary>
         /// Check if the position we want to cut into is valid

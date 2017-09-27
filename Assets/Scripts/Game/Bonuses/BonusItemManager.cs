@@ -35,7 +35,7 @@ namespace Jintori.Game
         /// <summary> To keep track of instance by item type (overall) </summary>
         Dictionary<System.Type, int> totalInstanceCount = new Dictionary<System.Type, int>();
 
-        /// <summary> List of instances that have been created (some might have been destroyed) </summary>
+        /// <summary> List of instances that have been created </summary>
         List<BonusItem> createdInstances;
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
@@ -99,27 +99,9 @@ namespace Jintori.Game
                 // check if we need to spawn new items
                 foreach (BonusItem item in bonusItems)
                 {
-                    // make sure we don't go over the max instance count
-                    System.Type type = item.GetType();
-                    if (!instanceCount.ContainsKey(type))
-                        instanceCount[type] = 0;
-
-                    if (instanceCount[type] >= item.maxSimultaneousInstanceCount)
+                    if (!CanSpawnCheck(item))
                         continue;
-
-                    // or the total instance count
-                    if (!totalInstanceCount.ContainsKey(type))
-                        totalInstanceCount[type] = 0;
-
-                    if (totalInstanceCount[type] >= item.maxTotalInstanceCount)
-                        continue;
-
-                    // check the chance of spawnning
-                    float chance = item.SpawnChance(playArea.mask.clearedRatio, round, totalRounds);
-                    print(chance);
-                    if (Random.value > chance)
-                        continue;
-
+                    
                     // if it's paused, wait before spawning
                     while (Controller.instance.isPaused)
                         yield return null;
@@ -127,12 +109,14 @@ namespace Jintori.Game
                     print("INSTANCED");
 
                     // create instance
+                    System.Type type = item.GetType();
                     instanceCount[type] = instanceCount[type] + 1;
                     totalInstanceCount[type] = totalInstanceCount[type] + 1;
 
                     BonusItem copy = Instantiate(item, item.transform.parent, true);
                     createdInstances.Add(copy);
                     copy.awarded += OnBonusAwarded;
+                    copy.timeout += OnBonusTimeout;
                     copy.Activate();
 
                     // only spawn 1 item per loop
@@ -143,17 +127,78 @@ namespace Jintori.Game
                 yield return new WaitForSeconds(5);
             }
         }
+        
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Returns true if the conditions for spawning that type of bonus item are met
+        /// </summary>
+        bool CanSpawnCheck(BonusItem item)
+        {
+            // regardless of type, we can put so many items in the shadow.
+            // The smaller the area, the less items we can put
+            float clearedRatio = playArea.mask.clearedTotalRatio;
+            // too little space
+            if (clearedRatio > 0.9f)
+                return false;
+            // a quarter space left
+            else if (clearedRatio > 0.75f && createdInstances.Count >= 2)
+                return false;
+            // half space left
+            else if (clearedRatio > 0.50f && createdInstances.Count >= 3)
+                return false;
+            // three quarters space left
+            else if (clearedRatio > 0.25f && createdInstances.Count >= 4)
+                return false;
+            // almost all covered
+            else if (createdInstances.Count >= 5)
+                return false;
+
+            // make sure we don't go over the max instance count
+            System.Type type = item.GetType();
+            if (!instanceCount.ContainsKey(type))
+                instanceCount[type] = 0;
+
+            if (instanceCount[type] >= item.maxSimultaneousInstanceCount)
+                return false;
+
+            // or the total instance count
+            if (!totalInstanceCount.ContainsKey(type))
+                totalInstanceCount[type] = 0;
+
+            if (totalInstanceCount[type] >= item.maxTotalInstanceCount)
+                return false;
+
+            // check the chance of spawnning
+            float chance = item.SpawnChance(playArea.mask.clearedRatio, round, totalRounds);
+            print(chance);
+            if (Random.value > chance)
+                return false;
+
+            return true;
+        }
 
         // -----------------------------------------------------------------------------------	
         private void OnBonusAwarded(BonusItem item)
         {
             // decrease instance count
             item.awarded -= OnBonusAwarded;
+            item.awarded -= OnBonusTimeout;
             instanceCount[item.GetType()]--;
+            createdInstances.Remove(item);
 
             // raise event
             if (bonusAwarded != null)
                 bonusAwarded(item);
+        }
+
+        // -----------------------------------------------------------------------------------	
+        private void OnBonusTimeout(BonusItem item)
+        {
+            // decrease instance count
+            item.awarded -= OnBonusAwarded;
+            item.awarded -= OnBonusTimeout;
+            instanceCount[item.GetType()]--;
+            createdInstances.Remove(item);
         }
     }
 }

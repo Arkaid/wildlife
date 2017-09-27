@@ -114,6 +114,16 @@ namespace Jintori.Game
 
         // -----------------------------------------------------------------------------------	
         /// <summary>
+        /// Recharges the skill to the fullest
+        /// </summary>
+        public void FullRecharge()
+        {
+            remainingTime = maxTime;
+            UI.instance.skillBar.remainingTime = remainingTime;
+        }
+
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
         /// Recharges a bit of the skill, based on percentage cleared
         /// </summary>
         public void Recharge(float percentage)

@@ -46,18 +46,6 @@ namespace Jintori.Game
         /// <summary> True if the enemy is active on the play area </summary>
         protected bool isAlive;
 
-        /// <summary> Collider for the enemy </summary>
-        public new Collider2D collider
-        {
-            get
-            {
-                if (_collider == null)
-                    _collider = GetComponent<Collider2D>();
-                return _collider;
-            }
-        }
-        private Collider2D _collider;
-
         /// <summary> List of minions that can be spawned by a boss</summary>
         List<Enemy> minions;
 

@@ -162,9 +162,6 @@ namespace Jintori.Game
             // reset the timer
             Timer.instance.ResetTimer(Config.instance.roundTime);
 
-            // Let the bonus manager know a new round started
-            BonusItemManager.instance.InitializeRound(playArea, round);
-
             // Hide the player
             playArea.player.Hide();
 
@@ -246,6 +243,9 @@ namespace Jintori.Game
             playArea.boss.PlaceRandomly();
             playArea.boss.minionKilled += OnMinionKilled;
             playArea.boss.Run();
+
+            // Let the bonus manager know a new round started
+            BonusItemManager.instance.InitializeRound(playArea, round);
 
             // start tracking it
             UI.instance.bossTracker.StartTracking(playArea.boss);
@@ -381,6 +381,10 @@ namespace Jintori.Game
 
             // stop timer
             Timer.instance.StopTimer();
+
+            // hold on one frame to give other objects finishing
+            // processing the last "OnMaskCleared"
+            yield return null;
 
             // cleanup remaining items
             BonusItemManager.instance.EndRound();
@@ -525,16 +529,22 @@ namespace Jintori.Game
         }
 
         // -----------------------------------------------------------------------------------	
-        private void OnBonusAwarded(BonusItem obj)
+        private void OnBonusAwarded(BonusItem item)
         {
             // Let's do the correct thing according to item type
-            System.Type type = obj.GetType();
+            System.Type type = item.GetType();
 
             if (type == typeof(ExtraLifeItem))
             {
                 livesLeft++;
                 UI.instance.lives = livesLeft;
             }
+
+            else if (type == typeof(SkillRechargeItem))
+                Skill.instance.FullRecharge();
+
+            else if (type == typeof(ExtraTimeItem))
+                Timer.instance.ExtendTimer((item as ExtraTimeItem).time);
         }
     }
 }

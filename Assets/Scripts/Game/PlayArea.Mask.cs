@@ -49,11 +49,17 @@ namespace Jintori.Game
             /// <summary> Number of pixels maked as white (255) in the shadow area </summary>
             int totalShadowArea = 0;
 
-            /// <summary> Number of pixels that have been cleared </summary>
+            /// <summary> Number of pixels that have been cleared (main figure) </summary>
             int clearedShadowArea = 0;
 
-            /// <summary> Cleared ratio, between 0 and 1 </summary>
+            /// <summary> Number of pixels that have been cleared (total) </summary>
+            int clearedTotalArea = 0;
+
+            /// <summary> Cleared ratio (main figure), between 0 and 1 </summary>
             public float clearedRatio { get { return (float)clearedShadowArea / totalShadowArea; } }
+
+            /// <summary> Cleared ratio (total), between 0 and 1 </summary>
+            public float clearedTotalRatio { get { return (float)clearedTotalArea / (imageWidth * imageHeight); } }
 
             /// <summary> Shadow image. Must be grayscale </summary>
             byte[] shadowImage;
@@ -152,6 +158,7 @@ namespace Jintori.Game
                 // fourth pass:
                 // count pixels and find center point of difference
                 clearedShadowArea = 0;
+                clearedTotalArea = 0;
                 for (int i = 0; i < imageWidth * imageHeight; i++)
                 {
                     if (oldData[i] != data[i])
@@ -161,7 +168,10 @@ namespace Jintori.Game
                     }
 
                     if (data[i] == Cleared)
+                    {
                         clearedShadowArea += shadowImage[i];
+                        clearedTotalArea++;
+                    }
                 }
                 clearedShadowArea /= 255;
 

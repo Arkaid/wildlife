@@ -1,70 +1,37 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jintori.Game
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    public class Timer : IllogicGate.SingletonBehaviour<Timer>
+    public class ExtraTimeItem : BonusItem
     {
         // --- Events -----------------------------------------------------------------------------------
-        public event System.Action timedOut;
-
         // --- Constants --------------------------------------------------------------------------------
+        static readonly int[] BonusTime = new int[] { 90, 60, 45 };
+
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
         // --- Properties -------------------------------------------------------------------------------
-        public float totalTime { get; private set; }
-
-        public float remainingTime { get; private set; }
-
-        public float elapsedTime { get { return totalTime - remainingTime; } }
+        public int time { get { return BonusTime[(int)Config.instance.difficulty]; } }
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        public void StartTimer()
+        public override float SpawnChance(float clearedRatio, int round, int totalRounds)
         {
-            StartCoroutine(Countdown());
+            return 1;
         }
 
         // -----------------------------------------------------------------------------------	
-        public void ResetTimer(int totalTime)
+        protected override void Award()
         {
-            this.totalTime = totalTime;
-            remainingTime = totalTime;
-        }
-
-        // -----------------------------------------------------------------------------------	
-        public void ExtendTimer(int deltaTime)
-        {
-            remainingTime += deltaTime;
-        }
-
-        // -----------------------------------------------------------------------------------	
-        public void StopTimer()
-        {
-            StopAllCoroutines();
-        }
-
-        // -----------------------------------------------------------------------------------	
-        IEnumerator Countdown()
-        {
-            while(remainingTime > 0)
-            {
-                remainingTime -= Time.deltaTime;
-                UI.instance.timeDisplay.time = remainingTime;
-                yield return null;
-            }
-            remainingTime = 0;
-            UI.instance.timeDisplay.time = 0;
-
-            if (timedOut != null)
-                timedOut();
+            Destroy(gameObject);
         }
     }
 }

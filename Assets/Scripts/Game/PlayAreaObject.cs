@@ -143,30 +143,43 @@ namespace Jintori.Game
         }
 
         // -----------------------------------------------------------------------------------	
-        Collider2D[] overlaps = new Collider2D[16];
+        private Collider2D[] overlaps = new Collider2D[16];
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Returns true if there is another play area object in the same position (requires collider)
+        /// </summary>
+        /// <returns></returns>
+        public bool IsOverlapping()
+        {
+            if (collider == null)
+                throw new System.Exception("Cannot determine size without a collider");
+
+            Bounds bounds = collider.bounds;
+            int hits = Physics2D.OverlapAreaNonAlloc(bounds.min, bounds.max, overlaps, PlayArea.EnemiesLayerMask | PlayArea.BonusesLayerMask);
+
+            bool result = false;
+            for (int i = 0; i < hits && !result; i++)
+            {
+                // it only overlaps if it's not the same object AND if that object is not a child
+                result = overlaps[i].gameObject != gameObject && 
+                        !overlaps[i].transform.IsChildOf(transform);
+            }
+
+            return result;
+        }
+
         // -----------------------------------------------------------------------------------	
         /// <summary>
         /// Places this object randomly on the play area. It requires a collider to estimate size
         /// </summary>
         public void PlaceRandomly()
         {
-            
             // find a valid position in the shadow
             do
             {
                 x = Random.Range(0, PlayArea.imageWidth);
                 y = Random.Range(0, PlayArea.imageHeight);
-
-                // it's valid in the shadow
-                if (IsInShadow())
-                {
-                    // does it overlap something else?
-                    Bounds bounds = collider.bounds;
-                    int hits = Physics2D.OverlapAreaNonAlloc(bounds.min, bounds.max, overlaps);
-                    if (hits == 1) // only overlaps itself
-                        break;
-                }
-            } while (true);
+            } while (!IsInShadow() || IsOverlapping());
         }
     }
 }

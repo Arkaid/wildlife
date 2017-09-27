@@ -8,7 +8,11 @@ namespace Jintori.Game
     public abstract class BonusItem : PlayAreaObject
     {
         // --- Events -----------------------------------------------------------------------------------
+        /// <summary> Raised when the player gets the item </summary>
         public event System.Action<BonusItem> awarded;
+
+        /// <summary> Raised when the item disappears </summary>
+        public event System.Action<BonusItem> timeout;
 
         // --- Constants --------------------------------------------------------------------------------
         /// <summary> Time the item stays active on the play area (easy, normal, hard) </summary>
@@ -73,6 +77,9 @@ namespace Jintori.Game
             StopCoroutine(flashCoroutine);
 
             playArea.mask.maskCleared -= OnMaskCleared;
+
+            if (timeout != null)
+                timeout(this);
 
             Destroy(gameObject);
         }
