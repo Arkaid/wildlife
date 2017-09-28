@@ -261,6 +261,7 @@ namespace Jintori.Data
                 characterDataByGUID.Add(data.guid, data);
             }
 
+            // version 2
             unlockState = new UnlockState(json["unlock_state"]);
         }
 

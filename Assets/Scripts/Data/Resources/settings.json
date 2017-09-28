@@ -3,20 +3,20 @@
 		"round_time": 300,
 		"clear_ratio": 0.75,
 		"start_lives": 4,
-		"skill_speed_multiplier": 2.00,
+		"skill_speed_multiplier": 3,
 
 		"skills": {
 			"Speed": {
-				"max_time": 2.5,
-				"time_charge_per_percentage": 0.1
+				"max_time": 3.5,
+				"time_charge_per_percentage": 0.15
 			},
 			"Shield": {
 				"max_time": 2.5,
 				"time_charge_per_percentage": 0.1
 			},
 			"Freeze": {
-				"max_time": 2.5,
-				"time_charge_per_percentage": 0.1
+				"max_time": 4.0,
+				"time_charge_per_percentage": 0.2
 			}
 		},
 
@@ -33,6 +33,8 @@
 			[100, 50000]
 		],
 
+		"unlock_letter_score" : 500,
+		
 		"bonus_time_score": 100,
 
 		"enemies": {
@@ -145,20 +147,20 @@
 		"round_time": 240,
 		"clear_ratio": 0.85,
 		"start_lives": 3,
-		"skill_speed_multiplier": 1.75,
+		"skill_speed_multiplier": 2.5,
 
 		"skills": {
 			"Speed": {
-				"max_time": 2,
-				"time_charge_per_percentage": 0.05
+				"max_time": 2.75,
+				"time_charge_per_percentage": 0.1
 			},
 			"Shield": {
 				"max_time": 2,
-				"time_charge_per_percentage": 0.05
+				"time_charge_per_percentage": 0.075
 			},
 			"Freeze": {
-				"max_time": 2,
-				"time_charge_per_percentage": 0.05
+				"max_time": 3.5,
+				"time_charge_per_percentage": 0.1
 			}
 		},
 
@@ -177,6 +179,8 @@
 
 		"bonus_time_score": 150,
 
+		"unlock_letter_score" : 1000,
+		
 		"enemies": {
 			"Slimy": [{
 					"speed": 175,
@@ -315,20 +319,20 @@
 		"round_time": 180,
 		"clear_ratio": 0.90,
 		"start_lives": 3,
-		"skill_speed_multiplier": 1.50,
+		"skill_speed_multiplier": 2,
 
 		"skills": {
 			"Speed": {
-				"max_time": 1.5,
-				"time_charge_per_percentage": 0.02
+				"max_time": 1.75,
+				"time_charge_per_percentage": 0.06
 			},
 			"Shield": {
 				"max_time": 1.5,
-				"time_charge_per_percentage": 0.02
+				"time_charge_per_percentage": 0.04
 			},
 			"Freeze": {
-				"max_time": 1.5,
-				"time_charge_per_percentage": 0.02
+				"max_time": 2.5,
+				"time_charge_per_percentage": 0.08
 			}
 		},
 
@@ -347,6 +351,8 @@
 
 		"bonus_time_score": 250,
 
+		"unlock_letter_score" : 2000,
+		
 		"enemies": {
 			"Slimy": [{
 					"speed": 200,

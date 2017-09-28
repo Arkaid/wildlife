@@ -27,20 +27,21 @@ namespace Jintori.Common.UI
         // --- Properties -------------------------------------------------------------------------------
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        private void Start()
-        {
-            Clear();
-        }
-
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        public void Clear()
+        /// <summary>
+        /// Loads the state in the save file and reflects it on the UI
+        /// </summary>
+        public void SetFromSaveFile()
         {
-            foreach (Letter letter in letters)
-                letter.image.enabled = false;
+            foreach (UNLOCK letter in System.Enum.GetValues(typeof(UNLOCK)))
+                ShowLetter(letter, Data.SaveFile.instance.unlockState[letter]);
         }
 
         // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Shows or hide a given letter
+        /// </summary>
         public void ShowLetter(UNLOCK letter, bool show)
         {
             letters.Find(l => l.letter == letter).image.enabled = show;

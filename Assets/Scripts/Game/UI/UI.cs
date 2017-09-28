@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 namespace Jintori.Game
 {
+    using Common.UI;
+
     // --- Class Declaration ------------------------------------------------------------------------
     public class UI : IllogicGate.SingletonBehaviour<UI>
     {
@@ -63,7 +65,11 @@ namespace Jintori.Game
         }
 
         [SerializeField]
-        BonusEffect bonusEffect;
+        BonusEffect bonusEffect = null;
+
+        [SerializeField]
+        UnlockLetters _unlockLetters = null;
+        public UnlockLetters unlockLetters { get { return _unlockLetters; } }
 
         // --- Properties -------------------------------------------------------------------------------
         /// <summary> Total lives to show </summary>
@@ -98,6 +104,7 @@ namespace Jintori.Game
             gameResult.Reset();
             scoreDisplay.Reset();
             bossTracker.Reset();
+            unlockLetters.SetFromSaveFile();
         }
 
         // -----------------------------------------------------------------------------------	

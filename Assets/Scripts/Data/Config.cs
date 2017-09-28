@@ -127,6 +127,9 @@ namespace Jintori
         /// <summary> Bonus time score, in bonus points per second remaining </summary>
         public float bonusTimeScore { get { return json["bonus_time_score"].f; } }
 
+        /// <summary> Score for capturing a letter you already had </summary>
+        public int unlockLetterScore { get { return (int)json["unlock_letter_score"].i; } }
+
         /// <summary> Starting amount of lives, adjusted for difficulty </summary>
         public int startLives { get { return (int)json["start_lives"].i; } }
 
