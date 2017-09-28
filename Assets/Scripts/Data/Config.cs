@@ -5,6 +5,9 @@ using UnityEngine;
 namespace Jintori
 {
     using Game;
+    
+    /// Unlock letters
+    public enum UNLOCK { U, N, L, O, C, K }
 
     // --- Class Declaration ------------------------------------------------------------------------
     public partial class Config : IllogicGate.Singleton<Config>

@@ -7,15 +7,13 @@ namespace Jintori.Game
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
-        /// <summary> Per game-play, how many extra lives to offer </summary>
-        static readonly int[] MaxInstancesPerDifficulty = new int[] { 2, 2, 2 };
-
+        static readonly int[] MaxPerGame = new int [] { 2, 1, 1 };
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
         // --- Properties -------------------------------------------------------------------------------
-        public override float maxTotalInstanceCount { get { return MaxInstancesPerDifficulty[(int)Config.instance.difficulty]; } }
+        public override int maxPerGame { get { return MaxPerGame[(int)Config.instance.difficulty]; } }
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
@@ -24,7 +22,7 @@ namespace Jintori.Game
         protected override void Award()
         {
             Vector3 pos = playArea.MaskPositionToWorld(x, y);
-            playArea.effects.ShowExtraLife(pos);
+            UI.instance.PlayBonusItemEffect(BonusEffect.Type.ExtraLife, pos);
             Destroy(gameObject);
         }
 
@@ -53,10 +51,10 @@ namespace Jintori.Game
                 case Config.Difficulty.Hard:
                     switch (round)
                     {
-                        case 0: return 0.2f * clearedRatio;
-                        case 1: return 0.4f * clearedRatio;
-                        case 2: return 0.6f * clearedRatio;
-                        case 3: return 0.8f * clearedRatio;
+                        case 0: return 0;
+                        case 1: return 0.2f * clearedRatio;
+                        case 2: return 0.5f * clearedRatio;
+                        case 3: return 1f;
                     }
                     break;
             }

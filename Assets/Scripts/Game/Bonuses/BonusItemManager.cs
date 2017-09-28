@@ -7,6 +7,28 @@ namespace Jintori.Game
     // --- Class Declaration ------------------------------------------------------------------------
     public class BonusItemManager : IllogicGate.SingletonBehaviour<BonusItemManager>
     {
+        class InstanceTracker
+        {
+            public int total { get; private set; }
+            public int round { get; private set; }
+            public BonusItem active { get; private set; }
+            public void Count(BonusItem item)
+            {
+                total++;
+                round++;
+                active = item;
+            }
+            public void RoundReset()
+            {
+                round = 0;
+                active = null;
+            }
+            public void Clear()
+            {
+                active = null;
+            }
+        }
+
         // --- Events -----------------------------------------------------------------------------------
         /// <summary> Called whenever any a item gets awarded </summary>
         public event System.Action<BonusItem> bonusAwarded;
@@ -17,8 +39,8 @@ namespace Jintori.Game
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
         // --- Properties -------------------------------------------------------------------------------
-        /// <summary> List of available items for the active playarea </summary>
-        List<BonusItem> bonusItems;
+        /// <summary> List of available items </summary>
+        List<BonusItem> sourceItems;
 
         /// <summary> Active playarea </summary>
         PlayArea playArea;
@@ -29,14 +51,11 @@ namespace Jintori.Game
         /// <summary> Total number of rounds </summary>
         int totalRounds;
 
-        /// <summary> To keep track of instance by item type </summary>
-        Dictionary<System.Type, int> instanceCount;
+        /// <summary> To keep track of instance by source item </summary>
+        Dictionary<BonusItem, InstanceTracker> instances;
 
-        /// <summary> To keep track of instance by item type (overall) </summary>
-        Dictionary<System.Type, int> totalInstanceCount = new Dictionary<System.Type, int>();
-
-        /// <summary> List of instances that have been created </summary>
-        List<BonusItem> createdInstances;
+        /// <summary> Number of active instances (any kind) </summary>
+        int activeInstanceCount;
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
@@ -49,6 +68,7 @@ namespace Jintori.Game
         public void InitializeGame(int totalRounds)
         {
             this.totalRounds = totalRounds;
+            sourceItems = new List<BonusItem>(GetComponentsInChildren<BonusItem>());
         }
 
         // -----------------------------------------------------------------------------------	
@@ -60,10 +80,20 @@ namespace Jintori.Game
         {
             this.playArea = playArea;
             this.round = round;
+            activeInstanceCount = 0;
 
-            createdInstances = new List<BonusItem>();
-            instanceCount = new Dictionary<System.Type, int>();
-            bonusItems = new List<BonusItem>(playArea.GetComponentsInChildren<BonusItem>());
+            // initialize the counters
+            if (round == 0)
+            {
+                instances = new Dictionary<BonusItem, InstanceTracker>();
+                foreach (BonusItem item in sourceItems)
+                    instances.Add(item, new InstanceTracker());
+            }
+            else
+            {
+                foreach (BonusItem item in sourceItems)
+                    instances[item].RoundReset();
+            }
 
             StartCoroutine(SpawnItems());
         }
@@ -74,19 +104,11 @@ namespace Jintori.Game
         /// </summary>
         public void EndRound()
         {
-            foreach(BonusItem item in createdInstances)
+            foreach(InstanceTracker instance in instances.Values)
             {
-                // might have been destroyed before the end of the round
-                if (item == null)
-                    continue;
-
-                // Any items untaken at the end of the round, may be
-                // taken later in other rounds
-                totalInstanceCount[item.GetType()]--;
-
-                Destroy(item.gameObject);
+                if (instance.active != null)
+                    Destroy(instance.active.gameObject);
             }
-            createdInstances = null;
             playArea = null;
             StopAllCoroutines();
         }
@@ -97,7 +119,7 @@ namespace Jintori.Game
             while (playArea != null)
             {
                 // check if we need to spawn new items
-                foreach (BonusItem item in bonusItems)
+                foreach (BonusItem item in sourceItems)
                 {
                     if (!CanSpawnCheck(item))
                         continue;
@@ -109,15 +131,14 @@ namespace Jintori.Game
                     print("INSTANCED");
 
                     // create instance
-                    System.Type type = item.GetType();
-                    instanceCount[type] = instanceCount[type] + 1;
-                    totalInstanceCount[type] = totalInstanceCount[type] + 1;
-
-                    BonusItem copy = Instantiate(item, item.transform.parent, true);
-                    createdInstances.Add(copy);
-                    copy.awarded += OnBonusAwarded;
-                    copy.timeout += OnBonusTimeout;
+                    BonusItem copy = Instantiate(item, playArea.transform, true);
+                    copy.awarded += bonusAwarded;
+                    copy.awarded += DecreaseInstance;
+                    copy.timeout += DecreaseInstance;
                     copy.Activate();
+
+                    instances[item].Count(copy);
+                    activeInstanceCount++;
 
                     // only spawn 1 item per loop
                     break;
@@ -141,36 +162,33 @@ namespace Jintori.Game
             if (clearedRatio > 0.9f)
                 return false;
             // a quarter space left
-            else if (clearedRatio > 0.75f && createdInstances.Count >= 2)
+            else if (clearedRatio > 0.75f && activeInstanceCount >= 2)
                 return false;
             // half space left
-            else if (clearedRatio > 0.50f && createdInstances.Count >= 3)
+            else if (clearedRatio > 0.50f && activeInstanceCount >= 3)
                 return false;
             // three quarters space left
-            else if (clearedRatio > 0.25f && createdInstances.Count >= 4)
+            else if (clearedRatio > 0.25f && activeInstanceCount >= 4)
                 return false;
             // almost all covered
-            else if (createdInstances.Count >= 5)
+            else if (activeInstanceCount >= 5)
                 return false;
 
-            // make sure we don't go over the max instance count
-            System.Type type = item.GetType();
-            if (!instanceCount.ContainsKey(type))
-                instanceCount[type] = 0;
-
-            if (instanceCount[type] >= item.maxSimultaneousInstanceCount)
+            // we can only have one of each item type instanced at the same time
+            if (instances[item].active != null)
                 return false;
 
-            // or the total instance count
-            if (!totalInstanceCount.ContainsKey(type))
-                totalInstanceCount[type] = 0;
-
-            if (totalInstanceCount[type] >= item.maxTotalInstanceCount)
+            // enforce per round limit
+            if (instances[item].round == item.maxPerRound)
                 return false;
 
-            // check the chance of spawnning
+            // enforce per play limit
+            if (instances[item].total == item.maxPerGame)
+                return false;
+            
+            // check the chance of spawning
             float chance = item.SpawnChance(playArea.mask.clearedRatio, round, totalRounds);
-            print(chance);
+            print(item.name + ": " + chance);
             if (Random.value > chance)
                 return false;
 
@@ -178,27 +196,18 @@ namespace Jintori.Game
         }
 
         // -----------------------------------------------------------------------------------	
-        private void OnBonusAwarded(BonusItem item)
+        private void DecreaseInstance(BonusItem item)
         {
             // decrease instance count
-            item.awarded -= OnBonusAwarded;
-            item.awarded -= OnBonusTimeout;
-            instanceCount[item.GetType()]--;
-            createdInstances.Remove(item);
+            item.awarded -= DecreaseInstance;
+            item.timeout -= DecreaseInstance;
+            activeInstanceCount--;
 
-            // raise event
-            if (bonusAwarded != null)
-                bonusAwarded(item);
-        }
-
-        // -----------------------------------------------------------------------------------	
-        private void OnBonusTimeout(BonusItem item)
-        {
-            // decrease instance count
-            item.awarded -= OnBonusAwarded;
-            item.awarded -= OnBonusTimeout;
-            instanceCount[item.GetType()]--;
-            createdInstances.Remove(item);
+            foreach(InstanceTracker instance in instances.Values)
+            {
+                if (instance.active == item)
+                    instance.Clear();
+            }
         }
     }
 }

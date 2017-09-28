@@ -1,48 +1,42 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jintori.Game
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    public class SkillRechargeItem : BonusItem
+    /// <summary>
+    /// Makes sure that the camera is the same size as the canvas, so we can render at the same scale
+    /// </summary>
+    [RequireComponent(typeof(Camera))]
+    public class EffectCameraAdjuster : MonoBehaviour
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
-
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
+        [SerializeField]
+        Canvas targetCanvas = null;
+
         // --- Properties -------------------------------------------------------------------------------
-        public override int maxPerGame { get { return 8; } }
-        public override int maxPerRound { get { return 2; } }
+        new Camera camera;
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        // --- Methods ----------------------------------------------------------------------------------
-        // -----------------------------------------------------------------------------------	
-        public override float SpawnChance(float clearedRatio, int round, int totalRounds)
+        private void Start()
         {
-            switch (Config.instance.difficulty)
-            {
-                case Config.Difficulty.Easy:
-                    return 0.70f * clearedRatio;
-                case Config.Difficulty.Normal:
-                    return 0.65f * clearedRatio;
-                case Config.Difficulty.Hard:
-                    return 0.60f * clearedRatio;
-            }
-            return 0;
+            camera = GetComponent<Camera>();
         }
 
         // -----------------------------------------------------------------------------------	
-        protected override void Award()
+        private void Update()
         {
-            Vector3 pos = playArea.MaskPositionToWorld(x, y);
-            UI.instance.PlayBonusItemEffect(BonusEffect.Type.SkillRecharge, pos);
-            Destroy(gameObject);
+            camera.orthographicSize = targetCanvas.pixelRect.height / 2;
         }
+
+        // --- Methods ----------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------	
     }
 }

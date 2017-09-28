@@ -43,6 +43,7 @@ namespace Jintori.Game
         public void ExtendTimer(int deltaTime)
         {
             remainingTime += deltaTime;
+            totalTime += deltaTime;
         }
 
         // -----------------------------------------------------------------------------------	

@@ -27,21 +27,12 @@ namespace Jintori.Game
         virtual protected float activeTime { get { return DefaultActiveTime[(int)Config.instance.difficulty]; } }
 
         /// <summary> Maximum number of instances that may be in the play area simultaneously </summary>
-        virtual public float maxSimultaneousInstanceCount { get { return 1; } }
+        virtual public int maxPerGame { get { return 1; } }
 
-        /// <summary> Maximum number of instances that may be allowed per character / game-set </summary>
-        virtual public float maxTotalInstanceCount { get { return 1; } }
+        /// <summary> Maximum number of instances that may be allowed per round </summary>
+        virtual public int maxPerRound { get { return 1; } }
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
-        // -----------------------------------------------------------------------------------	
-        private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.F5))
-                Activate();
-            if (Input.GetKeyDown(KeyCode.F6))
-                Award();
-        }
-
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         /// <summary>

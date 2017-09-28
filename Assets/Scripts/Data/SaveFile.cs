@@ -143,7 +143,10 @@ namespace Jintori.Data
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
+        const string CurrentVersion = SaveFileVer1;
+
         const string SaveFileVer1 = "VERSION_1";
+        const string SaveFileVer2 = "VERSION_2";
 
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
@@ -203,8 +206,8 @@ namespace Jintori.Data
 
             JSONObject json = IllogicGate.Data.EncryptedFile.ReadJSONObject(filePath);
 
-            // unused for now, but will become useful later
-            // string version = json["version"].str;
+            // If necessary, add the missing stuff to the savefile for a valid JSON
+            json = UpdateToCurrentVersion(json);
 
             characterDataByGUID = new Dictionary<string, CharacterStats>();
             foreach (JSONObject item in json["characters"].list)
@@ -212,6 +215,20 @@ namespace Jintori.Data
                 CharacterStats data = new CharacterStats(item);
                 characterDataByGUID.Add(data.guid, data);
             }
+        }
+
+        // -----------------------------------------------------------------------------------	
+        JSONObject UpdateToCurrentVersion(JSONObject json)
+        {
+            switch (json["version"].str)
+            {
+                case SaveFileVer1:
+                    // in version 2:
+                    // added UNLOCK letter collection
+                    break;
+            }
+
+            return json;
         }
     }
 }

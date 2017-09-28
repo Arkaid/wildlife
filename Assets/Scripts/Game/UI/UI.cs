@@ -62,6 +62,9 @@ namespace Jintori.Game
             }
         }
 
+        [SerializeField]
+        BonusEffect bonusEffect;
+
         // --- Properties -------------------------------------------------------------------------------
         /// <summary> Total lives to show </summary>
         public int lives { set { livesText.text = string.Format("x{0:00}", value); } }
@@ -119,6 +122,23 @@ namespace Jintori.Game
         public void HideResult()
         {
             gameResult.gameObject.SetActive(false);
+        }
+        
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Shows the trailing effect and correct sprite for the bonus item
+        /// Runs as coroutine
+        /// </summary>
+        /// <param name="from">Where does the effect begin, in world coordinates </param>
+        /// <returns></returns>
+        public void PlayBonusItemEffect(BonusEffect.Type type, Vector3 from)
+        {
+            // transform world coordinates into canvas coordinates
+            from = Camera.main.WorldToScreenPoint(from);
+            from.z = bonusEffect.transform.position.z;
+
+            BonusEffect copy = Instantiate(bonusEffect, bonusEffect.transform.parent, true);
+            StartCoroutine(copy.Play(type, from));
         }
 
         // -----------------------------------------------------------------------------------	
