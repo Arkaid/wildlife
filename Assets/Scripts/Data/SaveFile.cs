@@ -139,6 +139,42 @@ namespace Jintori.Data
     }
 
     // --- Class Declaration ------------------------------------------------------------------------
+    public class UnlockState 
+    {
+        public bool this[UNLOCK letter]
+        {
+            get { return state[letter]; }
+            set { state[letter] = value; }
+        }
+
+        /// <summary> Internal state </summary>
+        Dictionary<UNLOCK, bool> state = new Dictionary<UNLOCK, bool>();
+
+        /// <summary> Constructor </summary>
+        public UnlockState()
+        {
+            foreach (UNLOCK letter in System.Enum.GetValues(typeof(UNLOCK)))
+                state.Add(letter, false);
+        }
+
+        /// <summary> Constructor (Deserialization) </summary>
+        public UnlockState(JSONObject json)
+        {
+            foreach (UNLOCK letter in System.Enum.GetValues(typeof(UNLOCK)))
+                state.Add(letter, json[letter.ToString()].b);
+        }
+
+        /// <summary> Serialization </summary>
+        public JSONObject ToJSON()
+        {
+            JSONObject json = new JSONObject();
+            foreach (UNLOCK letter in System.Enum.GetValues(typeof(UNLOCK)))
+                json.AddField(letter.ToString(), state[letter]);
+            return json;
+        }
+    }
+
+    // --- Class Declaration ------------------------------------------------------------------------
     public class SaveFile : IllogicGate.Singleton<SaveFile>
     {
         // --- Events -----------------------------------------------------------------------------------
@@ -152,11 +188,16 @@ namespace Jintori.Data
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         // --- Properties -------------------------------------------------------------------------------
+        // --- VERSION 1 --- //
         /// <summary> Location of the progress file </summary>
         string filePath { get { return Application.persistentDataPath + "/progress.sav"; } }
 
         /// <summary> Saved data for each character, by guid </summary>
         Dictionary<string, CharacterStats> characterDataByGUID = new Dictionary<string, CharacterStats>();
+
+        // --- VERSION 2 --- //
+        /// <summary> State of each UNLOCK letter (true: taken, false: empty) </summary>
+        public UnlockState unlockState { get; private set; }
 
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
@@ -178,6 +219,7 @@ namespace Jintori.Data
             return characterDataByGUID[guid];
         }
 
+
         // -----------------------------------------------------------------------------------	
         /// <summary>
         /// Saves all changes to an encrypted save file
@@ -185,12 +227,15 @@ namespace Jintori.Data
         public void Save()
         {
             JSONObject json = new JSONObject();
-            json.AddField("version", SaveFileVer1);
+            json.AddField("version", SaveFileVer2);
 
-            JSONObject jsonList = new JSONObject();
+            JSONObject list = new JSONObject();
             foreach (CharacterStats data in characterDataByGUID.Values)
-                jsonList.Add(data.ToJSON());
-            json.AddField("characters", jsonList);
+                list.Add(data.ToJSON());
+            json.AddField("characters", list);
+
+            // version 2
+            json.AddField("unlock_state", unlockState.ToJSON());
 
             IllogicGate.Data.EncryptedFile.WriteJSONObject(filePath, json);
         }
@@ -207,7 +252,7 @@ namespace Jintori.Data
             JSONObject json = IllogicGate.Data.EncryptedFile.ReadJSONObject(filePath);
 
             // If necessary, add the missing stuff to the savefile for a valid JSON
-            json = UpdateToCurrentVersion(json);
+            UpdateToCurrentVersion(json);
 
             characterDataByGUID = new Dictionary<string, CharacterStats>();
             foreach (JSONObject item in json["characters"].list)
@@ -215,20 +260,20 @@ namespace Jintori.Data
                 CharacterStats data = new CharacterStats(item);
                 characterDataByGUID.Add(data.guid, data);
             }
+
+            unlockState = new UnlockState(json["unlock_state"]);
         }
 
         // -----------------------------------------------------------------------------------	
-        JSONObject UpdateToCurrentVersion(JSONObject json)
+        void UpdateToCurrentVersion(JSONObject json)
         {
             switch (json["version"].str)
             {
+                // Update from version 1 to version 2
                 case SaveFileVer1:
-                    // in version 2:
-                    // added UNLOCK letter collection
+                    json.AddField("unlock_state", new UnlockState().ToJSON());
                     break;
             }
-
-            return json;
         }
     }
 }
