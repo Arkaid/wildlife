@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 namespace Jintori.Common.UI
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    public class SkillSelectPopup : MonoBehaviour
+    public class SkillSelectPopup : Popup
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
@@ -17,8 +17,6 @@ namespace Jintori.Common.UI
         // --- Inspector --------------------------------------------------------------------------------
         // --- Properties -------------------------------------------------------------------------------
         SkillSelectButton[] skillButtons;
-
-        public bool isVisible { get; private set; }
 
         /// <summary> True if the user canceled the skill selection </summary>
         public bool canceled { get; private set; }
@@ -52,11 +50,10 @@ namespace Jintori.Common.UI
             selectedSkill = setDefault;
 
             canceled = false;
-            isVisible = true;
 
-            gameObject.SetActive(true);
-            Overlay.instance.background.Show();
             EventSystem.current.SetSelectedGameObject(skillButtons[(int)setDefault].gameObject);
+
+            base.Show();
         }
 
         // -----------------------------------------------------------------------------------	
@@ -71,9 +68,7 @@ namespace Jintori.Common.UI
         void Close(bool canceled)
         {
             this.canceled = canceled;
-            isVisible = false;
-            gameObject.SetActive(false);
-            Overlay.instance.background.Hide();
+            base.Hide();
         }
     }
 }

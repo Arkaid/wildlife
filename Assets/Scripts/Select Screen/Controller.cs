@@ -137,7 +137,7 @@ namespace Jintori.SelectScreen
                 if (Input.GetButtonDown("Cancel"))
                     yield return StartCoroutine(ExitConfirm());
 
-                if (Overlay.instance.isVisible || Options.instance.isVisible)
+                if (PopupManager.instance.isVisible || Options.instance.isVisible)
                     yield return null;
 
                 yield return null;
@@ -204,12 +204,12 @@ namespace Jintori.SelectScreen
             Game.Controller.sourceFile = selected;
 
             // select skill
-            Overlay.instance.skillSelectPopup.Show(Config.instance.skill);
-            while (Overlay.instance.skillSelectPopup.isVisible)
+            PopupManager.instance.skillSelectPopup.Show(Config.instance.skill);
+            while (PopupManager.instance.skillSelectPopup.isVisible)
                 yield return null;
 
             // skill select canceled?
-            if (Overlay.instance.skillSelectPopup.canceled)
+            if (PopupManager.instance.skillSelectPopup.canceled)
             {
                 avatar.SwitchImage();
                 startButton.Select();
@@ -218,9 +218,8 @@ namespace Jintori.SelectScreen
             }
 
             // set and save selected skill
-            Config.instance.skill = Overlay.instance.skillSelectPopup.selectedSkill;
+            Config.instance.skill = PopupManager.instance.skillSelectPopup.selectedSkill;
             Config.instance.SaveOptions();
-            Overlay.instance.background.Show(Color.clear);
 
             // fade out BGM and destroy sound manager (in game has its own manager)
             SoundManager.instance.FadeoutBGM(1f);
@@ -236,11 +235,8 @@ namespace Jintori.SelectScreen
         {
             state = State.ExitConfirm;
 
-            MessagePopup popup = Overlay.instance.messagePopup;
-            popup.ShowYesNo("EXIT GAME?");
-            while (popup.isVisible)
-                yield return null;
-            if (popup.isYes)
+            yield return StartCoroutine(PopupManager.instance.ShowMessagePopup("EXIT GAME?", "EXIT", MessagePopup.Type.YesNo));
+            if (PopupManager.instance.result == PopupManager.Result.YesButton)
             {
                 Application.Quit();
                 Debug.Log("Exiting");

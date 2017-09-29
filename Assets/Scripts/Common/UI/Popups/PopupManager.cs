@@ -10,29 +10,32 @@ namespace Jintori.Common.UI
     /// <summary>
     /// Simple overlay for with popups and other useful overlays
     /// </summary>
-    public class Overlay : IllogicGate.SingletonBehaviour<Overlay>
+    public class PopupManager : IllogicGate.SingletonBehaviour<PopupManager>
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
+        public enum Result
+        {
+            None,
+            YesButton,
+            NoButton,
+            OkButton,
+        }
+
+
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
         [SerializeField]
-        Background _background = null;
-        public Background background { get { return _background; } }
+        GameObject background;
 
         [SerializeField]
-        MessagePopup _messagePopup = null;
-        public MessagePopup messagePopup { get { return _messagePopup; } }
+        MessagePopup messagePopup = null;
 
         [SerializeField]
         SkillSelectPopup _skillSelectPopup = null;
         public SkillSelectPopup skillSelectPopup { get { return _skillSelectPopup; } }
-
-        [SerializeField]
-        RoundImageViewer _roundImageViewer = null;
-        public RoundImageViewer roundImageViewer { get { return _roundImageViewer; } }
 
         // --- Properties -------------------------------------------------------------------------------
         public bool isVisible
@@ -40,16 +43,39 @@ namespace Jintori.Common.UI
             get
             {
                 return
-                    background.isActiveAndEnabled ||
                     messagePopup.isVisible ||
-                    skillSelectPopup.isVisible ||
-                    roundImageViewer.isActiveAndEnabled;
+                    skillSelectPopup.isVisible;
             }
         }
 
+        public Result result { get; private set; }
+       
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
+        protected override void Awake()
+        {
+            base.Awake();
+            background.SetActive(false);
+            messagePopup.Hide();
+            skillSelectPopup.Hide();
+        }
         // --- Methods ----------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------	
+        public IEnumerator ShowMessagePopup(string content, string title = "", MessagePopup.Type type = MessagePopup.Type.Ok)
+        {
+            background.SetActive(true);
+            GameObject lastSelected = EventSystem.current.currentSelectedGameObject;
+
+            messagePopup.Show(content, title, type);
+            while (messagePopup.isActiveAndEnabled)
+                yield return null;
+
+            result = messagePopup.result;
+
+            EventSystem.current.SetSelectedGameObject(lastSelected);
+            background.SetActive(false);
+        }
+
         // -----------------------------------------------------------------------------------	
     }
 }

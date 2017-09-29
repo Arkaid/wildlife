@@ -85,9 +85,7 @@ namespace Jintori.Title
             // application update required. Show popup, then continue
             if (checker.state == UpdateChecker.State.ApplicationUpdateRequired)
             {
-                Overlay.instance.messagePopup.Show(NewVersionAvailable, "NEWS");
-                while (Overlay.instance.messagePopup.isVisible)
-                    yield return null;
+                yield return StartCoroutine(PopupManager.instance.ShowMessagePopup(NewVersionAvailable, "NEWS"));
                 StartCoroutine(PressStart());
                 yield break;
             }

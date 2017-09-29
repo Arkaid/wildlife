@@ -7,10 +7,16 @@ using UnityEngine.EventSystems;
 namespace Jintori.Common.UI
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    public class MessagePopup : MonoBehaviour
+    public class MessagePopup : Popup
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
+        public enum Type
+        {
+            YesNo,
+            Ok
+        }
+
         // --- Static Properties ------------------------------------------------------------------------
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
@@ -31,69 +37,49 @@ namespace Jintori.Common.UI
         Button noButton = null;
 
         // --- Properties -------------------------------------------------------------------------------
-        public bool isVisible { get; private set; }
-
-        public bool isYes { get; private set; }
-
-        GameObject lastSelected;
+        public PopupManager.Result result { get; private set; }
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         private void Start()
         {
-            yesButton.onClick.AddListener(() => { isYes = true; Close(); });
-            noButton.onClick.AddListener(() => { isYes = false; Close(); });
-            okButton.onClick.AddListener(Close);
+            yesButton.onClick.AddListener(() => { result = PopupManager.Result.YesButton; Hide(); });
+            noButton.onClick.AddListener(() => { result = PopupManager.Result.NoButton; Hide(); });
+            okButton.onClick.AddListener(() => { result = PopupManager.Result.OkButton; Hide(); });
         }
 
         // -----------------------------------------------------------------------------------	
         private void Update()
         {
             if (Input.GetButtonDown("Cancel"))
-                Close();
+                Hide();
         }
 
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        void ShowCommon(string content, string title)
+        public override void Show()
         {
-            isYes = false;
+            throw new System.NotImplementedException();
+        }
 
-            gameObject.SetActive(true);
+        // -----------------------------------------------------------------------------------	
+        public void Show(string content, string title= "", Type type = Type.Ok)
+        {
+            result = PopupManager.Result.None;
             contentText.text = content;
             titleText.text = title;
-            isVisible = true;
-            Overlay.instance.background.Show();
-            lastSelected = EventSystem.current.currentSelectedGameObject;
-        }
 
-        // -----------------------------------------------------------------------------------	
-        public void Show(string content, string title= "")
-        {
-            ShowCommon(content, title);
-            yesButton.gameObject.SetActive(false);
-            noButton.gameObject.SetActive(false);
-            okButton.gameObject.SetActive(true);
-            okButton.Select();
-        }
+            yesButton.gameObject.SetActive(type == Type.YesNo);
+            noButton.gameObject.SetActive(type == Type.YesNo);
+            okButton.gameObject.SetActive(type == Type.Ok);
 
-        // -----------------------------------------------------------------------------------	
-        public void ShowYesNo(string content, string title = "")
-        {
-            ShowCommon(content, title);
-            yesButton.gameObject.SetActive(true);
-            noButton.gameObject.SetActive(true);
-            okButton.gameObject.SetActive(false);
-            yesButton.Select();
-        }
+            switch (type)
+            {
+                case Type.YesNo: yesButton.Select(); break;
+                case Type.Ok: okButton.Select(); break;
+            }
 
-        // -----------------------------------------------------------------------------------	
-        void Close()
-        {
-            isVisible = false;
-            gameObject.SetActive(false);
-            Overlay.instance.background.Hide();
-            EventSystem.current.SetSelectedGameObject(lastSelected);
+            base.Show();
         }
     }
 }

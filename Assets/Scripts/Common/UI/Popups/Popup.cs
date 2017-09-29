@@ -1,46 +1,35 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Jintori.Common.UI
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    public class Background : MonoBehaviour
+    public abstract class Popup : MonoBehaviour
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
         // --- Static Properties ------------------------------------------------------------------------
-        static readonly Color defaultColor = new Color32(0, 0, 0, 150);
-
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
         // --- Properties -------------------------------------------------------------------------------
-        Image image;
+        public bool isVisible { get; private set; }
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------	
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        public void Show(Color color)
+        virtual public void Show()
         {
-            if (image == null)
-                image = GetComponent<Image>();
-
+            isVisible = true;
             gameObject.SetActive(true);
-            image.color = color;
         }
-
         // -----------------------------------------------------------------------------------	
-        public void Show()
-        {
-            Show(defaultColor);
-        }
-
-        // -----------------------------------------------------------------------------------	
-        public void Hide()
+        virtual public void Hide()
         {
             gameObject.SetActive(false);
+            isVisible = false;
         }
     }
 }

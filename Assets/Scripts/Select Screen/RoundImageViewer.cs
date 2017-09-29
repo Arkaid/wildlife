@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 namespace Jintori.Common.UI
 {
     // --- Class Declaration ------------------------------------------------------------------------
-    public class RoundImageViewer : MonoBehaviour
+    public class RoundImageViewer : IllogicGate.SingletonBehaviour<RoundImageViewer>
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
@@ -42,7 +42,6 @@ namespace Jintori.Common.UI
             portrait.enabled = false;
             localBackground.SetActive(false);
             artist.text = "";
-            Overlay.instance.background.Show(Color.clear);
 
             gameObject.SetActive(true);
             StartCoroutine(ShowCoroutine(characterFile, round));
@@ -64,7 +63,6 @@ namespace Jintori.Common.UI
             target.enabled = true;
             artist.text = "ARTIST:" + characterFile.artist.ToUpper();
             localBackground.SetActive(true);
-            Overlay.instance.background.Show();
             yield return StartCoroutine(Transition.instance.Hide());
 
             // wait
@@ -83,7 +81,6 @@ namespace Jintori.Common.UI
 
             // transition out, hide the stats and images
             yield return StartCoroutine(Transition.instance.Show());
-            Overlay.instance.background.Hide();
             stats.Hide();
             localBackground.SetActive(false);
             artist.text = "";
