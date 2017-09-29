@@ -236,7 +236,7 @@ namespace Jintori.SelectScreen
             state = State.ExitConfirm;
 
             yield return StartCoroutine(PopupManager.instance.ShowMessagePopup("EXIT GAME?", "EXIT", MessagePopup.Type.YesNo));
-            if (PopupManager.instance.result == PopupManager.Result.YesButton)
+            if (PopupManager.instance.result == PopupManager.Result.Button_Yes)
             {
                 Application.Quit();
                 Debug.Log("Exiting");

@@ -43,9 +43,9 @@ namespace Jintori.Common.UI
         // -----------------------------------------------------------------------------------	
         private void Start()
         {
-            yesButton.onClick.AddListener(() => { result = PopupManager.Result.YesButton; Hide(); });
-            noButton.onClick.AddListener(() => { result = PopupManager.Result.NoButton; Hide(); });
-            okButton.onClick.AddListener(() => { result = PopupManager.Result.OkButton; Hide(); });
+            yesButton.onClick.AddListener(() => { result = PopupManager.Result.Button_Yes; Hide(); });
+            noButton.onClick.AddListener(() => { result = PopupManager.Result.Button_No; Hide(); });
+            okButton.onClick.AddListener(() => { result = PopupManager.Result.Button_Ok; Hide(); });
         }
 
         // -----------------------------------------------------------------------------------	

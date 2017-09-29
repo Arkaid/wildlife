@@ -280,7 +280,7 @@ namespace Jintori.Game
                 if (paused != null)
                     paused(isPaused);
 
-                if (PopupManager.instance.result == PopupManager.Result.YesButton)
+                if (PopupManager.instance.result == PopupManager.Result.Button_Yes)
                     StartCoroutine(GameOver(true));
             }
         }
@@ -350,7 +350,7 @@ namespace Jintori.Game
 
                 // present retry dialog
                 yield return StartCoroutine(PopupManager.instance.ShowMessagePopup("RETRY?", "GAME OVER", MessagePopup.Type.YesNo));
-                retry = PopupManager.instance.result == PopupManager.Result.YesButton;
+                retry = PopupManager.instance.result == PopupManager.Result.Button_Yes;
             }
 
             // fade out BGM

@@ -17,9 +17,12 @@ namespace Jintori.Common.UI
         public enum Result
         {
             None,
-            YesButton,
-            NoButton,
-            OkButton,
+            Button_Yes,
+            Button_No,
+            Button_Ok,
+            Skill_Freeze,
+            Skill_Shield,
+            Skill_Speed,
         }
 
 
@@ -34,19 +37,10 @@ namespace Jintori.Common.UI
         MessagePopup messagePopup = null;
 
         [SerializeField]
-        SkillSelectPopup _skillSelectPopup = null;
-        public SkillSelectPopup skillSelectPopup { get { return _skillSelectPopup; } }
+        SkillSelectPopup skillSelectPopup = null;
 
         // --- Properties -------------------------------------------------------------------------------
-        public bool isVisible
-        {
-            get
-            {
-                return
-                    messagePopup.isVisible ||
-                    skillSelectPopup.isVisible;
-            }
-        }
+        public bool isVisible { get; private set; }
 
         public Result result { get; private set; }
        
@@ -61,8 +55,12 @@ namespace Jintori.Common.UI
         }
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Shows a standard popup message. Run as coroutine
+        /// </summary>
         public IEnumerator ShowMessagePopup(string content, string title = "", MessagePopup.Type type = MessagePopup.Type.Ok)
         {
+            isVisible = true;
             background.SetActive(true);
             GameObject lastSelected = EventSystem.current.currentSelectedGameObject;
 
@@ -74,6 +72,23 @@ namespace Jintori.Common.UI
 
             EventSystem.current.SetSelectedGameObject(lastSelected);
             background.SetActive(false);
+            isVisible = false;
+        }
+
+        // -----------------------------------------------------------------------------------	
+        public IEnumerator ShowSkillPopup()
+        {
+            isVisible = true;
+            background.SetActive(true);
+            GameObject lastSelected = EventSystem.current.currentSelectedGameObject;
+
+            skillSelectPopup.Show();
+            while (messagePopup.isActiveAndEnabled)
+                yield return null;
+
+            EventSystem.current.SetSelectedGameObject(lastSelected);
+            background.SetActive(false);
+            isVisible = false;
         }
 
         // -----------------------------------------------------------------------------------	
