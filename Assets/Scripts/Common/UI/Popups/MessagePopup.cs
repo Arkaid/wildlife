@@ -37,15 +37,15 @@ namespace Jintori.Common.UI
         Button noButton = null;
 
         // --- Properties -------------------------------------------------------------------------------
-        public PopupManager.Result result { get; private set; }
+        public PopupManager.Button result { get; private set; }
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         private void Start()
         {
-            yesButton.onClick.AddListener(() => { result = PopupManager.Result.Button_Yes; Hide(); });
-            noButton.onClick.AddListener(() => { result = PopupManager.Result.Button_No; Hide(); });
-            okButton.onClick.AddListener(() => { result = PopupManager.Result.Button_Ok; Hide(); });
+            yesButton.onClick.AddListener(() => { result = PopupManager.Button.Yes; Hide(); });
+            noButton.onClick.AddListener(() => { result = PopupManager.Button.No; Hide(); });
+            okButton.onClick.AddListener(() => { result = PopupManager.Button.Ok; Hide(); });
         }
 
         // -----------------------------------------------------------------------------------	
@@ -65,7 +65,9 @@ namespace Jintori.Common.UI
         // -----------------------------------------------------------------------------------	
         public void Show(string content, string title= "", Type type = Type.Ok)
         {
-            result = PopupManager.Result.None;
+            base.Show();
+
+            result = PopupManager.Button.None;
             contentText.text = content;
             titleText.text = title;
 
@@ -75,11 +77,9 @@ namespace Jintori.Common.UI
 
             switch (type)
             {
-                case Type.YesNo: yesButton.Select(); break;
-                case Type.Ok: okButton.Select(); break;
+                case Type.YesNo: EventSystem.current.SetSelectedGameObject(yesButton.gameObject); break;
+                case Type.Ok: EventSystem.current.SetSelectedGameObject(okButton.gameObject); break;
             }
-
-            base.Show();
         }
     }
 }

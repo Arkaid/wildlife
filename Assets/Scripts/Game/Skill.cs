@@ -21,7 +21,7 @@ namespace Jintori.Game
             Shield,
             Speed,
             Freeze,
-            COUNT
+            INVALID
         }
 
         // --- Static Properties ------------------------------------------------------------------------

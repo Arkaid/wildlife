@@ -14,15 +14,12 @@ namespace Jintori.Common.UI
     {
         // --- Events -----------------------------------------------------------------------------------
         // --- Constants --------------------------------------------------------------------------------
-        public enum Result
+        public enum Button
         {
             None,
-            Button_Yes,
-            Button_No,
-            Button_Ok,
-            Skill_Freeze,
-            Skill_Shield,
-            Skill_Speed,
+            Yes,
+            No,
+            Ok,
         }
 
 
@@ -42,8 +39,12 @@ namespace Jintori.Common.UI
         // --- Properties -------------------------------------------------------------------------------
         public bool isVisible { get; private set; }
 
-        public Result result { get; private set; }
-       
+        /// <summary> Button last pressed on the popup </summary>
+        public Button button { get; private set; }
+
+        /// <summary> Selecte skill on the popup </summary>
+        public Game.Skill.Type skill;
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         protected override void Awake()
@@ -68,7 +69,7 @@ namespace Jintori.Common.UI
             while (messagePopup.isActiveAndEnabled)
                 yield return null;
 
-            result = messagePopup.result;
+            button = messagePopup.result;
 
             EventSystem.current.SetSelectedGameObject(lastSelected);
             background.SetActive(false);
@@ -82,15 +83,15 @@ namespace Jintori.Common.UI
             background.SetActive(true);
             GameObject lastSelected = EventSystem.current.currentSelectedGameObject;
 
-            skillSelectPopup.Show();
-            while (messagePopup.isActiveAndEnabled)
+            skillSelectPopup.Show(Config.instance.skill);
+            while (skillSelectPopup.isActiveAndEnabled)
                 yield return null;
+
+            skill = skillSelectPopup.result;
 
             EventSystem.current.SetSelectedGameObject(lastSelected);
             background.SetActive(false);
             isVisible = false;
         }
-
-        // -----------------------------------------------------------------------------------	
     }
 }

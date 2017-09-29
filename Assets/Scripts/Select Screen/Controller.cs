@@ -134,13 +134,12 @@ namespace Jintori.SelectScreen
             state = State.SelectingCharacter;
             while (state == State.SelectingCharacter)
             {
+                yield return null;
                 if (Input.GetButtonDown("Cancel"))
                     yield return StartCoroutine(ExitConfirm());
 
                 if (PopupManager.instance.isVisible || Options.instance.isVisible)
                     yield return null;
-
-                yield return null;
             }
         }
 
@@ -193,7 +192,6 @@ namespace Jintori.SelectScreen
         // -----------------------------------------------------------------------------------	
         IEnumerator StartGame()
         {
-            Debug.Log("Starting game");
             state = State.StartingGame;
 
             // select random character if needed
@@ -204,21 +202,23 @@ namespace Jintori.SelectScreen
             Game.Controller.sourceFile = selected;
 
             // select skill
-            PopupManager.instance.skillSelectPopup.Show(Config.instance.skill);
-            while (PopupManager.instance.skillSelectPopup.isVisible)
-                yield return null;
+            yield return StartCoroutine(PopupManager.instance.ShowSkillPopup());
 
             // skill select canceled?
-            if (PopupManager.instance.skillSelectPopup.canceled)
+            if (PopupManager.instance.skill == Game.Skill.Type.INVALID)
             {
                 avatar.SwitchImage();
-                startButton.Select();
                 StartCoroutine(SelectingCharacter());
                 yield break;
             }
 
+            Debug.Log("Starting game");
+
+            // disable the graphics raycaster to avoid inputing anything while loading
+            GetComponent<GraphicRaycaster>().enabled = false;
+
             // set and save selected skill
-            Config.instance.skill = PopupManager.instance.skillSelectPopup.selectedSkill;
+            Config.instance.skill = PopupManager.instance.skill;
             Config.instance.SaveOptions();
 
             // fade out BGM and destroy sound manager (in game has its own manager)
@@ -236,7 +236,7 @@ namespace Jintori.SelectScreen
             state = State.ExitConfirm;
 
             yield return StartCoroutine(PopupManager.instance.ShowMessagePopup("EXIT GAME?", "EXIT", MessagePopup.Type.YesNo));
-            if (PopupManager.instance.result == PopupManager.Result.Button_Yes)
+            if (PopupManager.instance.button == PopupManager.Button.Yes)
             {
                 Application.Quit();
                 Debug.Log("Exiting");

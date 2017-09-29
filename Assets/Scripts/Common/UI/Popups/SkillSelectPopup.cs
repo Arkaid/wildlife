@@ -18,17 +18,28 @@ namespace Jintori.Common.UI
         // --- Properties -------------------------------------------------------------------------------
         SkillSelectButton[] skillButtons;
 
-        /// <summary> True if the user canceled the skill selection </summary>
-        public bool canceled { get; private set; }
-
-        public Game.Skill.Type selectedSkill { get; private set; }
+        /// <summary> Selected skill </summary>
+        public Game.Skill.Type result { get; private set; }
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------	
+
         // --- Methods ----------------------------------------------------------------------------------
-        private void Update()
+        // -----------------------------------------------------------------------------------	
+        public override void Show()
         {
-            if (Input.GetButtonDown("Cancel"))
-                Close(true);
+            throw new System.NotImplementedException();
+        }
+        
+        // -----------------------------------------------------------------------------------	
+        public void Show(Game.Skill.Type select)
+        {
+            if (skillButtons == null)
+                Initialize();
+
+            result = Game.Skill.Type.INVALID;
+            EventSystem.current.SetSelectedGameObject(skillButtons[(int)select].gameObject);
+            base.Show();
         }
 
         // -----------------------------------------------------------------------------------	
@@ -42,33 +53,11 @@ namespace Jintori.Common.UI
             }
         }
         // -----------------------------------------------------------------------------------	
-        public void Show(Game.Skill.Type setDefault)
-        {
-            if (skillButtons == null)
-                Initialize();
-
-            selectedSkill = setDefault;
-
-            canceled = false;
-
-            EventSystem.current.SetSelectedGameObject(skillButtons[(int)setDefault].gameObject);
-
-            base.Show();
-        }
-
-        // -----------------------------------------------------------------------------------	
         private void OnSkillSelected(SkillSelectButton sender)
         {
             SkillSelectButton skillButton = sender as SkillSelectButton;
-            selectedSkill = skillButton.skill;
-            Close(false);
-        }
-        
-        // -----------------------------------------------------------------------------------	
-        void Close(bool canceled)
-        {
-            this.canceled = canceled;
-            base.Hide();
+            result = skillButton.skill;
+            Hide();
         }
     }
 }
