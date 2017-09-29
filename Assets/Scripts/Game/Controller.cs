@@ -545,6 +545,27 @@ namespace Jintori.Game
 
             else if (type == typeof(ExtraTimeItem))
                 Timer.instance.ExtendTimer((item as ExtraTimeItem).time);
+
+            else if (type == typeof(UnlockLetterItem))
+            {
+                UnlockLetterItem letterItem = item as UnlockLetterItem;
+                Data.UnlockState unlockState = Data.SaveFile.instance.unlockState;
+
+                // already unlocked: award points
+                if (unlockState[letterItem.letter])
+                {
+                    score += Config.instance.unlockLetterScore;
+                    UI.instance.scoreDisplay.score = (long)score;
+                }
+
+                // unlock letters
+                else
+                {
+                    UI.instance.unlockLetters.ShowLetter(letterItem.letter, true);
+                    unlockState[letterItem.letter] = true;
+                    Data.SaveFile.instance.Save();
+                }
+            }
         }
     }
 }

@@ -14,6 +14,8 @@ namespace Jintori.Game
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
         // --- Properties -------------------------------------------------------------------------------
+        public override int maxPerGame { get { return 2; } } // the same letter may be repeated in another round
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
         [SerializeField]
         UNLOCK _letter;
@@ -27,9 +29,12 @@ namespace Jintori.Game
             switch (Config.instance.difficulty)
             {
                 case Config.Difficulty.Easy:
-                    //return 0.01f;
-                    return 1f;
+                    if (round == 0)  // no letters in first round
+                        return 0;
+                    return 0.01f;
                 case Config.Difficulty.Normal:
+                    if (round == 0) // no letters in first round
+                        return 0;
                     return 0.02f;
                 case Config.Difficulty.Hard:
                     return 0.03f;
@@ -43,11 +48,10 @@ namespace Jintori.Game
             Data.UnlockState unlockState = Data.SaveFile.instance.unlockState;
             Vector3 pos = playArea.MaskPositionToWorld(x, y);
 
-            // already unlocked: award points
+            // play effects (awards in controller)
             if (unlockState[letter])
                 playArea.effects.ShowScore(Config.instance.unlockLetterScore, pos);
 
-            // unlock!
             else
             {
                 switch (letter)
@@ -59,9 +63,6 @@ namespace Jintori.Game
                     case UNLOCK.C: UI.instance.PlayBonusItemEffect(BonusEffect.Type.Letter_C, pos); break;
                     case UNLOCK.K: UI.instance.PlayBonusItemEffect(BonusEffect.Type.Letter_K, pos); break;
                 }
-                UI.instance.unlockLetters.ShowLetter(letter, true);
-                unlockState[letter] = true;
-                Data.SaveFile.instance.Save();
             }
             
             Destroy(gameObject);
