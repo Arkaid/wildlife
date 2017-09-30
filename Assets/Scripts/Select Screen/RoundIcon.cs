@@ -49,6 +49,7 @@ namespace Jintori.SelectScreen
         public void AnimateUnlock(Sprite icon)
         {
             previewIcon.sprite = icon;
+            SetLocked();
             StartCoroutine(AnimateCoroutine());
         }
         

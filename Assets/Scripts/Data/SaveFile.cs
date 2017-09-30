@@ -52,13 +52,18 @@ namespace Jintori.Data
         /// <summary> Record socres for each difficulty </summary>
         public Dictionary<Config.Difficulty, Records> records { get; private set; }
 
+        // --- VERSION 2 --- //
+        /// <summary> Used for the menu UI, indicates if the shakey lock animation has been played already </summary>
+        public bool lockAnimationPlayed;
+
         /// <summary> Serializes to JSON </summary>
         public JSONObject ToJSON()
         {
             JSONObject json = new JSONObject();
 
             json.AddField("cleared", cleared);
-            foreach(KeyValuePair<Config.Difficulty, Records> kvp in records)
+            json.AddField("lock_anim_played", lockAnimationPlayed);
+            foreach (KeyValuePair<Config.Difficulty, Records> kvp in records)
                 json.AddField(kvp.Key.ToString(), kvp.Value.ToJSON());
             return json;
         }
@@ -67,6 +72,8 @@ namespace Jintori.Data
         public RoundData(JSONObject json)
         {
             cleared = json["cleared"].b;
+            json.GetField(out lockAnimationPlayed, "lock_anim_played", false); // added in ver 2
+
             records = new Dictionary<Config.Difficulty, Records>();
 
             foreach (Config.Difficulty diff in System.Enum.GetValues(typeof(Config.Difficulty)))

@@ -117,17 +117,32 @@ namespace Jintori.SelectScreen
         // -----------------------------------------------------------------------------------	
         public void SetCharacter(CharacterFile.File characterFile)
         {
+            bool saveNeeded = false;
             stats = Data.SaveFile.instance.GetCharacterStats(characterFile.guid);
             this.characterFile = characterFile;
             for (int i = 0; i < Config.Rounds; i++)
             {
                 if (stats.rounds[i].cleared)
-                    icons[i].SetUnlocked(characterFile.baseSheet.roundIcons[i]);
+                {
+                    // only play the animation the first time you unlock an image
+                    if (stats.rounds[i].lockAnimationPlayed)
+                        icons[i].SetUnlocked(characterFile.baseSheet.roundIcons[i]);
+                    else
+                    {
+                        icons[i].AnimateUnlock(characterFile.baseSheet.roundIcons[i]);
+                        stats.rounds[i].lockAnimationPlayed = true;
+                        saveNeeded = true;
+                    }
+
+                }
                 else if (i < characterFile.availableRounds)
                     icons[i].SetLocked();
                 else
                     icons[i].SetUnlocked(unavailableSprite);
             }
+
+            if (saveNeeded)
+                Data.SaveFile.instance.Save();
         }
     }
 }
