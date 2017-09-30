@@ -128,8 +128,6 @@ namespace Jintori.Game
                     while (Controller.instance.isPaused)
                         yield return null;
 
-                    print("INSTANCED");
-
                     // create instance
                     BonusItem copy = Instantiate(item, playArea.transform, true);
                     copy.awarded += bonusAwarded;
@@ -188,7 +186,6 @@ namespace Jintori.Game
             
             // check the chance of spawning
             float chance = item.SpawnChance(playArea.mask.clearedRatio, round, totalRounds);
-            print(item.name + ": " + chance);
             if (Random.value > chance)
                 return false;
 

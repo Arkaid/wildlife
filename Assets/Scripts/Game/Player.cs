@@ -57,6 +57,9 @@ namespace Jintori.Game
         /// <summary> First point in the cut path (used for the renderer) </summary>
         Point cutPathStart;
 
+        /// <summary> True during the few first moments after spawning </summary>
+        bool postSpawnInvulnerability = false;
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         protected override void Start()
@@ -152,7 +155,7 @@ namespace Jintori.Game
                     break;
             }
         }
-
+        
         // -----------------------------------------------------------------------------------	
         protected override void OnDestroy()
         {
@@ -199,7 +202,17 @@ namespace Jintori.Game
             this.y = y < 0 ? PlayArea.imageHeight / 2 : y;
             gameObject.SetActive(false);
         }
-        
+
+        // -----------------------------------------------------------------------------------	
+        IEnumerator Invulberability()
+        {
+            const float InvincibleTime = 3f;
+            postSpawnInvulnerability = true;
+            yield return new WaitForSeconds(InvincibleTime);
+            animator.SetBool("Invulnerable", false);
+            postSpawnInvulnerability = false;
+        }
+
         // -----------------------------------------------------------------------------------	
         /// <summary> 
         /// Spawns the player at the given position 
@@ -217,6 +230,9 @@ namespace Jintori.Game
             gameObject.SetActive(true);
             state = State.SafePath;
 
+            // we're invincible for a while
+            StartCoroutine(Invulberability());
+
             Skill.instance.skillTriggered += OnSkillTriggered;
             Skill.instance.skillReleased += OnSkillReleased;
 
@@ -231,8 +247,8 @@ namespace Jintori.Game
         /// <param name="isTimeout"> If true, the hit is from the timer running out (shield does not apply)</param>
         public void Hit(bool isTimeout)
         {
-            // can't be hit at this time, since we're protected by the shield
-            if (!isTimeout && Skill.instance.isShieldActive)
+            // can't be hit at this time, since we're protected by the shield or just spawned
+            if (!isTimeout && (Skill.instance.isShieldActive || postSpawnInvulnerability))
                 return;
 
             // disable player skills

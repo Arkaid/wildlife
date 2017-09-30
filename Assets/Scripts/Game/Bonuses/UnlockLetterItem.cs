@@ -30,7 +30,7 @@ namespace Jintori.Game
             {
                 case Config.Difficulty.Easy:
                     if (round == 0)  // no letters in first round
-                        return 1;
+                        return 0;
                     return 0.01f;
                 case Config.Difficulty.Normal:
                     if (round == 0) // no letters in first round
