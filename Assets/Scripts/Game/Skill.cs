@@ -63,12 +63,14 @@ namespace Jintori.Game
         {
             if (Controller.instance.isPaused)
                 return;
-                
+            
+            
+
             speedMultiplier = type == Type.Speed && isActive ?
                 Config.instance.speedSkillMultiplier : 1;
 
             // can we activate the skill?
-            if (!isActive && remainingTime > 0 && Input.GetButton("Skill"))
+            if (!isActive && remainingTime > 0 && (Input.GetButton("Skill") || Input.GetAxisRaw("Skill") != 0))
             {
                 string clip = "game_skill_" + type.ToString().ToLower();
                 SoundManager.instance.PlaySFX(clip);
@@ -78,7 +80,7 @@ namespace Jintori.Game
             }
 
             // do we have to deactivate the skill
-            else if (isActive && (remainingTime <= 0 || !Input.GetButton("Skill")))
+            else if (isActive && (remainingTime <= 0 || !(Input.GetButton("Skill") || Input.GetAxisRaw("Skill") != 0)))
                 Deactivate();
 
             if (isActive)
