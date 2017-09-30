@@ -15,7 +15,8 @@ namespace Jintori.Common.UI
         struct Letter
         {
             public UNLOCK letter;
-            public Image image; 
+            public Image image;
+            public Sprite sprite;
         }
 
         // --- Events -----------------------------------------------------------------------------------
@@ -25,7 +26,10 @@ namespace Jintori.Common.UI
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
         [SerializeField]
-        List<Letter> letters;
+        List<Letter> letters = null;
+
+        [SerializeField]
+        Sprite emptyLetter = null;
 
         // --- Properties -------------------------------------------------------------------------------
         // --- MonoBehaviour ----------------------------------------------------------------------------
@@ -47,7 +51,8 @@ namespace Jintori.Common.UI
         /// </summary>
         public void ShowLetter(UNLOCK letter, bool show)
         {
-            letters.Find(l => l.letter == letter).image.enabled = show;
+            Letter let = letters.Find(l => l.letter == letter);
+            let.image.sprite = show ? let.sprite : emptyLetter;
         }
     }
 }

@@ -19,9 +19,6 @@ namespace Jintori.SelectScreen
         RoundIcon[] icons = null;
 
         [SerializeField]
-        Sprite lockedSprite = null;
-
-        [SerializeField]
         Sprite unavailableSprite = null;
 
         // --- Properties -------------------------------------------------------------------------------
@@ -104,7 +101,7 @@ namespace Jintori.SelectScreen
             {
                 unlockState.Clear();
                 stats.rounds[round].cleared = true;
-                icons[round].previewIcon.sprite = characterFile.baseSheet.roundIcons[round];
+                icons[round].AnimateUnlock(characterFile.baseSheet.roundIcons[round]);
                 Data.SaveFile.instance.Save();
             }
         }
@@ -114,7 +111,7 @@ namespace Jintori.SelectScreen
         {
             characterFile = null;
             for (int i = 0; i < Config.Rounds; i++)
-                icons[i].previewIcon.sprite = unavailableSprite;
+                icons[i].SetUnlocked(unavailableSprite);
         }
 
         // -----------------------------------------------------------------------------------	
@@ -125,11 +122,11 @@ namespace Jintori.SelectScreen
             for (int i = 0; i < Config.Rounds; i++)
             {
                 if (stats.rounds[i].cleared)
-                    icons[i].previewIcon.sprite = characterFile.baseSheet.roundIcons[i];
+                    icons[i].SetUnlocked(characterFile.baseSheet.roundIcons[i]);
                 else if (i < characterFile.availableRounds)
-                    icons[i].previewIcon.sprite = lockedSprite;
+                    icons[i].SetLocked();
                 else
-                    icons[i].previewIcon.sprite = unavailableSprite;
+                    icons[i].SetUnlocked(unavailableSprite);
             }
         }
     }
