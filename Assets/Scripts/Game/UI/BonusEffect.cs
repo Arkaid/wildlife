@@ -60,7 +60,7 @@ namespace Jintori.Game
             // convert play area position to UI position
             Vector3 start = transform.parent.InverseTransformPoint(from);
             Vector3 finsh = transform.parent.InverseTransformPoint(set.target.position);
-            
+
             finsh.z = start.z;
 
             float elapsed = 0;
