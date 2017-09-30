@@ -204,7 +204,10 @@ namespace Jintori.Game
         }
 
         // -----------------------------------------------------------------------------------	
-        IEnumerator Invulberability()
+        /// <summary>
+        /// Small delay where you can't get hurt after spawning
+        /// </summary>
+        IEnumerator Invulnerability()
         {
             const float InvincibleTime = 3f;
             postSpawnInvulnerability = true;
@@ -231,7 +234,7 @@ namespace Jintori.Game
             state = State.SafePath;
 
             // we're invincible for a while
-            StartCoroutine(Invulberability());
+            StartCoroutine(Invulnerability());
 
             Skill.instance.skillTriggered += OnSkillTriggered;
             Skill.instance.skillReleased += OnSkillReleased;
