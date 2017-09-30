@@ -147,14 +147,25 @@ namespace Jintori.Data
             set { state[letter] = value; }
         }
 
+        /// <summary> true, if all letters are collected </summary>
+        public bool allCollected
+        {
+            get
+            {
+                bool result = true;
+                foreach (bool value in state.Values)
+                    result = result && value;
+                return result;
+            }
+        }
+
         /// <summary> Internal state </summary>
         Dictionary<UNLOCK, bool> state = new Dictionary<UNLOCK, bool>();
 
         /// <summary> Constructor </summary>
         public UnlockState()
         {
-            foreach (UNLOCK letter in System.Enum.GetValues(typeof(UNLOCK)))
-                state.Add(letter, false);
+            Clear();
         }
 
         /// <summary> Constructor (Deserialization) </summary>
@@ -171,6 +182,15 @@ namespace Jintori.Data
             foreach (UNLOCK letter in System.Enum.GetValues(typeof(UNLOCK)))
                 json.AddField(letter.ToString(), state[letter]);
             return json;
+        }
+
+        /// <summary>
+        /// Sets all letters to false
+        /// </summary>
+        public void Clear()
+        {
+            foreach (UNLOCK letter in System.Enum.GetValues(typeof(UNLOCK)))
+                state[letter] = false;
         }
     }
 

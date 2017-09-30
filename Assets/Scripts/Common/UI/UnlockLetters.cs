@@ -6,6 +6,9 @@ using UnityEngine.UI;
 namespace Jintori.Common.UI
 {
     // --- Class Declaration ------------------------------------------------------------------------
+    /// <summary>
+    /// Displays the UNLOCK letters
+    /// </summary>
     public class UnlockLetters : MonoBehaviour
     {
         [System.Serializable]

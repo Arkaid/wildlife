@@ -14,7 +14,9 @@ namespace Jintori.Common.UI
         public enum Type
         {
             YesNo,
-            Ok
+            Ok,
+            UnlockYesNo,
+            UnlockOk,
         }
 
         // --- Static Properties ------------------------------------------------------------------------
@@ -36,6 +38,9 @@ namespace Jintori.Common.UI
         [SerializeField]
         Button noButton = null;
 
+        [SerializeField]
+        UnlockLetters unlock = null;
+
         // --- Properties -------------------------------------------------------------------------------
         public PopupManager.Button result { get; private set; }
 
@@ -46,13 +51,6 @@ namespace Jintori.Common.UI
             yesButton.onClick.AddListener(() => { result = PopupManager.Button.Yes; Hide(); });
             noButton.onClick.AddListener(() => { result = PopupManager.Button.No; Hide(); });
             okButton.onClick.AddListener(() => { result = PopupManager.Button.Ok; Hide(); });
-        }
-
-        // -----------------------------------------------------------------------------------	
-        private void Update()
-        {
-            if (Input.GetButtonDown("Cancel"))
-                Hide();
         }
 
         // --- Methods ----------------------------------------------------------------------------------
@@ -71,14 +69,26 @@ namespace Jintori.Common.UI
             contentText.text = content;
             titleText.text = title;
 
-            yesButton.gameObject.SetActive(type == Type.YesNo);
-            noButton.gameObject.SetActive(type == Type.YesNo);
-            okButton.gameObject.SetActive(type == Type.Ok);
+            yesButton.gameObject.SetActive(type == Type.YesNo || type == Type.UnlockYesNo);
+            noButton.gameObject.SetActive(type == Type.YesNo || type == Type.UnlockYesNo);
+            okButton.gameObject.SetActive(type == Type.Ok || type == Type.UnlockOk);
+
+            // show UNLOCK or not (resize if needed)
+            unlock.gameObject.SetActive(type == Type.UnlockOk || type == Type.UnlockYesNo);
+            unlock.SetFromSaveFile();
+            RectTransform rt = GetComponent<RectTransform>();
+            Vector2 size = rt.sizeDelta;
+            size.y = unlock.isActiveAndEnabled ? 240 : 200;
+            rt.sizeDelta = size;
 
             switch (type)
             {
-                case Type.YesNo: EventSystem.current.SetSelectedGameObject(yesButton.gameObject); break;
-                case Type.Ok: EventSystem.current.SetSelectedGameObject(okButton.gameObject); break;
+                case Type.YesNo:
+                case Type.UnlockYesNo:
+                    EventSystem.current.SetSelectedGameObject(yesButton.gameObject); break;
+                case Type.Ok:
+                case Type.UnlockOk:
+                    EventSystem.current.SetSelectedGameObject(okButton.gameObject); break;
             }
         }
     }
