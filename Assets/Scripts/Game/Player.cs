@@ -18,6 +18,7 @@ namespace Jintori.Game
         /// <summary> Possible states for the player </summary>
         enum State
         {
+            Spawning,
             SafePath,
             StartCut,
             Cutting,
@@ -49,7 +50,7 @@ namespace Jintori.Game
         Stack<Point> rewindHistory = new Stack<Point>();
 
         /// <summary> Current state </summary>
-        State state = State.SafePath;
+        State state = State.Spawning;
 
         /// <summary> Current travel direction </summary>
         Direction direction = Direction.None;
@@ -116,6 +117,9 @@ namespace Jintori.Game
                     break;
             }
 
+            // enable or disable skills
+            SkillOnOff();
+
             // now move
             switch (state)
             {
@@ -168,6 +172,26 @@ namespace Jintori.Game
         }
 
         // --- Methods ----------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Enables or disables the skill depending on the current player state
+        /// </summary>
+        void SkillOnOff()
+        {
+            switch(Config.instance.skill)
+            {
+                case Skill.Type.Shield:
+                    Skill.instance.enabled = (state == State.Cutting || state == State.Rewinding) && !postSpawnInvulnerability;
+                    break;
+                case Skill.Type.Freeze:
+                    Skill.instance.enabled = state == State.Cutting || state == State.Rewinding;
+                    break;
+                case Skill.Type.Speed:
+                    Skill.instance.enabled = state != State.Dying && state != State.Spawning;
+                    break;
+            }
+        }
+
         // -----------------------------------------------------------------------------------	
         private void OnSkillReleased()
         {
