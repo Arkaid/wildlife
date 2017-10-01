@@ -20,17 +20,17 @@ namespace Jintori
         public static void SetResolutionFromConfig()
         {
             int w, h;
-            if (Config.instance.fullScreen)
+            if (Data.Options.instance.fullScreen)
             {
                 w = Screen.currentResolution.width;
                 h = Screen.currentResolution.height;
             }
             else
             {
-                w = (int)Config.instance.resolution.x;
-                h = (int)Config.instance.resolution.y;
+                w = (int)Data.Options.instance.resolution.x;
+                h = (int)Data.Options.instance.resolution.y;
             }
-            Screen.SetResolution(w, h, Config.instance.fullScreen);
+            Screen.SetResolution(w, h, Data.Options.instance.fullScreen);
         }
 
         // -----------------------------------------------------------------------------------

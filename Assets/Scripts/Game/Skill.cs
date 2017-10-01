@@ -26,7 +26,7 @@ namespace Jintori.Game
 
         // --- Static Properties ------------------------------------------------------------------------
         /// <summary> shorthand </summary>
-        Type type { get { return Config.instance.skill; } }
+        Type type { get { return Data.Options.instance.skill; } }
 
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------

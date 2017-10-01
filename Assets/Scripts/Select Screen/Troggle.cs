@@ -29,7 +29,7 @@ namespace Jintori.SelectScreen
         // --- Inspector --------------------------------------------------------------------------------
 
         // --- Properties -------------------------------------------------------------------------------
-        Image target;
+        Image target { get { return transform.Find("Background/Checkmark").GetComponent<Image>(); } }
 
         public Value value { get { return _value; } set { SetValue(value); } }
         Value _value;
@@ -39,7 +39,6 @@ namespace Jintori.SelectScreen
         protected override void Start()
         {
             base.Start();
-            target = transform.Find("Background/Checkmark").GetComponent<Image>();
             onClick.AddListener(OnClick);
         }
         // --- Methods ----------------------------------------------------------------------------------
@@ -47,7 +46,7 @@ namespace Jintori.SelectScreen
         void SetValue(Value value)
         {
             _value = value;
-            switch(value)
+            switch (value)
             {
                 case Value.Yes: target.color = YesColor; break;
                 case Value.No: target.color = NoColor; break;
@@ -58,7 +57,7 @@ namespace Jintori.SelectScreen
         // -----------------------------------------------------------------------------------	
         void OnClick()
         {
-            value =  (Value)(((int)value + 1) % 3);
+            value = (Value)(((int)value + 1) % 3);
         }
     }
 }

@@ -97,7 +97,7 @@ namespace Jintori.SelectScreen
             yield return StartCoroutine(Transition.instance.Hide());
             StartCoroutine(SelectingCharacter());
         }
-
+        
         // -----------------------------------------------------------------------------------	
         /// <summary>
         /// Loads all character sheets and sets up icons
@@ -110,7 +110,6 @@ namespace Jintori.SelectScreen
 
             foreach (string file in files)
             {
-                Debug.Log("Loading: " + file);
                 CharacterFile.File charFile = new CharacterFile.File(file);
                 CharacterIcon icon = characterGrid.AddCharacter(charFile);
                 icon.selected += OnCharacterSelected;
@@ -218,8 +217,8 @@ namespace Jintori.SelectScreen
             GetComponent<GraphicRaycaster>().enabled = false;
 
             // set and save selected skill
-            Config.instance.skill = PopupManager.instance.skill;
-            Config.instance.SaveOptions();
+            Data.Options.instance.skill = PopupManager.instance.skill;
+            Data.Options.instance.Save();
 
             // fade out BGM and destroy sound manager (in game has its own manager)
             SoundManager.instance.FadeoutBGM(1f);

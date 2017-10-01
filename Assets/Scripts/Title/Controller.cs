@@ -60,7 +60,7 @@ namespace Jintori.Title
         // -----------------------------------------------------------------------------------	
         IEnumerator Start()
         {
-            if (Config.instance.debugOn)
+            if (Data.Options.instance.debugOn)
                 IllogicGate.LogToFile.Activate();
 
             Debug.Log("Application started. Client version: " + Application.version);

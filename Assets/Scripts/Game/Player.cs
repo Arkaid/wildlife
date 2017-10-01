@@ -178,7 +178,7 @@ namespace Jintori.Game
         /// </summary>
         void SkillOnOff()
         {
-            switch(Config.instance.skill)
+            switch(Data.Options.instance.skill)
             {
                 case Skill.Type.Shield:
                     Skill.instance.enabled = (state == State.Cutting || state == State.Rewinding) && !postSpawnInvulnerability;
@@ -195,10 +195,10 @@ namespace Jintori.Game
         // -----------------------------------------------------------------------------------	
         private void OnSkillReleased()
         {
-            animator.SetBool(Config.instance.skill.ToString(), false);
+            animator.SetBool(Data.Options.instance.skill.ToString(), false);
 
             // stop protecting
-            if (Config.instance.skill == Skill.Type.Shield)
+            if (Data.Options.instance.skill == Skill.Type.Shield)
             {
                 playArea.cutPath.isShielded = false;
                 playArea.cutPath.RedrawPath(cutPathStart.x, cutPathStart.y);
@@ -208,10 +208,10 @@ namespace Jintori.Game
         // -----------------------------------------------------------------------------------	
         private void OnSkillTriggered()
         {
-            animator.SetBool(Config.instance.skill.ToString(), true);
+            animator.SetBool(Data.Options.instance.skill.ToString(), true);
 
             // start shielding the path
-            if (Config.instance.skill == Skill.Type.Shield)
+            if (Data.Options.instance.skill == Skill.Type.Shield)
             {
                 playArea.cutPath.isShielded = true;
                 playArea.cutPath.RedrawPath(cutPathStart.x, cutPathStart.y);

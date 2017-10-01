@@ -59,7 +59,13 @@ namespace Jintori.SelectScreen
         Button credits = null;
 
         [SerializeField]
+        Button filterSet = null;
+
+        [SerializeField]
         GameObject creditsScreen = null;
+
+        [SerializeField]
+        Filters filterScreen = null;
 
         // --- Properties -------------------------------------------------------------------------------
         public bool isVisible { get; private set; }
@@ -85,6 +91,7 @@ namespace Jintori.SelectScreen
             accept.onClick.AddListener(OnAccept);
             cancel.onClick.AddListener(Close);
             credits.onClick.AddListener(() => { StartCoroutine(ShowCredits()); });
+            filterSet.onClick.AddListener(() => { StartCoroutine(ShowFilters()); });
         }
 
         // -----------------------------------------------------------------------------------
@@ -100,19 +107,21 @@ namespace Jintori.SelectScreen
         // -----------------------------------------------------------------------------------
         void OnAccept()
         {
-            if (!Screen.fullScreen)
-                Config.instance.resolution = new Vector2(Screen.width, Screen.height);
+            Data.Options opts = Data.Options.instance;
 
-            Config.instance.difficulty = (Config.Difficulty)difficulty.value;
-            Config.instance.sfxVolume = sfx.value;
-            Config.instance.bgmVolume = bgm.value;
-            Config.instance.fullScreen = fullscreen.isOn;
-            Config.instance.zoom = zoom.value + 2;
+            if (!Screen.fullScreen)
+                opts.resolution = new Vector2(Screen.width, Screen.height);
+
+            opts.difficulty = (Config.Difficulty)difficulty.value;
+            opts.sfxVolume = sfx.value;
+            opts.bgmVolume = bgm.value;
+            opts.fullScreen = fullscreen.isOn;
+            opts.zoom = zoom.value + 2;
 
             Util.SetResolutionFromConfig();
 
             // save and close
-            Config.instance.SaveOptions();
+            opts.Save();
             Close();
         }
 
@@ -126,6 +135,19 @@ namespace Jintori.SelectScreen
                 yield return null;
             yield return StartCoroutine(Transition.instance.Show(false));
             creditsScreen.SetActive(false);
+            yield return StartCoroutine(Transition.instance.Hide());
+        }
+
+        // -----------------------------------------------------------------------------------
+        IEnumerator ShowFilters()
+        {
+            yield return StartCoroutine(Transition.instance.Show(false));
+            filterScreen.Show();
+            yield return StartCoroutine(Transition.instance.Hide());
+            while (!filterScreen.done)
+                yield return null;
+            yield return StartCoroutine(Transition.instance.Show(false));
+            filterScreen.Hide();
             yield return StartCoroutine(Transition.instance.Hide());
         }
 
@@ -151,11 +173,13 @@ namespace Jintori.SelectScreen
             isVisible = true;
             gameObject.SetActive(true);
 
-            difficulty.value = (int)Config.instance.difficulty;
-            sfx.value = Config.instance.sfxVolume;
-            bgm.value = Config.instance.bgmVolume;
-            fullscreen.isOn = Config.instance.fullScreen;
-            zoom.value = Config.instance.zoom - 2;
+            Data.Options opts = Data.Options.instance;
+
+            difficulty.value = (int)opts.difficulty;
+            sfx.value = opts.sfxVolume;
+            bgm.value = opts.bgmVolume;
+            fullscreen.isOn = opts.fullScreen;
+            zoom.value = opts.zoom - 2;
 
 
             difficulty.Select();

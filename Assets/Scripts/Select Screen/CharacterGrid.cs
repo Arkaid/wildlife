@@ -84,12 +84,16 @@ namespace Jintori.SelectScreen
         /// <summary> If true, sort backwards </summary>
         bool sortReversed = false;
 
+        /// <summary> List of available characters </summary>
+        List<CharacterIcon> availableCharacters;
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         protected override void Start()
         {
             nextPageButton.onClick.AddListener(NextPage);
             prevPageButton.onClick.AddListener(PrevPage);
+            availableCharacters = new List<CharacterIcon>();
 
             //sampleIcon.transform.SetParent(transform.parent, true);
             sampleIcon.gameObject.SetActive(false);
@@ -112,12 +116,10 @@ namespace Jintori.SelectScreen
         // -----------------------------------------------------------------------------------	
         public CharacterFile.File SelectRandomCharacter()
         {
-            CharacterIcon[] availableCharacters = GetComponentsInChildren<CharacterIcon>(true);
-
             while (true)
             {
-                int rnd = Random.Range(0, availableCharacters.Length);
-                if (availableCharacters[rnd].characterFile != null) // avoid reselecting random
+                int rnd = Random.Range(0, availableCharacters.Count);
+                if (availableCharacters[rnd].isActiveAndEnabled) // avoid selecting hidden (filtered) characters
                     return availableCharacters[rnd].characterFile;
             }
         }
@@ -135,7 +137,53 @@ namespace Jintori.SelectScreen
             newIcon.selected += OnCharacterSelected;
             newIcon.highlighted += OnCharacterHighlighted;
 
+            availableCharacters.Add(newIcon);
+
             return newIcon;
+        }
+
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
+        /// Applies keyword filters to loaded characters
+        /// </summary>
+        List<CharacterIcon> ApplyFilters(List<CharacterIcon> characterList)
+        {
+            List<string> show = Data.Options.instance.showKeywordsList;
+            List<string> hide = Data.Options.instance.hideKeywordsList;
+
+            List<CharacterIcon> result = new List<CharacterIcon>();
+            foreach(CharacterIcon icon in characterList)
+            {
+                List<string> tags = icon.characterFile.tagList;
+
+                // definitely add these
+                foreach (string keyword in show)
+                {
+                    if (tags.Contains(keyword))
+                    {
+                        icon.gameObject.SetActive(true);
+                        result.Add(icon);
+                        goto next;
+                    }
+                }
+
+                // definitely skip these
+                foreach (string keyword in hide)
+                {
+                    if (tags.Contains(keyword))
+                    {
+                        icon.gameObject.SetActive(false);
+                        goto next;
+                    }
+                }
+
+                // just add whatever is not skipped
+                icon.gameObject.SetActive(true);
+                result.Add(icon);
+                next:;
+            }
+
+            return result;
         }
 
         // -----------------------------------------------------------------------------------	
@@ -144,31 +192,30 @@ namespace Jintori.SelectScreen
         /// </summary>
         List<CharacterIcon> GetSortedCharacters()
         {
-            // get a list of characters, removing "random" icon
-            List<CharacterIcon> availableCharacters = new List<CharacterIcon>(GetComponentsInChildren<CharacterIcon>(true));
-            availableCharacters.Remove(random);
+            List<CharacterIcon> sortedCharacters = new List<CharacterIcon>(availableCharacters);
 
             // now sort
             switch (sortBy)
             {
                 case SortCriteria.DateCreated:
-                    availableCharacters.Sort(SortFunc_ByDateCreated); break;
+                    sortedCharacters.Sort(SortFunc_ByDateCreated); break;
                 case SortCriteria.DateUpdated:
-                    availableCharacters.Sort(SortFunc_ByDateUpdated); break;
+                    sortedCharacters.Sort(SortFunc_ByDateUpdated); break;
                 case SortCriteria.Artist:
-                    availableCharacters.Sort(SortFunc_ByArtist); break;
+                    sortedCharacters.Sort(SortFunc_ByArtist); break;
                 case SortCriteria.CharacterName:
-                    availableCharacters.Sort(SortFunc_ByCharacterName); break;
+                    sortedCharacters.Sort(SortFunc_ByCharacterName); break;
                 case SortCriteria.Unplayed:
-                    availableCharacters.Sort(SortFunc_ByUnplayed); break;
+                    sortedCharacters.Sort(SortFunc_ByUnplayed); break;
             }
 
             if (sortReversed)
-                availableCharacters.Reverse();
+                sortedCharacters.Reverse();
 
-            return availableCharacters;
+            return sortedCharacters;
         }
 
+        #region Sorting Functions
         // -----------------------------------------------------------------------------------	
         int SortFunc_ByDateCreated(CharacterIcon a, CharacterIcon b)
         {
@@ -217,6 +264,8 @@ namespace Jintori.SelectScreen
             else
                 return -1;
         }
+        #endregion
+
         // -----------------------------------------------------------------------------------	
         IEnumerator DelayedSelect()
         {
@@ -323,6 +372,8 @@ namespace Jintori.SelectScreen
             List<CharacterIcon> icons = GetSortedCharacters();
             foreach (CharacterIcon icon in icons)
                 icon.transform.SetParent(null, true);
+
+            icons = ApplyFilters(icons);
 
             // haven't added any characters yet
             if (icons.Count == 0)

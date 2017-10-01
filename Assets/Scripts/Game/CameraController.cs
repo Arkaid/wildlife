@@ -35,7 +35,7 @@ namespace Jintori.Game
         // -----------------------------------------------------------------------------------	
         void Start()
         {
-            zoom = Config.instance.zoom;
+            zoom = Data.Options.instance.zoom;
             camera = GetComponent<Camera>();
         }
 

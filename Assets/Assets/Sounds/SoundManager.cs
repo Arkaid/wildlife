@@ -34,8 +34,8 @@ namespace Jintori
         protected override void Awake()
         {
             base.Awake();
-            bgmVolume = Config.instance.bgmVolume / 100f;
-            sfxVolume = Config.instance.sfxVolume / 100f;
+            bgmVolume = Data.Options.instance.bgmVolume / 100f;
+            sfxVolume = Data.Options.instance.sfxVolume / 100f;
         }
 
         // --- Methods ----------------------------------------------------------------------------------

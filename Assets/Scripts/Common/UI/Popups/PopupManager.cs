@@ -83,7 +83,7 @@ namespace Jintori.Common.UI
             background.SetActive(true);
             GameObject lastSelected = EventSystem.current.currentSelectedGameObject;
 
-            skillSelectPopup.Show(Config.instance.skill);
+            skillSelectPopup.Show(Data.Options.instance.skill);
             while (skillSelectPopup.isActiveAndEnabled)
                 yield return null;
 

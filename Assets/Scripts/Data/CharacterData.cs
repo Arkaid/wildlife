@@ -518,6 +518,9 @@ namespace Jintori.CharacterFile
         /// <summary> List of comma separated tags </summary>
         public string tags { get { return header.tags; } }
 
+        /// <summary> List of tags </summary>
+        public List<string> tagList { get { return new List<string>(tags.Split(Data.Options.KeywordSeparator, StringSplitOptions.RemoveEmptyEntries)); } }
+
         /// <summary> original file with character data </summary>
         public string source { get; private set; }
 
