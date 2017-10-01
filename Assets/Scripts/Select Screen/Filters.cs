@@ -83,7 +83,6 @@ namespace Jintori.SelectScreen
         // -----------------------------------------------------------------------------------	
         void OnOK()
         {
-
             string show = "";
             string hide = "";
 
@@ -103,6 +102,7 @@ namespace Jintori.SelectScreen
             Data.Options.instance.Save();
 
             characterGrid.Paginate();
+            characterGrid.SelectFirst();
 
             OnCancel();
         }

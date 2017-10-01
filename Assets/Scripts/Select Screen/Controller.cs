@@ -193,6 +193,14 @@ namespace Jintori.SelectScreen
         {
             state = State.StartingGame;
 
+            // can't really select anything
+            if(characterGrid.isEmpty)
+            {
+                string msg = "NO CHARACTERS AVAILABLE";
+                yield return StartCoroutine(PopupManager.instance.ShowMessagePopup(msg));
+                yield break;
+            }
+
             // select random character if needed
             if (selected == null)
                 selected = characterGrid.SelectRandomCharacter();

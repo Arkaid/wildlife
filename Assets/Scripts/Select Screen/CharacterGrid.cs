@@ -53,9 +53,15 @@ namespace Jintori.SelectScreen
         [SerializeField]
         Button prevPageButton = null;
 
+        [SerializeField]
+        Text noCharactersAvailable = null;
+
         // --- Properties -------------------------------------------------------------------------------
         /// <summary> Becomes true when it's ready to be used </summary>
         public bool isReady { get { return iconsPerPageX != 0; } }
+
+        /// <summary> True, if there aren't any icons to select </summary>
+        public bool isEmpty { get; private set; }
 
         /// <summary> Number of icons per page, in the x axis </summary>
         int iconsPerPageX;
@@ -91,6 +97,8 @@ namespace Jintori.SelectScreen
         // -----------------------------------------------------------------------------------	
         protected override void Start()
         {
+            isEmpty = true;
+
             nextPageButton.onClick.AddListener(NextPage);
             prevPageButton.onClick.AddListener(PrevPage);
             availableCharacters = new List<CharacterIcon>();
@@ -376,7 +384,9 @@ namespace Jintori.SelectScreen
             icons = ApplyFilters(icons);
 
             // haven't added any characters yet
-            if (icons.Count == 0)
+            isEmpty = icons.Count == 0;
+            noCharactersAvailable.gameObject.SetActive(isEmpty);
+            if (isEmpty)
                 return;
 
             // delete all the old pages
@@ -543,8 +553,16 @@ namespace Jintori.SelectScreen
         public void SelectFirst()
         {
             Transform firstPage = pagesRoot.GetChild(0);
-            Transform first = firstPage.GetChild(0);
-            CharacterIcon icon = first.GetComponent<CharacterIcon>();
+            CharacterIcon icon = random;
+
+            // change to first icon on first page if there are
+            // any pages (ie: not empty)
+            if (firstPage != null && firstPage.childCount > 0)
+            {
+                Transform first = firstPage.GetChild(0);
+                icon = first.GetComponent<CharacterIcon>();
+            }
+
             icon.Select();
             icon.OnSubmit(null);
         }
