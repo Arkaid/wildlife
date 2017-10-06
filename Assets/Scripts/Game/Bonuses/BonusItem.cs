@@ -47,6 +47,16 @@ namespace Jintori.Game
         
         // -----------------------------------------------------------------------------------	
         /// <summary>
+        /// Override this if you want to play another sound
+        /// </summary>
+        protected virtual void PlaySound()
+        {
+            SoundManager.instance.PlaySFX("game_item");
+        }
+
+
+        // -----------------------------------------------------------------------------------	
+        /// <summary>
         /// Destroys the object after a given time
         /// </summary>
         IEnumerator Countdown()
@@ -94,6 +104,7 @@ namespace Jintori.Game
             if (IsInShadow())
                 return;
             playArea.mask.maskCleared -= OnMaskCleared;
+            PlaySound();
             Award();
 
             if (awarded != null)
