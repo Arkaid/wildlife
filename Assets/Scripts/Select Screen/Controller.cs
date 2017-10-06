@@ -82,8 +82,8 @@ namespace Jintori.SelectScreen
                 Instantiate(Resources.Load("Sound Manager"));
 
             // when it gets back from the game, there isn't any BGM playbg
-            if (!SoundManager.instance.IsPlayingBGM("Intersekt - Track 01"))
-                SoundManager.instance.PlayBGM("Intersekt - Track 01", 4.8f);
+            if (!SoundManager.instance.IsPlayingBGM("Intersekt - Smooth Highway"))
+                SoundManager.instance.PlayBGM("Intersekt - Smooth Highway", 7.3f);
 
             // handle buttons
             startButton.onClick.AddListener(() => { StartCoroutine(StartGame()); });

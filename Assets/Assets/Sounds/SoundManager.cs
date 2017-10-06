@@ -14,7 +14,7 @@ namespace Jintori
         {
             "Kurorak - Fulcrum",
             "Kurorak - Gravibender",
-            "Intersekt - Track 02",
+            "Intersekt - Suspended Sound",
         };
         // --- Static Properties ------------------------------------------------------------------------
         static public new SoundManager instance { get { return IllogicGate.SoundManager2D.instance as SoundManager; } }

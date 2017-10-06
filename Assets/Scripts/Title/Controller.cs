@@ -64,7 +64,7 @@ namespace Jintori.Title
                 IllogicGate.LogToFile.Activate();
 
             Debug.Log("Application started. Client version: " + Application.version);
-            SoundManager.instance.PlayBGM("Intersekt - Track 01");
+            SoundManager.instance.PlayBGM("Intersekt - Smooth Highway", 2.55f);
 
             // set up full screen if config'd like so
             Util.SetResolutionFromConfig();
