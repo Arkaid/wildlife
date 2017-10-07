@@ -39,6 +39,8 @@ namespace Jintori.Game
         /// </summary>
         public void Reset(int clearPercentage)
         {
+            Debug.Log("Setting UI clearPercentage bar to: " + clearPercentage);
+
             // set the sizes of "normal" and "clear"
             float t = clearPercentage / 100f;
             normalImage.rectTransform.anchorMax = new Vector2(t, 1);

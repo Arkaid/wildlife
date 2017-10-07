@@ -151,6 +151,9 @@ namespace Jintori.Game
             // Let the camera know it can start tracking the player
             cameraController.StartTracking(playArea);
 
+            Debug.Log("About to initialize the UI. Config.clearPercentages reads: " + Config.instance.clearPercentage);
+            Debug.Log("About to initialize the UI. Config.clearRation reads: " + Config.instance.clearRatio);
+
             // reset the UI
             UI.instance.Reset(
                 livesLeft,

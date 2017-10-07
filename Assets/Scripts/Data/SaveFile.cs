@@ -230,6 +230,7 @@ namespace Jintori.Data
         // -----------------------------------------------------------------------------------	
         protected override void OnInstanceCreated()
         {
+            unlockState = new UnlockState();
             Load();
         }
 

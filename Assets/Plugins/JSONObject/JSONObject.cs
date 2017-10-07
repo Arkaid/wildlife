@@ -10,6 +10,7 @@ using Debug = UnityEngine.Debug;
 using System.Diagnostics;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 /*
  * http://www.opensource.org/licenses/lgpl-2.1.php
@@ -338,11 +339,11 @@ public class JSONObject {
 						default:
 							try {
 #if USEFLOAT
-								n = System.Convert.ToSingle(str);
+								n = System.Convert.ToSingle(str, CultureInfo.InvariantCulture);
 #else
-								n = System.Convert.ToDouble(str);				 
+								n = System.Convert.ToDouble(str, CultureInfo.InvariantCulture);				 
 #endif
-								if(!str.Contains(".")) {
+                                if (!str.Contains(".")) {
 									i = System.Convert.ToInt64(str);
 									useInt = true;
 								}
