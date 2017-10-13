@@ -59,7 +59,7 @@ namespace Jintori.Game
         Point cutPathStart;
 
         /// <summary> True during the few first moments after spawning </summary>
-        bool postSpawnInvulnerability = false;
+        public bool postSpawnInvulnerability { get; private set; }
 
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
@@ -199,10 +199,7 @@ namespace Jintori.Game
 
             // stop protecting
             if (Data.Options.instance.skill == Skill.Type.Shield)
-            {
-                playArea.cutPath.isShielded = false;
-                playArea.cutPath.RedrawPath(cutPathStart.x, cutPathStart.y);
-            }
+                ShieldPath(false);
         }
 
         // -----------------------------------------------------------------------------------	
@@ -212,10 +209,14 @@ namespace Jintori.Game
 
             // start shielding the path
             if (Data.Options.instance.skill == Skill.Type.Shield)
-            {
-                playArea.cutPath.isShielded = true;
-                playArea.cutPath.RedrawPath(cutPathStart.x, cutPathStart.y);
-            }
+                ShieldPath(true);
+        }
+
+        // -----------------------------------------------------------------------------------	
+        void ShieldPath(bool shielded)
+        {
+            playArea.cutPath.isShielded = shielded;
+            playArea.cutPath.RedrawPath(cutPathStart.x, cutPathStart.y);
         }
 
         // -----------------------------------------------------------------------------------	
@@ -233,13 +234,23 @@ namespace Jintori.Game
         /// </summary>
         IEnumerator Invulnerability()
         {
-            const float InvincibleTime = 3f;
+            const float InvincibleTime = 1.75f;
             postSpawnInvulnerability = true;
-            yield return new WaitForSeconds(InvincibleTime);
+            ShieldPath(true);
+
+            float elapsed = 0;
+            while(elapsed <= InvincibleTime)
+            {
+                ShieldPath(true);
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+
             animator.SetBool("Invulnerable", false);
             postSpawnInvulnerability = false;
+            ShieldPath(false);
         }
-
+        
         // -----------------------------------------------------------------------------------	
         /// <summary> 
         /// Spawns the player at the given position 

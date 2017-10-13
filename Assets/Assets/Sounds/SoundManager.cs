@@ -14,6 +14,7 @@ namespace Jintori
         {
             "Kurorak - Fulcrum",
             "Kurorak - Gravibender",
+            "Kurorak - [I Am] Running Out of Time",
             "Intersekt - Suspended Sound",
         };
         // --- Static Properties ------------------------------------------------------------------------
