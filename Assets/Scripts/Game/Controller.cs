@@ -60,6 +60,9 @@ namespace Jintori.Game
         /// <summary> True, if the game is paused </summary>
         public bool isPaused { get; private set; }
 
+        /// <summary> Used to reset the round state upon retrying </summary>
+        int roundStartLives;
+
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         void Start()
@@ -126,6 +129,9 @@ namespace Jintori.Game
 
             // Play a random track
             SoundManager.instance.PlayRandomRoundClip();
+
+            // save to restore later
+            roundStartLives = livesLeft;
 
             // Load the images
             CharacterFile.RoundImages roundData = sourceFile.LoadRound(round);
@@ -360,7 +366,16 @@ namespace Jintori.Game
             yield return StartCoroutine(Transition.instance.Show());
             yield return new WaitForSeconds(1f - Transition.TransitionTime);
 
-            SceneManager.LoadScene(retry ? "Game" : "Select Menu");
+            // retry: restart the last level from scratch
+            if (retry)
+            {
+                livesLeft = roundStartLives;
+                StartCoroutine(InitializeRound());
+            }
+
+            // give up and go back to menu
+            else
+                SceneManager.LoadScene("Game");
         }
 
 
