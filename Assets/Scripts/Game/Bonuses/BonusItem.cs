@@ -22,6 +22,10 @@ namespace Jintori.Game
         // --- Static Methods ---------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------
         // --- Inspector --------------------------------------------------------------------------------
+        [SerializeField]
+        bool _canSpawnOnRetryRound = true;
+        public bool canSpawnOnRetryRound { get { return _canSpawnOnRetryRound; } }
+
         // --- Properties -------------------------------------------------------------------------------
         /// <summary> Time the item stays active on the play area, adjusted for difficulty </summary>
         virtual protected float activeTime { get { return DefaultActiveTime[(int)Config.instance.difficulty]; } }

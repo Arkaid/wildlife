@@ -16,6 +16,7 @@ namespace Jintori
             "Kurorak - Gravibender",
             "Kurorak - [I Am] Running Out of Time",
             "Intersekt - Suspended Sound",
+            "Intersekt - Hot Fox",
         };
         // --- Static Properties ------------------------------------------------------------------------
         static public new SoundManager instance { get { return IllogicGate.SoundManager2D.instance as SoundManager; } }

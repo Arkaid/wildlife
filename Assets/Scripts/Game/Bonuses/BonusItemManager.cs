@@ -75,8 +75,10 @@ namespace Jintori.Game
         /// <summary>
         /// Call to get the bonus items associated with the new play area and initialize 
         /// the new round
+        /// Some bonus items won't spawn on a retry play, so we need to know if it's a retry
+        /// round or not
         /// </summary>
-        public void InitializeRound(PlayArea playArea, int round)
+        public void InitializeRound(PlayArea playArea, int round, bool isRetry)
         {
             this.playArea = playArea;
             this.round = round;
@@ -95,7 +97,7 @@ namespace Jintori.Game
                     instances[item].RoundReset();
             }
 
-            StartCoroutine(SpawnItems());
+            StartCoroutine(SpawnItems(isRetry));
         }
         
         // -----------------------------------------------------------------------------------	
@@ -114,14 +116,14 @@ namespace Jintori.Game
         }
 
         // -----------------------------------------------------------------------------------	
-        IEnumerator SpawnItems()
+        IEnumerator SpawnItems(bool isRetry)
         {
             while (playArea != null)
             {
                 // check if we need to spawn new items
                 foreach (BonusItem item in sourceItems)
                 {
-                    if (!CanSpawnCheck(item))
+                    if (!CanSpawnCheck(item, isRetry))
                         continue;
                     
                     // if it's paused, wait before spawning
@@ -151,8 +153,12 @@ namespace Jintori.Game
         /// <summary>
         /// Returns true if the conditions for spawning that type of bonus item are met
         /// </summary>
-        bool CanSpawnCheck(BonusItem item)
+        bool CanSpawnCheck(BonusItem item, bool isRetry)
         {
+            // this item is not available on a retry round
+            if (isRetry && !item.canSpawnOnRetryRound)
+                return false;
+
             // regardless of type, we can put so many items in the shadow.
             // The smaller the area, the less items we can put
             float clearedRatio = playArea.mask.clearedTotalRatio;

@@ -102,7 +102,7 @@ namespace Jintori.Game
             BonusItemManager.instance.bonusAwarded += OnBonusAwarded;
 
             // start the first round
-            StartCoroutine(InitializeRound());
+            StartCoroutine(InitializeRound(false));
         }
 
         // -----------------------------------------------------------------------------------	
@@ -119,7 +119,7 @@ namespace Jintori.Game
 
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        IEnumerator InitializeRound()
+        IEnumerator InitializeRound(bool isRetry)
         {
             Debug.Log("Starting round: " + (round + 1));
 
@@ -251,7 +251,7 @@ namespace Jintori.Game
             playArea.boss.Run();
 
             // Let the bonus manager know a new round started
-            BonusItemManager.instance.InitializeRound(playArea, round);
+            BonusItemManager.instance.InitializeRound(playArea, round, isRetry);
 
             // start tracking it
             UI.instance.bossTracker.StartTracking(playArea.boss);
@@ -370,12 +370,12 @@ namespace Jintori.Game
             if (retry)
             {
                 livesLeft = roundStartLives;
-                StartCoroutine(InitializeRound());
+                StartCoroutine(InitializeRound(true));
             }
 
             // give up and go back to menu
             else
-                SceneManager.LoadScene("Game");
+                SceneManager.LoadScene("Select Menu");
         }
 
 
@@ -469,7 +469,7 @@ namespace Jintori.Game
                 livesLeft++;
 
                 // start next round
-                StartCoroutine(InitializeRound());
+                StartCoroutine(InitializeRound(false));
             }
             else
             {

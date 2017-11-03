@@ -249,7 +249,13 @@ namespace Jintori.SelectScreen
         // -----------------------------------------------------------------------------------	
         int SortFunc_ByArtist(CharacterIcon a, CharacterIcon b)
         {
-            return string.Compare(a.characterFile.artist, b.characterFile.artist);
+            int compare = string.Compare(a.characterFile.artist, b.characterFile.artist);
+            
+            // sort by creation date if they're all from the same artist
+            if (compare == 0)
+                compare = SortFunc_ByDateCreated(a, b);
+
+            return compare;
         }
         // -----------------------------------------------------------------------------------	
         int SortFunc_ByCharacterName(CharacterIcon a, CharacterIcon b)
@@ -262,9 +268,9 @@ namespace Jintori.SelectScreen
             Data.CharacterStats stats_a = Data.SaveFile.instance.GetCharacterStats(a.characterFile.guid);
             Data.CharacterStats stats_b = Data.SaveFile.instance.GetCharacterStats(b.characterFile.guid);
 
-            // if both are either played, or unplayed; sort by last updated
+            // if both are either played, or unplayed; sort by creation date
             if (stats_a.played == stats_b.played)
-                return SortFunc_ByDateUpdated(a, b);
+                return SortFunc_ByDateCreated(a, b);
 
             // else, unplayed comes first
             if (!stats_a.played)
