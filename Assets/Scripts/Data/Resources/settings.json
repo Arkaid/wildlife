@@ -316,7 +316,7 @@
 		}
 	},
 	"Hard": {
-		"round_time": 180,
+		"round_time": 999,
 		"clear_ratio": 0.90,
 		"start_lives": 3,
 		"skill_speed_multiplier": 2,

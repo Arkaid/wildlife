@@ -36,7 +36,7 @@ namespace Jintori.SelectScreen
         RectTransform pagesRoot = null;
 
         [SerializeField]
-        CharacterIcon sampleIcon;
+        CharacterIcon sampleIcon = null;
 
         [SerializeField]
         RoundIcon round4 = null;

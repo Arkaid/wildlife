@@ -50,6 +50,17 @@ namespace Jintori.Game
             // calculate repulsion velocity
             replusion = normal * speed;
 
+            ContactPoint2D[] contacts = new ContactPoint2D[500];
+
+            for (int i = 0; i < 50; i++)
+            {
+                int n = collider.GetContacts(contacts);
+                position += replusion * Time.fixedDeltaTime;
+                x = Mathf.RoundToInt(position.x);
+                y = Mathf.RoundToInt(position.y);
+                Physics2D.SyncTransforms();
+            }
+
             // reflect velocity
             velocity = Vector2.Reflect(velocity, normal).normalized * speed;
 
