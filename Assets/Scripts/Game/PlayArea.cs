@@ -22,8 +22,11 @@ namespace Jintori.Game
         public static readonly ContactFilter2D ObstacleFilter = new ContactFilter2D()
         {
             useLayerMask = true,
-            layerMask = EdgesLayerMask | BonusesLayerMask
+            layerMask = ObstacleLayerMask
         };
+
+        public const int ObstacleLayerMask = EdgesLayerMask | BonusesLayerMask;
+
         public const int EnemiesLayerMask = 1 << 9;
 
         public const int BonusesLayerMask = 1 << 10;

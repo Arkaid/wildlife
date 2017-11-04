@@ -34,60 +34,8 @@ namespace Jintori.Game
         /// <summary> Position in float, as not to accumulate rounding errors from x, y </summary>
         Vector2 position;
 
-        /// <summary> repulsion velocity used to move away from walls </summary>
-        Vector2 replusion;
-
         // --- MonoBehaviour ----------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
-        private void OnCollisionEnter2D(Collision2D collision)
-        {
-            // obtain normal from contact points
-            Vector2 normal = Vector3.zero;
-            foreach (ContactPoint2D cp in collision.contacts)
-                normal += cp.normal;
-            normal.Normalize();
-
-            // calculate repulsion velocity
-            replusion = normal * speed;
-
-            ContactPoint2D[] contacts = new ContactPoint2D[500];
-
-            for (int i = 0; i < 50; i++)
-            {
-                int n = collider.GetContacts(contacts);
-                position += replusion * Time.fixedDeltaTime;
-                x = Mathf.RoundToInt(position.x);
-                y = Mathf.RoundToInt(position.y);
-                Physics2D.SyncTransforms();
-            }
-
-            // reflect velocity
-            velocity = Vector2.Reflect(velocity, normal).normalized * speed;
-
-            // clamp if necessary
-            if (lock45)
-                ClampVelocity45();
-        }
-
-        // -----------------------------------------------------------------------------------	
-        void OnCollisionStay2D(Collision2D collision)
-        {
-            // obtain normal from contact points
-            Vector2 normal = Vector3.zero;
-            foreach (ContactPoint2D cp in collision.contacts)
-                normal += cp.normal;
-            normal.Normalize();
-
-            // calculate repulsion velocity
-            replusion = normal * speed;
-        }
-        
-        // -----------------------------------------------------------------------------------	
-        void OnCollisionExit2D(Collision2D collision)
-        {
-            replusion = Vector2.zero;
-        }
-
         // --- Methods ----------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------	
         /// <summary>
@@ -151,12 +99,56 @@ namespace Jintori.Game
         /// </summary>
         protected void Move()
         {
-            // use repulsion velocity if available, otherwise move as planned
-            Vector2 vel = replusion != Vector2.zero ? replusion : velocity;
-
-            position += vel * Time.fixedDeltaTime;
+            // update position
+            position += velocity * Time.fixedDeltaTime;
             x = Mathf.RoundToInt(position.x);
             y = Mathf.RoundToInt(position.y);
+
+            // does it overlap any obstacle?
+            Collider2D[] overlaps = new Collider2D[1];
+            bool bounce = collider.OverlapCollider(PlayArea.ObstacleFilter, overlaps) > 0;
+
+            // nope
+            if (!bounce)
+                return;
+
+            // rewind until there's no more overlap
+            Vector2 dv = velocity * Time.fixedDeltaTime * 0.1f;
+            do
+            {
+                position -= dv;
+                x = Mathf.RoundToInt(position.x);
+                y = Mathf.RoundToInt(position.y);
+            } while (collider.OverlapCollider(PlayArea.ObstacleFilter, overlaps) > 0);
+
+            position -= dv;
+            x = Mathf.RoundToInt(position.x);
+            y = Mathf.RoundToInt(position.y);
+
+            
+            // check where do we hit the obstable to calculate normal
+            float distance = speed * Time.fixedDeltaTime;
+            RaycastHit2D[] hits = new RaycastHit2D[8];
+            int hitCount = collider.Cast(velocity, PlayArea.ObstacleFilter, hits, distance);
+
+            // obtain normal from contact points
+            Vector2 normal = Vector3.zero;
+            for (int i = 0; i < hitCount; i++)
+                normal += hits[i].normal;
+            normal.Normalize();
+
+            // reflect velocity
+            Vector2 before = velocity;
+            velocity = Vector2.Reflect(velocity, normal).normalized * speed;
+
+            // clamp if necessary
+            if (lock45)
+                ClampVelocity45();
+
+            // velocity hasn't changed enough!
+            if (Vector2.Angle(before, velocity) < 2.5f)
+                velocity *= -1;
         }
     }
+
 }
