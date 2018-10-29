@@ -9,6 +9,9 @@ To create new characters, you can use the Unity Editor tool, under [Jintori/Char
 ## Forks and Pull requests
 Feel free to fork this game and create your own version if you want to!. If instead you have any bugfixes or updates you want to add to the game, send me a pull request.
 
+## Known issues
+* The update check and character download functionality is still there, but it's pointing to a dead server. It needs to be fixed so it can run fully offline.... or someone should set up a new server.
+
 ## Licenses
 * The source code is released under the GPLv3 License
 * All visual assets (images, animations) are released under a CC BY-NC-SA 4.0 License
@@ -16,3 +19,4 @@ Feel free to fork this game and create your own version if you want to!. If inst
 * The [Press Start] font is released under the SIL Open Font License
 
 The background music files belong to their respective authors. I have been given permission to include them in this game, but please contact them for licensing information.
+
