@@ -10,7 +10,7 @@ To create new characters, you can use the Unity Editor tool, under [Jintori/Char
 Feel free to fork this game and create your own version if you want to!. If instead you have any bugfixes or updates you want to add to the game, send me a pull request.
 
 ## Known issues
-* The update check and character download functionality is still there, but it's pointing to a dead server. It needs to be fixed so it can run fully offline.... or someone should set up a new server.
+* The "Update Check" and "Automatic Character Download" functionality is still there, but it's pointing to a dead server. It needs to be fixed so it can run fully offline.... or someone should set up a new server.
 
 ## Licenses
 * The source code is released under the GPLv3 License
